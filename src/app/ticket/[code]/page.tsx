@@ -39,7 +39,7 @@ export default async function TicketPage({ params }: { params: Promise<{ code: s
     valid:     { bg: 'bg-green-50',  border: 'border-green-200',  text: 'text-green-700',  label: '✅ Billet valide',   icon: '✅' },
     used:      { bg: 'bg-gray-50',   border: 'border-gray-200',   text: 'text-gray-600',   label: '✔️ Déjà utilisé',   icon: '✔️' },
     cancelled: { bg: 'bg-red-50',    border: 'border-red-200',    text: 'text-red-700',    label: '❌ Billet annulé',   icon: '❌' },
-  }[ticket.status] ?? { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-600', label: ticket.status, icon: '❓' }
+  }[ticket.status as 'valid' | 'used' | 'cancelled'] ?? { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-600', label: ticket.status, icon: '❓' }
 
   const ticketUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://qrcode-express-ibig.vercel.app'}/ticket/${code}`
 
@@ -50,13 +50,13 @@ export default async function TicketPage({ params }: { params: Promise<{ code: s
         <div className="text-center">
           <p className="text-4xl mb-2">🎟️</p>
           <h1 className="text-xl font-bold text-[#041B4D]">{(event.name as string) || 'Billet'}</h1>
-          {event.date && (
+          {!!event.date && (
             <p className="text-sm text-gray-500 mt-1">
               {new Date(event.date as string).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
               {event.time ? ` à ${event.time}` : ''}
             </p>
           )}
-          {event.location && <p className="text-xs text-gray-400 mt-0.5">📍 {event.location as string}</p>}
+          {!!event.location && <p className="text-xs text-gray-400 mt-0.5">📍 {event.location as string}</p>}
         </div>
 
         {/* Status badge */}

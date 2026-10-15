@@ -45,13 +45,13 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
       <main className="min-h-screen bg-gray-50">
         {/* Hero banner */}
         <div className="relative" style={{ background: `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)` }}>
-          {event.logo && (
+          {!!event.logo && (
             <img src={event.logo as string} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />
           )}
           <div className="relative max-w-lg mx-auto px-6 py-12 text-center text-white">
             <p className="text-4xl mb-3">🎟️</p>
             <h1 className="text-2xl font-bold leading-tight mb-2">{(event.name as string) || 'Événement'}</h1>
-            {event.organizer && (
+            {!!event.organizer && (
               <p className="text-sm opacity-80">Par {event.organizer as string}</p>
             )}
           </div>
@@ -71,7 +71,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
                 </div>
               </div>
             )}
-            {event.location && (
+            {!!event.location && (
               <div className="flex items-center gap-3 text-sm">
                 <span className="text-2xl">📍</span>
                 <p className="text-gray-700">{event.location as string}</p>
@@ -98,7 +98,7 @@ export default async function EventPage({ params }: { params: Promise<{ id: stri
           </div>
 
           {/* Description */}
-          {event.description && (
+          {!!event.description && (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
               <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{event.description as string}</p>
             </div>

@@ -40,13 +40,13 @@ export default async function PayPage({ params }: { params: Promise<{ id: string
       <main className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className="relative" style={{ background: `linear-gradient(135deg, ${accentColor}, ${accentColor}cc)` }}>
-          {payment.logo && (
+          {!!payment.logo && (
             <img src={payment.logo as string} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />
           )}
           <div className="relative max-w-lg mx-auto px-6 py-10 text-center text-white">
             <p className="text-4xl mb-3">💳</p>
             <h1 className="text-2xl font-bold leading-tight mb-1">{(payment.merchant as string) || 'Paiement'}</h1>
-            {payment.description && (
+            {!!payment.description && (
               <p className="text-sm opacity-90 leading-relaxed mt-1">{payment.description as string}</p>
             )}
             {fixedAmount > 0 && !customAmount && (

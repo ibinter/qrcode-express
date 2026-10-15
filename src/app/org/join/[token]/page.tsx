@@ -63,7 +63,7 @@ export default async function JoinOrgPage({ params }: { params: Promise<{ token:
     await admin.from('org_invitations').update({ accepted: true }).eq('id', inv.id)
   }
 
-  const orgName = (inv.organizations as Record<string, unknown>)?.name as string || 'l\'organisation'
+  const orgName = ((Array.isArray(inv.organizations) ? inv.organizations[0] : inv.organizations) as { name: string } | null)?.name || 'l\'organisation'
 
   return (
     <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">

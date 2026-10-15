@@ -582,7 +582,7 @@ function ReviewForm({ data, onChange }: { data: Record<string, string>; onChange
   )
 }
 
-function EventForm({ data, onChange }: { data: Record<string, unknown>; onChange: (d: Record<string, unknown>) => void }) {
+function EventForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
   const raw = typeof data.event_json === 'string' ? data.event_json : ''
   let parsed: Record<string, unknown> = {}
   try { parsed = raw ? JSON.parse(raw) : {} } catch {}
@@ -651,7 +651,7 @@ function EventForm({ data, onChange }: { data: Record<string, unknown>; onChange
 
 type LeadField = { id: string; type: 'text' | 'email' | 'tel' | 'textarea' | 'select'; label: string; required: boolean; options?: string }
 
-function LeadForm({ data, onChange }: { data: Record<string, unknown>; onChange: (d: Record<string, unknown>) => void }) {
+function LeadForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
   const raw = typeof data.lead_json === 'string' ? data.lead_json : ''
   let parsed: Record<string, unknown> = {}
   try { parsed = raw ? JSON.parse(raw) : {} } catch {}
@@ -751,7 +751,7 @@ function LeadForm({ data, onChange }: { data: Record<string, unknown>; onChange:
   )
 }
 
-function PaymentForm({ data, onChange }: { data: Record<string, unknown>; onChange: (d: Record<string, unknown>) => void }) {
+function PaymentForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
   const raw = typeof data.payment_json === 'string' ? data.payment_json : ''
   let parsed: Record<string, unknown> = {}
   try { parsed = raw ? JSON.parse(raw) : {} } catch {}

@@ -89,8 +89,8 @@ export default async function OrgPage({ params }: { params: Promise<{ id: string
                 id: m.id,
                 role: m.role,
                 user_id: m.user_id,
-                full_name: (m.profiles as Record<string, unknown>)?.full_name as string | null,
-                avatar_url: (m.profiles as Record<string, unknown>)?.avatar_url as string | null,
+                full_name: ((Array.isArray(m.profiles) ? m.profiles[0] : m.profiles) as { full_name: string | null; avatar_url: string | null } | null)?.full_name ?? null,
+                avatar_url: ((Array.isArray(m.profiles) ? m.profiles[0] : m.profiles) as { full_name: string | null; avatar_url: string | null } | null)?.avatar_url ?? null,
                 isCurrentUser: m.user_id === user.id,
               }))}
               invitations={(invitations || []).map((inv) => ({

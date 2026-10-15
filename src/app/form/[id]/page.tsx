@@ -34,13 +34,13 @@ export default async function FormPage({ params }: { params: Promise<{ id: strin
       <main className="min-h-screen bg-gray-50">
         {/* Header */}
         <div className="relative" style={{ background: `linear-gradient(135deg, ${accentColor}, ${accentColor}bb)` }}>
-          {form.logo && (
+          {!!form.logo && (
             <img src={form.logo as string} alt="" className="absolute inset-0 w-full h-full object-cover opacity-20" />
           )}
           <div className="relative max-w-lg mx-auto px-6 py-10 text-center text-white">
             <p className="text-4xl mb-3">📋</p>
             <h1 className="text-2xl font-bold leading-tight mb-2">{(form.title as string) || 'Formulaire'}</h1>
-            {form.description && (
+            {!!form.description && (
               <p className="text-sm opacity-90 leading-relaxed">{form.description as string}</p>
             )}
           </div>

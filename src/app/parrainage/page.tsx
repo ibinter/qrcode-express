@@ -56,7 +56,7 @@ export default async function ParrainagePage() {
             status: r.status,
             credits_given: r.credits_given,
             created_at: r.created_at,
-            referred_name: (r.profiles as Record<string, unknown> | null)?.full_name as string | null,
+            referred_name: ((Array.isArray(r.profiles) ? r.profiles[0] : r.profiles) as { full_name: string | null } | null)?.full_name ?? null,
           }))}
           referrerCredits={REFERRER_CREDITS}
           referredCredits={REFERRED_CREDITS}

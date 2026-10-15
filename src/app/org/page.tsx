@@ -27,7 +27,7 @@ export default async function OrgsPage() {
 
   const memberOrgs = (memberRows || [])
     .filter((r) => {
-      const org = r.organizations as Record<string, unknown> | null
+      const org = (Array.isArray(r.organizations) ? r.organizations[0] : r.organizations) as { id: string } | null
       return org && !(ownedOrgs || []).find((o) => o.id === org.id)
     })
 
@@ -75,7 +75,7 @@ export default async function OrgsPage() {
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">Organisations rejointes</p>
             <div className="grid sm:grid-cols-2 gap-4">
               {memberOrgs.map((row) => {
-                const org = row.organizations as Record<string, unknown>
+                const org = (Array.isArray(row.organizations) ? row.organizations[0] : row.organizations) as { id: string; name: string; logo_url: string | null; plan: string }
                 return (
                   <Link key={row.org_id} href={`/org/${org.id}`}
                     className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 flex items-center gap-4 hover:shadow-md transition-shadow">
