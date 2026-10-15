@@ -102,11 +102,10 @@ export default function Hero() {
             <div className="bg-gray-50 rounded-xl p-3 mb-3">
               {/* Simulated QR */}
               <div className="w-full aspect-square grid grid-cols-7 gap-0.5">
-                {Array.from({ length: 49 }).map((_, i) => {
-                  const corners = [0,1,2,3,4,5,6,7,13,14,20,21,27,28,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48]
-                  const isDark = corners.includes(i) || Math.random() > 0.55
-                  return <div key={i} className={`rounded-sm ${isDark ? 'bg-[#041B4D]' : 'bg-transparent'}`} />
-                })}
+                {/* Deterministic QR pattern — no Math.random() to avoid prerender error */}
+                {[1,1,1,1,1,1,1,1,0,0,1,0,0,1,1,0,1,0,1,0,1,1,0,0,1,0,0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,0,1,1,0,1].map((v, i) => (
+                  <div key={i} className={`rounded-sm ${v ? 'bg-[#041B4D]' : 'bg-transparent'}`} />
+                ))}
               </div>
             </div>
             <p className="text-center text-[10px] font-bold text-[#041B4D] uppercase tracking-wide">SCAN ME</p>
