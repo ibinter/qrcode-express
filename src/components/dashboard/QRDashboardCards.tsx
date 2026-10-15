@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import QRCodeMini from './QRCodeMini'
 import EditQRModal from './EditQRModal'
+import LinkHealthBadge from './LinkHealthBadge'
 
 interface QRRow {
   id: string
@@ -15,7 +16,7 @@ interface QRRow {
   scan_count: number
   status: string
   created_at: string
-  design?: Record<string, string>
+  design?: Record<string, unknown>
 }
 
 interface Props {
@@ -85,7 +86,7 @@ export default function QRDashboardCards({ qrs, typeIcons }: Props) {
                   : qr.mode === 'dynamic' && qr.slug
                   ? `${typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'}/r/${qr.slug}`
                   : qr.content}
-                color={qr.design?.fgColor || '#041B4D'}
+                color={(qr.design?.fgColor as string) || '#041B4D'}
               />
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-[#041B4D] text-sm leading-tight line-clamp-2">
@@ -107,7 +108,17 @@ export default function QRDashboardCards({ qrs, typeIcons }: Props) {
             {/* Stats */}
             <div className="flex items-center justify-between text-xs text-gray-500 border-t border-gray-50 pt-2">
               <span className="font-semibold text-[#041B4D]">📊 {qr.scan_count ?? 0} scans</span>
-              <span>{new Date(qr.created_at).toLocaleDateString('fr-FR')}</span>
+              <div className="flex items-center gap-2">
+                {qr.mode === 'dynamic' && qr.content?.startsWith('http') && (
+                  <LinkHealthBadge
+                    qrId={qr.id}
+                    url={qr.content}
+                    initialHealth={(qr.design?.link_health as any) ?? null}
+                    compact
+                  />
+                )}
+                <span>{new Date(qr.created_at).toLocaleDateString('fr-FR')}</span>
+              </div>
             </div>
 
             {/* Actions row 1 */}

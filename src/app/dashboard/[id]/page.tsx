@@ -4,6 +4,7 @@ import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import RoutingRulesManager from '@/components/dashboard/RoutingRulesManager'
 import QRSettingsPanel from '@/components/dashboard/QRSettingsPanel'
+import LinkHealthBadge from '@/components/dashboard/LinkHealthBadge'
 
 export const instant = false
 
@@ -204,6 +205,21 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
         {qr.mode === 'dynamic' && (
           <div className="mb-5">
             <RoutingRulesManager qrId={id} initialRules={routingRules || []} />
+          </div>
+        )}
+
+        {/* Surveillance du lien */}
+        {qr.mode === 'dynamic' && qr.content?.startsWith('http') && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+            <h2 className="text-sm font-bold text-[#041B4D] mb-3">🔍 Surveillance du lien</h2>
+            <p className="text-xs text-gray-500 mb-3">
+              Vérifie si l'URL de destination répond correctement. Utile pour détecter les liens cassés avant qu'ils n'affectent vos scans.
+            </p>
+            <LinkHealthBadge
+              qrId={id}
+              url={qr.content}
+              initialHealth={(qr.design as Record<string, unknown>)?.link_health as any ?? null}
+            />
           </div>
         )}
 
