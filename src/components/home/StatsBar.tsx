@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 const stats = [
-  { value: 14, suffix: '', label: 'types de QR codes', icon: '📱' },
+  { value: 20, suffix: '+', label: 'types de QR codes', icon: '📱' },
   { value: 30, suffix: 's', label: 'pour créer un QR', icon: '⚡' },
   { value: 100, suffix: '%', label: 'sans filigrane', icon: '✨' },
   { value: 0, suffix: ' FCFA', label: 'pour commencer', icon: '🎁' },

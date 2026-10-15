@@ -2,7 +2,11 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-const ROTATING_WORDS = ['restaurant', 'boutique', 'événement', 'carte de visite', 'coupon promo', 'réseau Wi-Fi', 'bio links']
+const ROTATING_WORDS = [
+  'restaurant', 'boutique', 'événement', 'carte de visite',
+  'coupon promo', 'réseau Wi-Fi', 'bio links', 'billetterie',
+  'paiement QR', 'formulaire', 'équipe', 'catalogue',
+]
 
 export default function Hero() {
   const [wordIdx, setWordIdx] = useState(0)
@@ -52,7 +56,7 @@ export default function Hero() {
         {/* Left: Text */}
         <div className="flex-1 text-center md:text-left">
           <p className="anim-1 inline-flex items-center gap-2 text-xs font-bold text-[#FF6A00] uppercase tracking-widest mb-5 bg-[#FF6A00]/10 px-3 py-1.5 rounded-full border border-[#FF6A00]/20">
-            ⚡ par IBIG SOFT · Made in Côte d'Ivoire
+            ⚡ par IBIG SOFT · Made in Côte d&apos;Ivoire
           </p>
 
           <h1 className="anim-2 text-4xl md:text-6xl font-extrabold leading-tight mb-4">
@@ -60,15 +64,14 @@ export default function Hero() {
             de votre{' '}
             <span
               className={`text-[#FF6A00] inline-block transition-all duration-300 ${visible ? 'word-in' : 'word-out'}`}
-              style={{ minWidth: 180 }}
+              style={{ minWidth: 200 }}
             >
               {ROTATING_WORDS[wordIdx]}
             </span>
           </h1>
 
           <p className="anim-3 text-lg md:text-xl text-blue-100/80 max-w-lg mb-8 leading-relaxed">
-            Créez, personnalisez et suivez vos QR codes en 30 secondes.
-            Menus, coupons, bio links, vCard — tout en un.
+            20+ types de QR codes. Menus, billetterie, paiements Mobile Money, formulaires, bio links, organisations — tout en un, fait pour l&apos;Afrique.
           </p>
 
           <div className="anim-4 flex flex-col sm:flex-row gap-3 justify-center md:justify-start mb-8">
@@ -89,7 +92,7 @@ export default function Hero() {
 
           {/* Trust badges */}
           <div className="anim-4 flex flex-wrap gap-x-5 gap-y-2 justify-center md:justify-start text-xs text-blue-300">
-            {['Sans inscription', 'PNG gratuit', 'Aucun filigrane', 'Moins de 30 secondes'].map((t) => (
+            {['Sans inscription', 'PNG gratuit', 'Aucun filigrane', 'Wave · Orange · MTN'].map((t) => (
               <span key={t} className="flex items-center gap-1"><span className="text-green-400">✓</span> {t}</span>
             ))}
           </div>
@@ -100,9 +103,7 @@ export default function Hero() {
           {/* Main QR card */}
           <div className="qr-float absolute top-0 left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-2xl p-5 w-52">
             <div className="bg-gray-50 rounded-xl p-3 mb-3">
-              {/* Simulated QR */}
               <div className="w-full aspect-square grid grid-cols-7 gap-0.5">
-                {/* Deterministic QR pattern — no Math.random() to avoid prerender error */}
                 {[1,1,1,1,1,1,1,1,0,0,1,0,0,1,1,0,1,0,1,0,1,1,0,0,1,0,0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,0,1,1,0,1].map((v, i) => (
                   <div key={i} className={`rounded-sm ${v ? 'bg-[#041B4D]' : 'bg-transparent'}`} />
                 ))}
@@ -112,32 +113,28 @@ export default function Hero() {
             <div className="mt-1 h-1 rounded-full" style={{ background: 'linear-gradient(90deg, #FF6A00, #041B4D)' }} />
           </div>
 
-          {/* Floating badge: Restaurant */}
+          {/* Floating badge: Billetterie */}
           <div className="qr-float2 absolute top-4 -right-2 md:-right-8 bg-white rounded-xl shadow-lg px-3 py-2 flex items-center gap-2 border border-gray-100">
-            <span className="text-lg">🍽️</span>
+            <span className="text-lg">🎟️</span>
             <div>
-              <p className="text-[10px] font-bold text-[#041B4D]">Menu Restaurant</p>
-              <p className="text-[9px] text-gray-400">QR Dynamique</p>
+              <p className="text-[10px] font-bold text-[#041B4D]">Billetterie QR</p>
+              <p className="text-[9px] text-gray-400">Inscription + ticket</p>
             </div>
           </div>
 
-          {/* Floating badge: Scans */}
+          {/* Floating badge: Paiement */}
           <div className="qr-float absolute bottom-8 -left-4 md:-left-10 bg-[#041B4D] border border-white/10 rounded-xl shadow-lg px-3 py-2">
-            <p className="text-[9px] text-blue-300 font-semibold">📊 Scans aujourd'hui</p>
-            <p className="text-white font-extrabold text-base">+247</p>
-            <div className="flex gap-0.5 mt-1">{[3,5,4,7,6,8,5,9,7,6].map((h,i)=>(
-              <div key={i} className="w-1.5 rounded-t-sm bg-[#FF6A00]" style={{ height: h*3 }} />
-            ))}</div>
+            <p className="text-[9px] text-blue-300 font-semibold">💳 Paiement reçu</p>
+            <p className="text-white font-extrabold text-base">+15 000 FCFA</p>
+            <div className="flex gap-1 mt-1 text-[9px] text-blue-200">
+              <span>🌊 Wave</span><span>🟠 Orange</span>
+            </div>
           </div>
 
           {/* Floating badge: Design */}
           <div className="qr-float2 absolute bottom-4 -right-2 md:-right-6 bg-white rounded-xl shadow-lg px-3 py-2 border border-gray-100">
-            <p className="text-[10px] font-bold text-[#041B4D] mb-1">🎨 Studio design</p>
-            <div className="flex gap-1">
-              {['#041B4D','#FF6A00','#10b981','#8b5cf6','#ef4444'].map(c => (
-                <div key={c} className="w-4 h-4 rounded-full border-2 border-white shadow-sm" style={{ background: c }} />
-              ))}
-            </div>
+            <p className="text-[10px] font-bold text-[#041B4D] mb-1">🏢 Organisations</p>
+            <p className="text-[9px] text-gray-400">Partagez en équipe</p>
           </div>
         </div>
       </div>

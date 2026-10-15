@@ -6,19 +6,25 @@ const steps = [
     n: '01',
     icon: '🎯',
     title: 'Choisissez le type',
-    desc: 'URL, menu, coupon, vCard, Wi-Fi… 14 types disponibles pour chaque besoin.',
+    desc: 'URL, menu, billetterie, paiement, formulaire, vCard… 20+ types pour chaque besoin professionnel.',
   },
   {
     n: '02',
     icon: '🎨',
     title: 'Personnalisez',
-    desc: 'Logo, couleurs, cadre, style — votre QR à votre image en quelques clics.',
+    desc: 'Logo, couleurs, cadre, style — votre QR à votre image en quelques clics. Design pro garanti.',
   },
   {
     n: '03',
     icon: '⬇️',
     title: 'Téléchargez & partagez',
-    desc: 'PNG gratuit, SVG vectoriel, PDF imprimable. Prêt à coller partout.',
+    desc: 'PNG gratuit, SVG vectoriel, PDF imprimable. Prêt à imprimer, coller ou envoyer.',
+  },
+  {
+    n: '04',
+    icon: '📊',
+    title: 'Suivez & gérez',
+    desc: 'Analytics en temps réel, modification sans réimpression, gestion d\'équipe et paiements reçus.',
   },
 ]
 
@@ -50,21 +56,18 @@ export default function HowItWorks() {
     <section className="py-20 px-4 bg-gradient-to-br from-[#041B4D] to-[#0a2d7a] text-white">
       <div className="max-w-5xl mx-auto" ref={ref}>
         <div className="text-center mb-14">
-          <h2 className="text-3xl md:text-4xl font-extrabold mb-3">En 3 étapes seulement</h2>
-          <p className="text-blue-200 text-lg">Moins de 30 secondes pour votre premier QR</p>
+          <h2 className="text-3xl md:text-4xl font-extrabold mb-3">En 4 étapes seulement</h2>
+          <p className="text-blue-200 text-lg">De zéro à un QR professionnel en moins de 2 minutes</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative">
-          {/* Connector line (desktop) */}
-          <div className="hidden md:block absolute top-10 left-[calc(16.66%+2rem)] right-[calc(16.66%+2rem)] h-0.5 bg-white/10" />
-
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 relative">
           {steps.map((s) => (
             <div key={s.n} className="hiw-card relative flex flex-col items-center text-center">
               <div className="w-20 h-20 rounded-2xl flex items-center justify-center text-3xl mb-5 shadow-lg"
                 style={{ background: 'rgba(255,106,0,0.15)', border: '1px solid rgba(255,106,0,0.3)' }}>
                 {s.icon}
               </div>
-              <div className="absolute top-0 right-6 md:right-auto md:left-auto text-xs font-extrabold text-[#FF6A00] opacity-60 tracking-widest">
+              <div className="absolute top-0 right-6 md:right-auto text-xs font-extrabold text-[#FF6A00] opacity-60 tracking-widest">
                 {s.n}
               </div>
               <h3 className="font-bold text-xl mb-2">{s.title}</h3>
