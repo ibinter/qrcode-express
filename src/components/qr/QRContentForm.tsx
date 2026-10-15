@@ -386,18 +386,7 @@ export default function QRContentForm({ type, data, onChange }: Props) {
         <Field label="Longitude" name="lng" placeholder="-4.0167" data={data} onChange={onChange} required />
       </>
     case 'event':
-      return <>
-        <Field label="Titre de l'événement" name="title" placeholder="Conférence IBIG 2025" data={data} onChange={onChange} required />
-        <Field label="Début" name="start" type="datetime-local" data={data} onChange={onChange} required />
-        <Field label="Fin" name="end" type="datetime-local" data={data} onChange={onChange} />
-        <Field label="Lieu" name="location" placeholder="Cocody, Abidjan" data={data} onChange={onChange} />
-        <div className="mb-4">
-          <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
-          <textarea value={data.description || ''} onChange={(e) => onChange({ ...data, description: e.target.value })}
-            placeholder="Détails de l'événement…" rows={3}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
-        </div>
-      </>
+      return <EventForm data={data} onChange={onChange} />
     case 'vcard_plus': {
       const vp = data.vcard_json ? JSON.parse(data.vcard_json) : {}
       function updateVP(patch: object) {
@@ -585,6 +574,73 @@ function ReviewForm({ data, onChange }: { data: Record<string, string>; onChange
       <input value={parsed.logo || ''} onChange={(e) => update({ logo: e.target.value })}
         placeholder="URL logo (optionnel)"
         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+    </div>
+  )
+}
+
+function EventForm({ data, onChange }: { data: Record<string, unknown>; onChange: (d: Record<string, unknown>) => void }) {
+  const raw = typeof data.event_json === 'string' ? data.event_json : ''
+  let parsed: Record<string, unknown> = {}
+  try { parsed = raw ? JSON.parse(raw) : {} } catch {}
+
+  function update(fields: Record<string, unknown>) {
+    onChange({ ...data, event_json: JSON.stringify({ ...parsed, ...fields }) })
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs text-gray-500 bg-blue-50 rounded-lg p-3 leading-relaxed">
+        🎟️ <strong>Billetterie QR</strong> : créez un événement avec inscription en ligne. Chaque inscrit reçoit un billet QR unique, validable par scan.
+      </p>
+      <input value={(parsed.name as string) || ''} onChange={(e) => update({ name: e.target.value })}
+        placeholder="Nom de l'événement *" required
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
+      <textarea value={(parsed.description as string) || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description de l'événement" rows={3}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40 resize-none" />
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="text-xs text-gray-500 mb-1 block">Date *</label>
+          <input type="date" value={(parsed.date as string) || ''} onChange={(e) => update({ date: e.target.value })}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
+        </div>
+        <div>
+          <label className="text-xs text-gray-500 mb-1 block">Heure</label>
+          <input type="time" value={(parsed.time as string) || ''} onChange={(e) => update({ time: e.target.value })}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
+        </div>
+      </div>
+      <input value={(parsed.location as string) || ''} onChange={(e) => update({ location: e.target.value })}
+        placeholder="Lieu (adresse ou lien Google Maps)"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="text-xs text-gray-500 mb-1 block">Capacité max</label>
+          <input type="number" min={1} value={(parsed.capacity as number) || ''} onChange={(e) => update({ capacity: Number(e.target.value) })}
+            placeholder="ex: 100"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
+        </div>
+        <div>
+          <label className="text-xs text-gray-500 mb-1 block">Prix billet (0 = gratuit)</label>
+          <input type="number" min={0} value={(parsed.price as number) ?? ''} onChange={(e) => update({ price: Number(e.target.value) })}
+            placeholder="0"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
+        </div>
+      </div>
+      <input value={(parsed.organizer as string) || ''} onChange={(e) => update({ organizer: e.target.value })}
+        placeholder="Organisateur"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
+      <input value={(parsed.whatsapp as string) || ''} onChange={(e) => update({ whatsapp: e.target.value })}
+        placeholder="WhatsApp organisateur (ex: +22507...)"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
+      <div className="flex items-center gap-3">
+        <label className="text-xs text-gray-500 whitespace-nowrap">Couleur accent</label>
+        <input type="color" value={(parsed.color as string) || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
+          className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
+      </div>
+      <input value={(parsed.logo as string) || ''} onChange={(e) => update({ logo: e.target.value })}
+        placeholder="URL logo/bannière (optionnel)"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
     </div>
   )
 }

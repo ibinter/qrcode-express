@@ -34,8 +34,10 @@ export function buildQRContent(type: QRType, data: Record<string, string>): stri
       return data.url || ''
     case 'location':
       return `geo:${data.lat},${data.lng}`
-    case 'event':
-      return buildVEvent(data)
+    case 'event': {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'
+      return data.event_json ? `${origin}/event/__ID__` : buildVEvent(data)
+    }
     case 'vcard_plus': {
       const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'
       return data.vcard_json ? `${origin}/vcard/__ID__` : ''
