@@ -1,5 +1,10 @@
+'use client'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+
 const plans = [
   {
+    id: 'free',
     name: 'Gratuit',
     price: '0',
     unit: '',
@@ -9,35 +14,60 @@ const plans = [
     href: '#generateur',
   },
   {
+    id: 'essential',
     name: 'Essentiel',
     price: '1 000',
     unit: 'FCFA / mois',
     highlight: false,
     features: ['10 téléchargements Premium/mois', '5 QR dynamiques', 'Statistiques simples', 'vCard Plus'],
     cta: 'Essayer 14 jours',
-    href: '/inscription?plan=essential',
   },
   {
+    id: 'pro',
     name: 'Pro',
     price: '2 500',
     unit: 'FCFA / mois',
     highlight: true,
     features: ['PNG HD + SVG + PDF illimité', '30 QR dynamiques', 'Pages métiers', 'Routage intelligent', 'Statistiques complètes'],
     cta: 'Choisir Pro',
-    href: '/inscription?plan=pro',
   },
   {
+    id: 'business',
     name: 'Business',
     price: '6 000',
     unit: 'FCFA / mois',
     highlight: false,
     features: ['150 QR dynamiques', '5 collaborateurs', 'Tests A/B', 'Pixels & coupons', 'Génération en lot (1 000 QR)'],
     cta: 'Choisir Business',
-    href: '/inscription?plan=business',
   },
 ]
 
 export default function Pricing() {
+  const [loading, setLoading] = useState<string | null>(null)
+  const router = useRouter()
+
+  async function handlePay(planId: string) {
+    setLoading(planId)
+    const res = await fetch('/api/payment/initiate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan: planId }),
+    })
+
+    if (res.status === 401) {
+      router.push(`/connexion?redirect=/&plan=${planId}`)
+      return
+    }
+
+    const data = await res.json()
+    if (data.payment_url) {
+      window.location.href = data.payment_url
+    } else {
+      alert('Erreur lors de l\'initiation du paiement. Réessayez.')
+    }
+    setLoading(null)
+  }
+
   return (
     <section className="py-16 px-4">
       <div className="max-w-6xl mx-auto">
@@ -66,21 +96,32 @@ export default function Pricing() {
                   </li>
                 ))}
               </ul>
-              <a
-                href={p.href}
-                className={`text-center py-2 rounded-lg font-semibold text-sm transition-colors ${
-                  p.highlight
-                    ? 'bg-[#FF6A00] text-white hover:bg-orange-600'
-                    : 'border border-[#041B4D] text-[#041B4D] hover:bg-[#041B4D] hover:text-white'
-                }`}
-              >
-                {p.cta}
-              </a>
+
+              {p.id === 'free' ? (
+                <a
+                  href="#generateur"
+                  className="text-center py-2 rounded-lg font-semibold text-sm border border-[#041B4D] text-[#041B4D] hover:bg-[#041B4D] hover:text-white transition-colors"
+                >
+                  {p.cta}
+                </a>
+              ) : (
+                <button
+                  onClick={() => handlePay(p.id)}
+                  disabled={loading === p.id}
+                  className={`py-2 rounded-lg font-semibold text-sm transition-colors disabled:opacity-60 ${
+                    p.highlight
+                      ? 'bg-[#FF6A00] text-white hover:bg-orange-600'
+                      : 'border border-[#041B4D] text-[#041B4D] hover:bg-[#041B4D] hover:text-white'
+                  }`}
+                >
+                  {loading === p.id ? 'Redirection…' : p.cta}
+                </button>
+              )}
             </div>
           ))}
         </div>
         <p className="text-center text-sm text-gray-400 mt-6">
-          Tous les moyens de paiement · Orange Money, Wave, MTN, Moov, carte bancaire via GeniusPay
+          Orange Money, Wave, MTN, Moov, carte bancaire via GeniusPay
         </p>
       </div>
     </section>
