@@ -1,7 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 export default function InscriptionPage() {
@@ -12,7 +12,18 @@ export default function InscriptionPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const router = useRouter()
+  const searchParams = useSearchParams()
   const supabase = createClient()
+
+  // Persist referral code across the email-verification flow
+  useEffect(() => {
+    const ref = searchParams.get('ref')
+    if (ref) {
+      try { localStorage.setItem('qre_ref', ref.toUpperCase()) } catch {}
+    }
+  }, [searchParams])
+
+  const refCode = searchParams.get('ref')
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
@@ -31,7 +42,7 @@ export default function InscriptionPage() {
       email,
       password,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?claim_ref=1`,
       },
     })
 
@@ -48,7 +59,7 @@ export default function InscriptionPage() {
   async function handleGoogle() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: `${window.location.origin}/auth/callback?claim_ref=1` },
     })
   }
 
@@ -62,6 +73,11 @@ export default function InscriptionPage() {
             Un lien de confirmation a été envoyé à <strong>{email}</strong>.
             Cliquez dessus pour activer votre compte.
           </p>
+          {refCode && (
+            <p className="text-xs text-green-600 mt-3 font-semibold">
+              🎁 Code parrain détecté — {refCode}. Vos crédits de bienvenue seront crédités à l&apos;activation.
+            </p>
+          )}
           <Link href="/connexion"
             className="mt-6 inline-block text-[#FF6A00] font-semibold text-sm hover:underline">
             Retour à la connexion →
@@ -79,7 +95,12 @@ export default function InscriptionPage() {
             QR <span className="text-[#FF6A00]">CODE</span> EXPRESS
           </span>
         </Link>
-        <h1 className="text-xl font-bold text-center text-[#041B4D] mb-6">Créer un compte</h1>
+        <h1 className="text-xl font-bold text-center text-[#041B4D] mb-1">Créer un compte</h1>
+        {refCode && (
+          <p className="text-xs text-center text-green-600 font-semibold mb-4">
+            🎁 Vous êtes parrainé ! Code : <strong>{refCode}</strong>
+          </p>
+        )}
 
         <button onClick={handleGoogle}
           className="w-full flex items-center justify-center gap-2 border border-gray-200 rounded-xl py-2.5 text-sm font-medium hover:bg-gray-50 mb-5 transition-colors">

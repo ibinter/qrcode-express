@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import QRDashboardCards from '@/components/dashboard/QRDashboardCards'
+import ReferralClaimOnce from '@/components/ReferralClaimOnce'
 
 export const instant = false
 
@@ -9,7 +10,7 @@ const TYPE_ICONS: Record<string, string> = {
   url: '🔗', whatsapp: '💬', vcard: '👤', vcard_plus: '🪪', wifi: '📶', text: '📝',
   email: '✉️', phone: '📞', sms: '💬', pdf: '📄', app: '📲', event: '📅',
   menu: '🍽️', coupon: '🎫', biolink: '🔗', social: '📱', location: '📍',
-  catalog: '🛍️', review: '⭐',
+  catalog: '🛍️', review: '⭐', lead: '📋', payment: '💳',
 }
 
 export default async function DashboardPage() {
@@ -30,6 +31,7 @@ export default async function DashboardPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
+      <ReferralClaimOnce />
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">

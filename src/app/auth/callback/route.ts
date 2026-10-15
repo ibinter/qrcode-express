@@ -6,6 +6,7 @@ export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/dashboard'
+  const claimRef = searchParams.get('claim_ref') === '1'
 
   if (code) {
     const cookieStore = await cookies()
@@ -26,7 +27,12 @@ export async function GET(request: NextRequest) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
-      return NextResponse.redirect(`${origin}${next}`)
+      // If came from signup with potential referral, redirect to dashboard with flag
+      // The actual claim happens client-side via localStorage → /api/referral/claim
+      const redirectUrl = claimRef
+        ? `${origin}/dashboard?welcome=1&claim_ref=1`
+        : `${origin}${next}`
+      return NextResponse.redirect(redirectUrl)
     }
   }
 
