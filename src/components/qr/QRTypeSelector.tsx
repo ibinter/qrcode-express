@@ -19,6 +19,8 @@ const QR_TYPES: { type: QRType; label: string; icon: string }[] = [
   { type: 'biolink', label: 'Bio Links', icon: '🔗' },
   { type: 'social', label: 'Réseaux sociaux', icon: '📱' },
   { type: 'location', label: 'Localisation', icon: '📍' },
+  { type: 'catalog', label: 'Catalogue', icon: '🛍️' },
+  { type: 'review', label: 'Avis clients', icon: '⭐' },
 ]
 
 interface Props {

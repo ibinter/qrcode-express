@@ -11,6 +11,7 @@ const TYPE_LABELS: Record<string, string> = {
   url: 'URL', whatsapp: 'WhatsApp', vcard: 'Contact', vcard_plus: 'Carte Pro', wifi: 'Wi-Fi', text: 'Texte',
   email: 'E-mail', phone: 'Téléphone', sms: 'SMS', pdf: 'PDF', app: 'App Store', event: 'Événement',
   menu: 'Menu', coupon: 'Coupon', biolink: 'Bio Links', social: 'Réseaux', location: 'Localisation',
+  catalog: 'Catalogue', review: 'Avis clients',
 }
 
 function BarChart({ data }: { data: { label: string; count: number }[] }) {

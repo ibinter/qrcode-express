@@ -23,7 +23,7 @@ interface Props {
   typeIcons: Record<string, string>
 }
 
-const DYNAMIC_PATHS: Record<string, string> = { menu: 'menu', coupon: 'coupon', biolink: 'bio', vcard_plus: 'vcard' }
+const DYNAMIC_PATHS: Record<string, string> = { menu: 'menu', coupon: 'coupon', biolink: 'bio', vcard_plus: 'vcard', catalog: 'catalog' }
 
 function getPublicUrl(qr: QRRow): string {
   if (qr.mode === 'dynamic' && DYNAMIC_PATHS[qr.type]) {

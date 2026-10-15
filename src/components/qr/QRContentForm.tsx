@@ -432,7 +432,122 @@ export default function QRContentForm({ type, data, onChange }: Props) {
         </div>
       )
     }
+    case 'catalog':
+      return <CatalogForm data={data} onChange={onChange} />
+    case 'review':
+      return (
+        <div className="space-y-3">
+          <p className="text-xs text-gray-500">Redirigez vos clients vers votre page d&apos;avis en un scan.</p>
+          <Field label="Nom de l'établissement" name="nom" placeholder="Restaurant Le Palmier" data={data} onChange={onChange} required />
+          <Field label="URL Google Maps / Trustpilot / Facebook" name="url" type="url" placeholder="https://g.page/r/..." data={data} onChange={onChange} required />
+          <Field label="Message d'invitation (optionnel)" name="message" placeholder="Laissez-nous un avis en 30 secondes !" data={data} onChange={onChange} />
+        </div>
+      )
     default:
       return <Field label="URL / Contenu" name="url" placeholder="https://" data={data} onChange={onChange} />
   }
+}
+
+function CatalogForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const parsed = data.catalog_json ? JSON.parse(data.catalog_json) : {
+    store: '', description: '', whatsapp: '', currency: 'FCFA', logo: '', color: '#041B4D', categories: []
+  }
+
+  function update(patch: object) {
+    onChange({ ...data, catalog_json: JSON.stringify({ ...parsed, ...patch }) })
+  }
+
+  function addCategory() {
+    update({ categories: [...(parsed.categories || []), { name: 'Nouvelle catégorie', products: [] }] })
+  }
+
+  function updateCategory(ci: number, name: string) {
+    const cats = [...parsed.categories]
+    cats[ci] = { ...cats[ci], name }
+    update({ categories: cats })
+  }
+
+  function addProduct(ci: number) {
+    const cats = [...parsed.categories]
+    cats[ci] = { ...cats[ci], products: [...(cats[ci].products || []), { name: '', price: '', description: '', image: '', available: true }] }
+    update({ categories: cats })
+  }
+
+  function updateProduct(ci: number, pi: number, field: string, value: string | boolean) {
+    const cats = [...parsed.categories]
+    cats[ci].products[pi] = { ...cats[ci].products[pi], [field]: value }
+    update({ categories: cats })
+  }
+
+  function removeProduct(ci: number, pi: number) {
+    const cats = [...parsed.categories]
+    cats[ci].products = cats[ci].products.filter((_: unknown, i: number) => i !== pi)
+    update({ categories: cats })
+  }
+
+  function removeCategory(ci: number) {
+    update({ categories: parsed.categories.filter((_: unknown, i: number) => i !== ci) })
+  }
+
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40'
+
+  return (
+    <div className="space-y-4 max-h-[65vh] overflow-y-auto pr-1">
+      <input value={parsed.store || ''} onChange={(e) => update({ store: e.target.value })}
+        placeholder="Nom de la boutique / marque" className={inp} />
+      <input value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Slogan ou description courte" className={inp} />
+      <div className="grid grid-cols-2 gap-2">
+        <input value={parsed.whatsapp || ''} onChange={(e) => update({ whatsapp: e.target.value })}
+          placeholder="WhatsApp commande (+225…)" className={inp} />
+        <select value={parsed.currency || 'FCFA'} onChange={(e) => update({ currency: e.target.value })}
+          className={inp}>
+          <option value="FCFA">FCFA</option>
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="GNF">GNF</option>
+          <option value="XAF">XAF</option>
+        </select>
+      </div>
+      <input value={parsed.logo || ''} onChange={(e) => update({ logo: e.target.value })}
+        placeholder="URL logo (optionnel)" className={inp} />
+      <div className="flex items-center gap-2">
+        <label className="text-xs text-gray-500 shrink-0">Couleur accent</label>
+        <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
+          className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
+      </div>
+
+      <div className="border-t border-gray-100 pt-3">
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-3">Catégories & produits</p>
+        {(parsed.categories || []).map((cat: { name: string; products: { name: string; price: string; description: string; image: string; available: boolean }[] }, ci: number) => (
+          <div key={ci} className="border border-gray-200 rounded-xl p-3 mb-3 space-y-2">
+            <div className="flex gap-2 items-center">
+              <input value={cat.name} onChange={(e) => updateCategory(ci, e.target.value)}
+                className="flex-1 font-semibold text-sm border border-gray-100 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#FF6A00]/40" />
+              <button onClick={() => removeCategory(ci)} className="text-red-400 hover:text-red-600 text-xs px-2">✕</button>
+            </div>
+            {(cat.products || []).map((p: { name: string; price: string; description: string; image: string; available: boolean }, pi: number) => (
+              <div key={pi} className="bg-gray-50 rounded-lg p-2 space-y-1.5">
+                <div className="flex gap-2">
+                  <input value={p.name} onChange={(e) => updateProduct(ci, pi, 'name', e.target.value)}
+                    placeholder="Nom du produit" className="flex-1 border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
+                  <input value={p.price} onChange={(e) => updateProduct(ci, pi, 'price', e.target.value)}
+                    placeholder="Prix" className="w-24 border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
+                  <button onClick={() => removeProduct(ci, pi)} className="text-red-400 hover:text-red-600 text-xs">✕</button>
+                </div>
+                <input value={p.description || ''} onChange={(e) => updateProduct(ci, pi, 'description', e.target.value)}
+                  placeholder="Description courte (optionnel)" className="w-full border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
+                <input value={p.image || ''} onChange={(e) => updateProduct(ci, pi, 'image', e.target.value)}
+                  placeholder="URL image (optionnel)" className="w-full border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
+              </div>
+            ))}
+            <button onClick={() => addProduct(ci)} className="text-xs text-[#FF6A00] font-semibold hover:underline">+ Ajouter un produit</button>
+          </div>
+        ))}
+        <button onClick={addCategory} className="w-full py-2 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors">
+          + Ajouter une catégorie
+        </button>
+      </div>
+    </div>
+  )
 }

@@ -9,6 +9,7 @@ const TYPE_ICONS: Record<string, string> = {
   url: '🔗', whatsapp: '💬', vcard: '👤', vcard_plus: '🪪', wifi: '📶', text: '📝',
   email: '✉️', phone: '📞', sms: '💬', pdf: '📄', app: '📲', event: '📅',
   menu: '🍽️', coupon: '🎫', biolink: '🔗', social: '📱', location: '📍',
+  catalog: '🛍️', review: '⭐',
 }
 
 export default async function DashboardPage() {
