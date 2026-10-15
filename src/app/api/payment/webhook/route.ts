@@ -56,6 +56,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ received: true })
   }
 
+  // Cas 2 : paiement QR marchand — transaction déjà marquée success, rien d'autre à faire
+  if (meta.type === 'payment') {
+    return NextResponse.json({ received: true })
+  }
+
   // Cas 2 : abonnement
   const plan = (meta.plan as string) ?? 'essential'
   const days = PLAN_DURATION_DAYS[plan] ?? 30

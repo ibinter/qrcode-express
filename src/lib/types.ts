@@ -19,6 +19,7 @@ export type QRType =
   | 'catalog'
   | 'review'
   | 'lead'
+  | 'payment'
 
 export type QRMode = 'static' | 'dynamic'
 

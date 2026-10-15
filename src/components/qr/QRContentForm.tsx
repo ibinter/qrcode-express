@@ -389,6 +389,8 @@ export default function QRContentForm({ type, data, onChange }: Props) {
       return <EventForm data={data} onChange={onChange} />
     case 'lead':
       return <LeadForm data={data} onChange={onChange} />
+    case 'payment':
+      return <PaymentForm data={data} onChange={onChange} />
     case 'vcard_plus': {
       const vp = data.vcard_json ? JSON.parse(data.vcard_json) : {}
       function updateVP(patch: object) {
@@ -745,6 +747,80 @@ function LeadForm({ data, onChange }: { data: Record<string, unknown>; onChange:
       <input value={(parsed.logo as string) || ''} onChange={(e) => update({ logo: e.target.value })}
         placeholder="URL logo (optionnel)"
         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/40" />
+    </div>
+  )
+}
+
+function PaymentForm({ data, onChange }: { data: Record<string, unknown>; onChange: (d: Record<string, unknown>) => void }) {
+  const raw = typeof data.payment_json === 'string' ? data.payment_json : ''
+  let parsed: Record<string, unknown> = {}
+  try { parsed = raw ? JSON.parse(raw) : {} } catch {}
+
+  function update(fields: Record<string, unknown>) {
+    onChange({ ...data, payment_json: JSON.stringify({ ...parsed, ...fields }) })
+  }
+
+  const methods: string[] = Array.isArray(parsed.methods) ? parsed.methods as string[] : ['wave', 'orange', 'mtn']
+
+  function toggleMethod(m: string) {
+    const next = methods.includes(m) ? methods.filter((x) => x !== m) : [...methods, m]
+    update({ methods: next })
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs text-gray-500 bg-green-50 rounded-lg p-3 leading-relaxed">
+        💳 <strong>QR de paiement Mobile Money</strong> : vos clients scannent et paient directement via Wave, Orange Money ou MTN MoMo.
+      </p>
+      <input value={(parsed.merchant as string) || ''} onChange={(e) => update({ merchant: e.target.value })}
+        placeholder="Nom du marchand / établissement *" required
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400/40" />
+      <textarea value={(parsed.description as string) || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description du produit ou service" rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none resize-none focus:ring-2 focus:ring-green-400/40" />
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="text-xs text-gray-500 mb-1 block">Montant fixe (FCFA)</label>
+          <input type="number" min={100} value={(parsed.amount as number) || ''} onChange={(e) => update({ amount: Number(e.target.value) })}
+            placeholder="ex: 5000"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400/40" />
+        </div>
+        <div>
+          <label className="text-xs text-gray-500 mb-1 block">Laisser choisir le montant</label>
+          <label className="flex items-center gap-2 mt-2 cursor-pointer">
+            <input type="checkbox" checked={!!parsed.custom_amount} onChange={(e) => update({ custom_amount: e.target.checked })}
+              className="rounded" />
+            <span className="text-sm text-gray-600">Montant libre</span>
+          </label>
+        </div>
+      </div>
+      <div>
+        <p className="text-xs text-gray-500 mb-2">Méthodes acceptées</p>
+        <div className="flex gap-3">
+          {[
+            { id: 'wave', label: '🌊 Wave', color: 'bg-blue-100 text-blue-700 border-blue-200' },
+            { id: 'orange', label: '🟠 Orange', color: 'bg-orange-100 text-orange-700 border-orange-200' },
+            { id: 'mtn', label: '🟡 MTN', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
+          ].map(({ id, label, color }) => (
+            <button key={id} type="button"
+              onClick={() => toggleMethod(id)}
+              className={`flex-1 py-2 text-xs font-semibold rounded-lg border transition-all ${methods.includes(id) ? color : 'bg-gray-50 text-gray-400 border-gray-200'}`}>
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
+      <input value={(parsed.phone as string) || ''} onChange={(e) => update({ phone: e.target.value })}
+        placeholder="Numéro WhatsApp marchand (optionnel, pour notifications)"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400/40" />
+      <div className="flex items-center gap-3">
+        <label className="text-xs text-gray-500 whitespace-nowrap">Couleur</label>
+        <input type="color" value={(parsed.color as string) || '#16A34A'} onChange={(e) => update({ color: e.target.value })}
+          className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
+      </div>
+      <input value={(parsed.logo as string) || ''} onChange={(e) => update({ logo: e.target.value })}
+        placeholder="URL logo marchand (optionnel)"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400/40" />
     </div>
   )
 }

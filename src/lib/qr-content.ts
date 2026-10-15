@@ -54,6 +54,10 @@ export function buildQRContent(type: QRType, data: Record<string, string>): stri
       const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'
       return data.lead_json ? `${origin}/form/__ID__` : ''
     }
+    case 'payment': {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'
+      return data.payment_json ? `${origin}/pay/__ID__` : ''
+    }
     default:
       return data.url || data.text || ''
   }
