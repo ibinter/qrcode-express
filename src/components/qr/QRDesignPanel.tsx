@@ -61,8 +61,59 @@ export default function QRDesignPanel({ design, onChange }: Props) {
         </select>
       </div>
 
+      {/* Cadres */}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">Cadre</label>
+        <div className="grid grid-cols-3 gap-2">
+          {([
+            { id: 'none',          label: 'Aucun',        icon: '⬜' },
+            { id: 'simple',        label: 'Simple',       icon: '▢' },
+            { id: 'rounded',       label: 'Arrondi',      icon: '◯' },
+            { id: 'banner_bottom', label: 'Bandeau bas',  icon: '⬇' },
+            { id: 'banner_top',    label: 'Bandeau haut', icon: '⬆' },
+            { id: 'bubble',        label: 'Bulle',        icon: '💬' },
+          ] as const).map((f) => (
+            <button key={f.id} onClick={() => update({ frameStyle: f.id })}
+              className={`py-2 px-1 rounded-lg text-xs font-medium border transition-colors text-center ${
+                (design.frameStyle ?? 'none') === f.id
+                  ? 'bg-[#041B4D] text-white border-[#041B4D]'
+                  : 'border-gray-200 text-gray-600 hover:border-gray-400'
+              }`}>
+              <div className="text-base mb-0.5">{f.icon}</div>
+              {f.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Texte et couleur du cadre */}
+      {design.frameStyle && design.frameStyle !== 'none' && (
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Texte du cadre</label>
+            <input
+              type="text"
+              maxLength={30}
+              placeholder="Ex: Scannez-moi !"
+              value={design.frameLabel ?? ''}
+              onChange={(e) => update({ frameLabel: e.target.value })}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#FF6A00]/40 focus:outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Couleur du cadre</label>
+            <div className="flex items-center gap-2">
+              <input type="color" value={design.frameColor ?? '#041B4D'}
+                onChange={(e) => update({ frameColor: e.target.value })}
+                className="w-10 h-10 rounded cursor-pointer border border-gray-200" />
+              <span className="text-sm text-gray-500 font-mono">{design.frameColor ?? '#041B4D'}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       <p className="text-xs text-gray-400 bg-orange-50 rounded-lg p-3">
-        🎨 Logo, cadre personnalisé et styles avancés sont disponibles à partir de 500 FCFA.
+        🎨 Logo et styles avancés disponibles à partir de 500 FCFA.
       </p>
     </div>
   )

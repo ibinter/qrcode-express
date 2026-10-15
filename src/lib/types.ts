@@ -25,8 +25,9 @@ export interface QRDesign {
   bgColor: string
   moduleStyle: 'squares' | 'rounded' | 'dots'
   eyeStyle: 'square' | 'rounded'
-  frameStyle?: string
+  frameStyle?: 'none' | 'simple' | 'rounded' | 'banner_bottom' | 'banner_top' | 'bubble'
   frameLabel?: string
+  frameColor?: string
   logoUrl?: string
   errorCorrection: 'L' | 'M' | 'Q' | 'H'
 }
