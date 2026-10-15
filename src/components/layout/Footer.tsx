@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+const YEAR = 2026
+
 export default function Footer() {
   return (
     <footer className="bg-[#041B4D] text-white mt-20">
@@ -37,7 +39,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="border-t border-blue-900 py-4 text-center text-xs text-gray-400">
-        © {new Date().getFullYear()} IBIG SOFT — INTERMARK BUSINESS INTERNATIONAL GROUP (IBIG SARL), Abidjan
+        © {YEAR} IBIG SOFT — INTERMARK BUSINESS INTERNATIONAL GROUP (IBIG SARL), Abidjan
       </div>
     </footer>
   )

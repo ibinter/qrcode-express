@@ -17,7 +17,7 @@ export function buildQRContent(type: QRType, data: Record<string, string>): stri
     case 'vcard':
       return buildVCard(data)
     case 'whatsapp':
-      return `https://wa.me/${data.phone.replace(/\D/g, '')}${data.message ? `?text=${encodeURIComponent(data.message)}` : ''}`
+      return `https://wa.me/${(data.phone || '').replace(/\D/g, '')}${data.message ? `?text=${encodeURIComponent(data.message)}` : ''}`
     case 'social':
       return data.url || ''
     case 'location':
