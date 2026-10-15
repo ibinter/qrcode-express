@@ -12,6 +12,9 @@ const QR_TYPES: { type: QRType; label: string; icon: string }[] = [
   { type: 'sms', label: 'SMS', icon: '💬' },
   { type: 'pdf', label: 'PDF', icon: '📄' },
   { type: 'app', label: 'App Store', icon: '📲' },
+  { type: 'menu', label: 'Menu', icon: '🍽️' },
+  { type: 'coupon', label: 'Coupon', icon: '🎫' },
+  { type: 'biolink', label: 'Bio Links', icon: '🔗' },
   { type: 'social', label: 'Réseaux sociaux', icon: '📱' },
   { type: 'location', label: 'Localisation', icon: '📍' },
 ]

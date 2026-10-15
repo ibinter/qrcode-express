@@ -22,6 +22,12 @@ export function buildQRContent(type: QRType, data: Record<string, string>): stri
       const appUrl = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'
       return data.url || `${appUrl}/app/mon-app`
     }
+    case 'menu':
+      return data.menu_json ? `${typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'}/menu/__ID__` : ''
+    case 'coupon':
+      return data.coupon_json ? `${typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'}/coupon/__ID__` : ''
+    case 'biolink':
+      return data.bio_json ? `${typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'}/bio/__ID__` : ''
     case 'pdf':
       return data.pdf_url || ''
     case 'social':

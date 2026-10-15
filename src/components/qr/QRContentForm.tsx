@@ -28,6 +28,156 @@ function Field({ label, name, type = 'text', placeholder, data, onChange, requir
   )
 }
 
+function MenuForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const parsed = data.menu_json ? JSON.parse(data.menu_json) : { restaurant: '', description: '', categories: [] }
+
+  function update(patch: object) {
+    const updated = { ...parsed, ...patch }
+    onChange({ ...data, menu_json: JSON.stringify(updated) })
+  }
+
+  function addCategory() {
+    update({ categories: [...(parsed.categories || []), { category: 'Nouvelle catégorie', items: [] }] })
+  }
+
+  function updateCategory(ci: number, name: string) {
+    const cats = [...parsed.categories]
+    cats[ci] = { ...cats[ci], category: name }
+    update({ categories: cats })
+  }
+
+  function addItem(ci: number) {
+    const cats = [...parsed.categories]
+    cats[ci] = { ...cats[ci], items: [...(cats[ci].items || []), { name: '', price: '', description: '' }] }
+    update({ categories: cats })
+  }
+
+  function updateItem(ci: number, ii: number, field: string, value: string) {
+    const cats = [...parsed.categories]
+    cats[ci].items[ii] = { ...cats[ci].items[ii], [field]: value }
+    update({ categories: cats })
+  }
+
+  function removeItem(ci: number, ii: number) {
+    const cats = [...parsed.categories]
+    cats[ci].items = cats[ci].items.filter((_: any, i: number) => i !== ii)
+    update({ categories: cats })
+  }
+
+  return (
+    <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
+      <input value={parsed.restaurant || ''} onChange={(e) => update({ restaurant: e.target.value })}
+        placeholder="Nom du restaurant" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      <input value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description (optionnel)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+
+      {(parsed.categories || []).map((cat: any, ci: number) => (
+        <div key={ci} className="border border-gray-200 rounded-xl p-3 space-y-2">
+          <input value={cat.category} onChange={(e) => updateCategory(ci, e.target.value)}
+            className="w-full font-semibold text-sm border border-gray-100 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#FF6A00]/40" />
+          {(cat.items || []).map((item: any, ii: number) => (
+            <div key={ii} className="flex gap-2 items-center">
+              <input value={item.name} onChange={(e) => updateItem(ci, ii, 'name', e.target.value)}
+                placeholder="Plat" className="flex-1 border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
+              <input value={item.price} onChange={(e) => updateItem(ci, ii, 'price', e.target.value)}
+                placeholder="Prix" className="w-20 border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
+              <button onClick={() => removeItem(ci, ii)} className="text-red-400 hover:text-red-600 text-xs">✕</button>
+            </div>
+          ))}
+          <button onClick={() => addItem(ci)} className="text-xs text-[#FF6A00] font-semibold hover:underline">+ Ajouter un plat</button>
+        </div>
+      ))}
+      <button onClick={addCategory} className="w-full py-2 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors">
+        + Ajouter une catégorie
+      </button>
+    </div>
+  )
+}
+
+function CouponForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const parsed = data.coupon_json ? JSON.parse(data.coupon_json) : {}
+
+  function update(patch: object) {
+    onChange({ ...data, coupon_json: JSON.stringify({ ...parsed, ...patch }) })
+  }
+
+  return (
+    <div className="space-y-3">
+      <input value={parsed.title || ''} onChange={(e) => update({ title: e.target.value })}
+        placeholder="Titre du coupon (ex: Offre spéciale)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      <input value={parsed.brand || ''} onChange={(e) => update({ brand: e.target.value })}
+        placeholder="Nom de la marque / boutique" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      <input value={parsed.discount || ''} onChange={(e) => update({ discount: e.target.value })}
+        placeholder="Réduction (ex: -20%, 500 FCFA offerts)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      <input value={parsed.code || ''} onChange={(e) => update({ code: e.target.value })}
+        placeholder="Code promo (ex: PROMO2025)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      <input value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description / conditions" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      <div>
+        <label className="block text-xs text-gray-500 mb-1">Date d'expiration</label>
+        <input type="date" value={parsed.expires || ''} onChange={(e) => update({ expires: e.target.value })}
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      </div>
+    </div>
+  )
+}
+
+function BioForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const parsed = data.bio_json ? JSON.parse(data.bio_json) : { name: '', bio: '', color: '#FF6A00', links: [] }
+
+  function update(patch: object) {
+    onChange({ ...data, bio_json: JSON.stringify({ ...parsed, ...patch }) })
+  }
+
+  function addLink() {
+    update({ links: [...(parsed.links || []), { label: '', url: '', network: 'autre' }] })
+  }
+
+  function updateLink(i: number, field: string, value: string) {
+    const links = [...(parsed.links || [])]
+    links[i] = { ...links[i], [field]: value }
+    update({ links })
+  }
+
+  function removeLink(i: number) {
+    update({ links: parsed.links.filter((_: any, idx: number) => idx !== i) })
+  }
+
+  const networks = ['instagram', 'tiktok', 'facebook', 'twitter', 'linkedin', 'youtube', 'whatsapp', 'website', 'telegram', 'autre']
+
+  return (
+    <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+      <input value={parsed.name || ''} onChange={(e) => update({ name: e.target.value })}
+        placeholder="Nom ou pseudo" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      <input value={parsed.bio || ''} onChange={(e) => update({ bio: e.target.value })}
+        placeholder="Bio / description courte" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      <div className="flex items-center gap-2">
+        <label className="text-xs text-gray-500">Couleur accent</label>
+        <input type="color" value={parsed.color || '#FF6A00'} onChange={(e) => update({ color: e.target.value })}
+          className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
+      </div>
+
+      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider pt-1">Liens</p>
+      {(parsed.links || []).map((link: any, i: number) => (
+        <div key={i} className="flex gap-2 items-center">
+          <select value={link.network || 'autre'} onChange={(e) => updateLink(i, 'network', e.target.value)}
+            className="border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none w-28">
+            {networks.map((n) => <option key={n} value={n}>{n}</option>)}
+          </select>
+          <input value={link.label} onChange={(e) => updateLink(i, 'label', e.target.value)}
+            placeholder="Texte du bouton" className="flex-1 border border-gray-100 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
+          <input value={link.url} onChange={(e) => updateLink(i, 'url', e.target.value)}
+            placeholder="URL" className="flex-1 border border-gray-100 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
+          <button onClick={() => removeLink(i)} className="text-red-400 text-xs hover:text-red-600">✕</button>
+        </div>
+      ))}
+      <button onClick={addLink} className="w-full py-2 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors">
+        + Ajouter un lien
+      </button>
+    </div>
+  )
+}
+
 function AppForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qrcode-express-ibig.vercel.app'
 
@@ -222,6 +372,12 @@ export default function QRContentForm({ type, data, onChange }: Props) {
       return <AppForm data={data} onChange={onChange} />
     case 'pdf':
       return <PDFForm data={data} onChange={onChange} />
+    case 'menu':
+      return <MenuForm data={data} onChange={onChange} />
+    case 'coupon':
+      return <CouponForm data={data} onChange={onChange} />
+    case 'biolink':
+      return <BioForm data={data} onChange={onChange} />
     case 'social':
       return <Field label="Lien du profil" name="url" type="url" placeholder="https://facebook.com/votrepage" data={data} onChange={onChange} required />
     case 'location':
