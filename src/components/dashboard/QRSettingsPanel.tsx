@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { Shield, Link2, Pause, Play, Trash2, BarChart2 } from 'lucide-react'
+import { Shield, Link2, Pause, Play, Trash2, BarChart2, Eye } from 'lucide-react'
 
 interface UTMConfig {
   source: string
@@ -10,14 +10,21 @@ interface UTMConfig {
   term: string
 }
 
+interface PixelsConfig {
+  meta_pixel_id: string
+  gtag_id: string
+  tiktok_pixel_id: string
+}
+
 interface Props {
   qrId: string
   initialFallbackUrl: string
   initialStatus: string
   initialUtm?: UTMConfig | null
+  initialPixels?: PixelsConfig | null
 }
 
-export default function QRSettingsPanel({ qrId, initialFallbackUrl, initialStatus, initialUtm }: Props) {
+export default function QRSettingsPanel({ qrId, initialFallbackUrl, initialStatus, initialUtm, initialPixels }: Props) {
   const [fallbackUrl, setFallbackUrl] = useState(initialFallbackUrl || '')
   const [status, setStatus] = useState(initialStatus)
   const [saving, setSaving] = useState(false)
@@ -33,6 +40,14 @@ export default function QRSettingsPanel({ qrId, initialFallbackUrl, initialStatu
   })
   const [utmSaving, setUtmSaving] = useState(false)
   const [utmSaved, setUtmSaved] = useState(false)
+
+  const [pixels, setPixels] = useState<PixelsConfig>({
+    meta_pixel_id:    initialPixels?.meta_pixel_id    ?? '',
+    gtag_id:          initialPixels?.gtag_id          ?? '',
+    tiktok_pixel_id:  initialPixels?.tiktok_pixel_id  ?? '',
+  })
+  const [pixelsSaving, setPixelsSaving] = useState(false)
+  const [pixelsSaved, setPixelsSaved]   = useState(false)
 
   async function saveFallback() {
     setSaving(true); setSaved(false); setError('')
@@ -57,6 +72,18 @@ export default function QRSettingsPanel({ qrId, initialFallbackUrl, initialStatu
     })
     if (res.ok) { setUtmSaved(true); setTimeout(() => setUtmSaved(false), 2000) }
     setUtmSaving(false)
+  }
+
+  async function savePixels() {
+    setPixelsSaving(true)
+    const hasValues = Object.values(pixels).some(Boolean)
+    const res = await fetch(`/api/qr/${qrId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pixels: hasValues ? pixels : null }),
+    })
+    if (res.ok) { setPixelsSaved(true); setTimeout(() => setPixelsSaved(false), 2000) }
+    setPixelsSaving(false)
   }
 
   async function toggleStatus() {
@@ -154,6 +181,63 @@ export default function QRSettingsPanel({ qrId, initialFallbackUrl, initialStatu
             ?utm_source={utm.source}&utm_medium={utm.medium}&utm_campaign={utm.campaign}
           </p>
         )}
+      </div>
+
+      {/* Pixels de tracking */}
+      <div className="border border-purple-100 rounded-xl p-4 bg-purple-50">
+        <div className="flex items-center gap-2 mb-2">
+          <Eye size={14} className="text-purple-600" />
+          <p className="text-sm font-semibold text-purple-700">Pixels de tracking</p>
+        </div>
+        <p className="text-xs text-gray-600 mb-3">
+          Chaque scan déclenchera vos pixels — idéal pour le retargeting publicitaire.
+        </p>
+        <div className="space-y-2 mb-3">
+          <div>
+            <label className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
+              <span className="text-blue-600 font-bold">f</span> Meta Pixel ID
+            </label>
+            <input
+              type="text"
+              value={pixels.meta_pixel_id}
+              onChange={(e) => setPixels((p) => ({ ...p, meta_pixel_id: e.target.value }))}
+              placeholder="ex: 1234567890123456"
+              className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-purple-300"
+            />
+          </div>
+          <div>
+            <label className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
+              <span className="text-orange-500 font-bold">G</span> Google Tag (gtag)
+            </label>
+            <input
+              type="text"
+              value={pixels.gtag_id}
+              onChange={(e) => setPixels((p) => ({ ...p, gtag_id: e.target.value }))}
+              placeholder="ex: G-XXXXXXXXXX ou AW-XXXXXXXXX"
+              className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-purple-300"
+            />
+          </div>
+          <div>
+            <label className="flex items-center gap-1.5 text-xs text-gray-500 mb-1">
+              <span className="font-bold" style={{ color: '#010101' }}>♪</span> TikTok Pixel ID
+            </label>
+            <input
+              type="text"
+              value={pixels.tiktok_pixel_id}
+              onChange={(e) => setPixels((p) => ({ ...p, tiktok_pixel_id: e.target.value }))}
+              placeholder="ex: CXXXXXXXXXXXXXXXXX"
+              className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-purple-300"
+            />
+          </div>
+        </div>
+        <button
+          onClick={savePixels}
+          disabled={pixelsSaving}
+          className="w-full py-2 rounded-lg text-xs font-semibold text-white disabled:opacity-50"
+          style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}
+        >
+          {pixelsSaving ? '…' : pixelsSaved ? '✅ Pixels sauvegardés' : 'Sauvegarder les pixels'}
+        </button>
       </div>
 
       {/* Pause / Reprise */}

@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { notFound } from 'next/navigation'
+import PixelSnippets from '@/components/PixelSnippets'
 
 export const instant = false
 
@@ -18,7 +19,7 @@ export default async function BioPage({ params }: { params: Promise<{ id: string
 
   const { data: qr } = await admin
     .from('qr_codes')
-    .select('content, status')
+    .select('content, status, design')
     .eq('id', id)
     .eq('type', 'biolink')
     .single()
@@ -27,11 +28,13 @@ export default async function BioPage({ params }: { params: Promise<{ id: string
 
   let bio: BioData = { name: '', links: [] }
   try { bio = JSON.parse(qr.content) } catch {}
+  const pixels = (qr.design as Record<string, unknown>)?.pixels as any
 
   const accent = bio.color || '#FF6A00'
 
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col items-center px-4 py-10">
+      <PixelSnippets pixels={pixels} />
       <div className="w-full max-w-sm space-y-4">
         {/* Profile */}
         <div className="text-center mb-6">

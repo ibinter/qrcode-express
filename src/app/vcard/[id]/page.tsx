@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { notFound } from 'next/navigation'
+import PixelSnippets from '@/components/PixelSnippets'
 
 export const instant = false
 
@@ -22,7 +23,7 @@ export default async function VCardPlusPage({ params }: { params: Promise<{ id: 
 
   const { data: qr } = await admin
     .from('qr_codes')
-    .select('content, name, status')
+    .select('content, name, status, design')
     .eq('id', id)
     .eq('type', 'vcard_plus')
     .single()
@@ -31,6 +32,7 @@ export default async function VCardPlusPage({ params }: { params: Promise<{ id: 
 
   let card: VCardPlusData = {}
   try { card = JSON.parse(qr.content) } catch {}
+  const pixels = (qr.design as Record<string, unknown>)?.pixels as any
 
   const accent = card.color || '#041B4D'
 
@@ -48,6 +50,7 @@ export default async function VCardPlusPage({ params }: { params: Promise<{ id: 
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-10">
+      <PixelSnippets pixels={pixels} />
       <div className="w-full max-w-sm">
         {/* Card */}
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden">

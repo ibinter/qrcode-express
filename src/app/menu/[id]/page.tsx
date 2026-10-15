@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { notFound } from 'next/navigation'
+import PixelSnippets from '@/components/PixelSnippets'
 
 export const instant = false
 
@@ -14,7 +15,7 @@ export default async function MenuPage({ params }: { params: Promise<{ id: strin
 
   const { data: qr } = await admin
     .from('qr_codes')
-    .select('content, name, status')
+    .select('content, name, status, design')
     .eq('id', id)
     .eq('type', 'menu')
     .single()
@@ -23,9 +24,11 @@ export default async function MenuPage({ params }: { params: Promise<{ id: strin
 
   let menu: MenuData = { restaurant: qr.name || 'Menu', categories: [] }
   try { menu = JSON.parse(qr.content) } catch {}
+  const pixels = (qr.design as Record<string, unknown>)?.pixels as any
 
   return (
     <main className="min-h-screen bg-gray-50">
+      <PixelSnippets pixels={pixels} />
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="bg-[#041B4D] text-white px-6 pt-10 pb-8 text-center">

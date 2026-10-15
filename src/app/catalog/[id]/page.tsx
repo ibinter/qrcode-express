@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { notFound } from 'next/navigation'
+import PixelSnippets from '@/components/PixelSnippets'
 
 export const instant = false
 
@@ -32,7 +33,7 @@ export default async function CatalogPage({ params }: { params: Promise<{ id: st
 
   const { data: qr } = await admin
     .from('qr_codes')
-    .select('content, name, status')
+    .select('content, name, status, design')
     .eq('id', id)
     .eq('type', 'catalog')
     .single()
@@ -41,6 +42,7 @@ export default async function CatalogPage({ params }: { params: Promise<{ id: st
 
   let catalog: CatalogData = {}
   try { catalog = JSON.parse(qr.content) } catch {}
+  const pixels = (qr.design as Record<string, unknown>)?.pixels as any
 
   const accent = catalog.color || '#041B4D'
   const currency = catalog.currency || 'FCFA'
@@ -53,6 +55,7 @@ export default async function CatalogPage({ params }: { params: Promise<{ id: st
 
   return (
     <main className="min-h-screen bg-gray-50">
+      <PixelSnippets pixels={pixels} />
       {/* Header */}
       <div className="sticky top-0 z-10 shadow-sm" style={{ background: accent }}>
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-3">

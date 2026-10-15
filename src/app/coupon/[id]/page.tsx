@@ -1,5 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { notFound } from 'next/navigation'
+import PixelSnippets from '@/components/PixelSnippets'
 
 export const instant = false
 
@@ -18,7 +19,7 @@ export default async function CouponPage({ params }: { params: Promise<{ id: str
 
   const { data: qr } = await admin
     .from('qr_codes')
-    .select('content, status, expires_at')
+    .select('content, status, expires_at, design')
     .eq('id', id)
     .eq('type', 'coupon' as any)
     .single()
@@ -29,9 +30,11 @@ export default async function CouponPage({ params }: { params: Promise<{ id: str
 
   let coupon: CouponData = { title: 'Bon de réduction' }
   try { coupon = JSON.parse(qr.content) } catch {}
+  const pixels = (qr.design as Record<string, unknown>)?.pixels as any
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-[#041B4D] to-[#0a2d7a] flex items-center justify-center px-4">
+      <PixelSnippets pixels={pixels} />
       <div className="w-full max-w-sm">
         {/* Coupon card */}
         <div className="bg-white rounded-3xl overflow-hidden shadow-2xl">

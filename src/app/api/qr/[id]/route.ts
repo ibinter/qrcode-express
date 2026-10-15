@@ -24,8 +24,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { content, name, status, fallback_url, utm } = body
-  if (!content && !name && !status && fallback_url === undefined && utm === undefined) {
+  const { content, name, status, fallback_url, utm, pixels } = body
+  if (!content && !name && !status && fallback_url === undefined && utm === undefined && pixels === undefined) {
     return NextResponse.json({ error: 'Nothing to update' }, { status: 400 })
   }
 
@@ -36,13 +36,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (name) patch.name = name
   if (status) patch.status = status
 
-  // fallback_url and utm stored in design JSONB
-  if (fallback_url !== undefined || utm !== undefined) {
+  // fallback_url, utm, pixels stored in design JSONB
+  if (fallback_url !== undefined || utm !== undefined || pixels !== undefined) {
     const currentDesign = (existing?.design || {}) as Record<string, unknown>
     patch.design = {
       ...currentDesign,
       ...(fallback_url !== undefined ? { fallback_url: fallback_url || null } : {}),
       ...(utm !== undefined ? { utm: utm || null } : {}),
+      ...(pixels !== undefined ? { pixels: pixels || null } : {}),
     }
   }
 
