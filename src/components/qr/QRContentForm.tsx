@@ -28,6 +28,55 @@ function Field({ label, name, type = 'text', placeholder, data, onChange, requir
   )
 }
 
+function AppForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qrcode-express-ibig.vercel.app'
+
+  function updateApp(patch: Partial<{ ios: string; android: string; fallback: string }>) {
+    const current = data.app_json ? JSON.parse(data.app_json) : {}
+    const updated = { ...current, ...patch }
+    onChange({ ...data, app_json: JSON.stringify(updated), url: `${appUrl}/app/${data.app_slug || 'mon-app'}` })
+  }
+
+  const parsed = data.app_json ? JSON.parse(data.app_json) : {}
+
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-gray-500">Le QR détecte l&apos;appareil et redirige automatiquement vers l&apos;App Store ou le Play Store.</p>
+
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
+          🍎 Lien App Store (iOS)
+        </label>
+        <input type="url" value={parsed.ios || ''} placeholder="https://apps.apple.com/app/id..."
+          onChange={(e) => updateApp({ ios: e.target.value })}
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      </div>
+
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
+          🤖 Lien Play Store (Android)
+        </label>
+        <input type="url" value={parsed.android || ''} placeholder="https://play.google.com/store/apps/details?id=..."
+          onChange={(e) => updateApp({ android: e.target.value })}
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      </div>
+
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">🖥️ Lien de secours (desktop)</label>
+        <input type="url" value={parsed.fallback || ''} placeholder="https://monsite.com/telecharger"
+          onChange={(e) => updateApp({ fallback: e.target.value })}
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      </div>
+
+      {(parsed.ios || parsed.android) && (
+        <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 text-xs text-blue-700">
+          ✅ QR prêt — redirige automatiquement iOS → App Store, Android → Play Store
+        </div>
+      )}
+    </div>
+  )
+}
+
 function PDFForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
@@ -169,6 +218,8 @@ export default function QRContentForm({ type, data, onChange }: Props) {
           />
         </div>
       </>
+    case 'app':
+      return <AppForm data={data} onChange={onChange} />
     case 'pdf':
       return <PDFForm data={data} onChange={onChange} />
     case 'social':
