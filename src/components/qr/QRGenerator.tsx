@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import QRTypeSelector from './QRTypeSelector'
 import QRContentForm from './QRContentForm'
 import QRPreview from './QRPreview'
@@ -7,6 +7,9 @@ import QRDesignPanel from './QRDesignPanel'
 import QRReadinessScore from './QRReadinessScore'
 import { QRType, QRDesign } from '@/lib/types'
 import { buildQRContent } from '@/lib/qr-content'
+import { createClient } from '@/lib/supabase/client'
+import { Save, LogIn, CheckCircle } from 'lucide-react'
+import Link from 'next/link'
 
 const DEFAULT_DESIGN: QRDesign = {
   fgColor: '#041B4D',
@@ -21,8 +24,48 @@ export default function QRGenerator() {
   const [formData, setFormData] = useState<Record<string, string>>({})
   const [design, setDesign] = useState<QRDesign>(DEFAULT_DESIGN)
   const [tab, setTab] = useState<'content' | 'design'>('content')
+  const [user, setUser] = useState<any>(null)
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [saveError, setSaveError] = useState('')
+
+  const supabase = createClient()
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setUser(data.user))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
 
   const content = buildQRContent(type, formData)
+
+  async function handleSave() {
+    if (!user || !content) return
+    setSaving(true)
+    setSaveError('')
+    setSaved(false)
+
+    const name = formData.url || formData.text || formData.nom || `QR ${type}`
+    const { error } = await supabase.from('qr_codes').insert({
+      user_id: user.id,
+      type,
+      mode: 'static',
+      content,
+      name: name.slice(0, 100),
+      design,
+      status: 'active',
+    })
+
+    if (error) {
+      setSaveError('Erreur lors de la sauvegarde.')
+    } else {
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    }
+    setSaving(false)
+  }
 
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
@@ -65,6 +108,36 @@ export default function QRGenerator() {
         <div className="p-6 flex flex-col items-center gap-4">
           <QRPreview content={content} design={design} />
           <QRReadinessScore design={design} content={content} />
+
+          {/* Save button */}
+          {content && (
+            <div className="w-full max-w-[280px]">
+              {user ? (
+                <>
+                  <button
+                    onClick={handleSave}
+                    disabled={saving || saved}
+                    className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm border-2 border-[#041B4D] text-[#041B4D] hover:bg-[#041B4D] hover:text-white transition-colors disabled:opacity-50"
+                  >
+                    {saved ? (
+                      <><CheckCircle size={16} className="text-green-600" /><span className="text-green-600">Sauvegardé !</span></>
+                    ) : (
+                      <><Save size={16} />{saving ? 'Sauvegarde…' : 'Sauvegarder dans mon espace'}</>
+                    )}
+                  </button>
+                  {saveError && <p className="text-xs text-red-500 text-center mt-1">{saveError}</p>}
+                </>
+              ) : (
+                <Link
+                  href="/connexion"
+                  className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm border-2 border-[#041B4D] text-[#041B4D] hover:bg-[#041B4D] hover:text-white transition-colors"
+                >
+                  <LogIn size={16} />
+                  Se connecter pour sauvegarder
+                </Link>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
