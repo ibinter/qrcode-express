@@ -39,28 +39,57 @@ export default function QRGenerator() {
     return () => subscription.unsubscribe()
   }, [])
 
-  const content = buildQRContent(type, formData)
+  useEffect(() => { setSavedUrl(null) }, [type, formData])
+
+  const DYNAMIC_TYPES = ['menu', 'coupon', 'biolink'] as const
+  const isDynamic = DYNAMIC_TYPES.includes(type as any)
+  const [savedUrl, setSavedUrl] = useState<string | null>(null)
+
+  const content = savedUrl ?? buildQRContent(type, formData)
+
+  function getDynamicContent(): string {
+    if (type === 'menu') return formData.menu_json || ''
+    if (type === 'coupon') return formData.coupon_json || ''
+    if (type === 'biolink') return formData.bio_json || ''
+    return buildQRContent(type, formData)
+  }
+
+  function getDynamicName(): string {
+    try {
+      if (type === 'menu') return JSON.parse(formData.menu_json || '{}').restaurant || 'Menu restaurant'
+      if (type === 'coupon') return JSON.parse(formData.coupon_json || '{}').title || 'Coupon'
+      if (type === 'biolink') return JSON.parse(formData.bio_json || '{}').name || 'Bio Links'
+    } catch {}
+    return `QR ${type}`
+  }
 
   async function handleSave() {
-    if (!user || !content) return
+    if (!user) return
+    const saveContent = isDynamic ? getDynamicContent() : buildQRContent(type, formData)
+    if (!saveContent) return
     setSaving(true)
     setSaveError('')
     setSaved(false)
 
-    const name = formData.url || formData.text || formData.nom || `QR ${type}`
-    const { error } = await supabase.from('qr_codes').insert({
+    const name = isDynamic ? getDynamicName() : (formData.url || formData.text || formData.nom || `QR ${type}`)
+    const { data: inserted, error } = await supabase.from('qr_codes').insert({
       user_id: user.id,
       type,
-      mode: 'static',
-      content,
+      mode: isDynamic ? 'dynamic' : 'static',
+      content: saveContent,
       name: name.slice(0, 100),
       design,
       status: 'active',
-    })
+    }).select('id').single()
 
-    if (error) {
+    if (error || !inserted) {
       setSaveError('Erreur lors de la sauvegarde.')
     } else {
+      if (isDynamic) {
+        const origin = window.location.origin
+        const pathMap: Record<string, string> = { menu: 'menu', coupon: 'coupon', biolink: 'bio' }
+        setSavedUrl(`${origin}/${pathMap[type]}/${inserted.id}`)
+      }
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
     }

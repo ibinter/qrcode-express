@@ -1,13 +1,19 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import QRDashboardCards from '@/components/dashboard/QRDashboardCards'
 
-export const instant = false
+export const dynamic = 'force-dynamic'
+
+const TYPE_ICONS: Record<string, string> = {
+  url: '🔗', whatsapp: '💬', vcard: '👤', wifi: '📶', text: '📝',
+  email: '✉️', phone: '📞', sms: '💬', pdf: '📄', app: '📲',
+  menu: '🍽️', coupon: '🎫', biolink: '🔗', social: '📱', location: '📍',
+}
 
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-
   if (!user) redirect('/connexion')
 
   const { data: qrs } = await supabase
@@ -16,22 +22,45 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .neq('status', 'archived')
     .order('created_at', { ascending: false })
-    .limit(20)
+    .limit(50)
+
+  const totalScans = qrs?.reduce((sum, q) => sum + (q.scan_count || 0), 0) ?? 0
+  const dynamicCount = qrs?.filter((q) => q.mode === 'dynamic').length ?? 0
 
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-6xl mx-auto px-4 py-8">
+        {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-bold text-[#041B4D]">Mon espace QR CODE EXPRESS</h1>
+          <div>
+            <h1 className="text-2xl font-bold text-[#041B4D]">Mes QR codes</h1>
+            <p className="text-sm text-gray-500 mt-0.5">{user.email}</p>
+          </div>
           <Link
             href="/"
-            className="px-4 py-2 rounded-lg text-sm font-semibold text-white"
+            className="px-4 py-2 rounded-xl text-sm font-semibold text-white shadow-sm hover:opacity-90 transition-opacity"
             style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}
           >
             + Créer un QR
           </Link>
         </div>
 
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          {[
+            { label: 'QR codes', value: qrs?.length ?? 0, icon: '📱' },
+            { label: 'Scans total', value: totalScans, icon: '📊' },
+            { label: 'Dynamiques', value: dynamicCount, icon: '⚡' },
+          ].map((s) => (
+            <div key={s.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 text-center">
+              <p className="text-2xl mb-1">{s.icon}</p>
+              <p className="text-3xl font-bold text-[#041B4D]">{s.value}</p>
+              <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* QR list */}
         {!qrs?.length ? (
           <div className="text-center py-16 text-gray-400">
             <p className="text-5xl mb-4">📱</p>
@@ -42,32 +71,7 @@ export default async function DashboardPage() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {qrs.map((qr) => (
-              <div key={qr.id} className="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
-                <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <p className="font-semibold text-[#041B4D] text-sm">{qr.name || `QR ${qr.type}`}</p>
-                    <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                      qr.mode === 'dynamic' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'
-                    }`}>
-                      {qr.mode === 'dynamic' ? 'Dynamique' : 'Statique'}
-                    </span>
-                  </div>
-                  <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-                    qr.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                  }`}>
-                    {qr.status === 'active' ? 'Actif' : qr.status}
-                  </span>
-                </div>
-                <p className="text-xs text-gray-400 truncate mb-3">{qr.content}</p>
-                <div className="flex items-center justify-between text-xs text-gray-500">
-                  <span>📊 {qr.scan_count} scans</span>
-                  <span>{new Date(qr.created_at).toLocaleDateString('fr-FR')}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+          <QRDashboardCards qrs={qrs} typeIcons={TYPE_ICONS} />
         )}
       </div>
     </main>
