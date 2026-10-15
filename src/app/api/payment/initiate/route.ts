@@ -47,7 +47,8 @@ export async function POST(request: NextRequest) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${process.env.GENIUSPAY_API_KEY}`,
+      'X-Api-Key': process.env.GENIUSPAY_API_KEY!,
+      'Authorization': `Bearer ${process.env.GENIUSPAY_API_SECRET}`,
     },
     body: JSON.stringify({
       amount: planConfig.amount,

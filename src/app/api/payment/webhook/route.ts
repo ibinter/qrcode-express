@@ -9,7 +9,8 @@ const PLAN_DURATION_DAYS: Record<string, number> = {
 }
 
 function verifySignature(payload: string, signature: string): boolean {
-  const secret = process.env.GENIUSPAY_WEBHOOK_SECRET
+  // GeniusPay signe avec l'API Secret
+  const secret = process.env.GENIUSPAY_WEBHOOK_SECRET || process.env.GENIUSPAY_API_SECRET
   if (!secret) return false
   const expected = createHmac('sha256', secret).update(payload).digest('hex')
   return expected === signature
