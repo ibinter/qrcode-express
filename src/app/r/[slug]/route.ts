@@ -10,7 +10,7 @@ export async function GET(
 
   const { data: qr, error } = await admin
     .from('qr_codes')
-    .select('id, content, status, expires_at, max_scans, scan_count, password_hash, type')
+    .select('id, content, status, expires_at, max_scans, scan_count, password_hash, type, design')
     .eq('slug', slug)
     .eq('mode', 'dynamic')
     .single()
@@ -19,15 +19,21 @@ export async function GET(
     return NextResponse.redirect(new URL('/qr-introuvable', request.url))
   }
 
-  if (qr.status === 'expired' || (qr.expires_at && new Date(qr.expires_at) < new Date())) {
-    return NextResponse.redirect(new URL(`/qr-expire?slug=${slug}`, request.url))
-  }
+  // QR "jamais mort" — fallback_url dans design JSON
+  const design = (qr.design || {}) as Record<string, unknown>
+  const fallbackUrl = design.fallback_url as string | undefined
 
-  if (qr.max_scans && qr.scan_count >= qr.max_scans) {
+  const isExpired = qr.status === 'expired' || (qr.expires_at && new Date(qr.expires_at) < new Date())
+  const isMaxReached = qr.max_scans && qr.scan_count >= qr.max_scans
+
+  if (isExpired || isMaxReached) {
+    // Redirect to fallback URL if configured (QR jamais mort)
+    if (fallbackUrl) return NextResponse.redirect(fallbackUrl)
     return NextResponse.redirect(new URL(`/qr-expire?slug=${slug}`, request.url))
   }
 
   if (qr.status === 'paused') {
+    if (fallbackUrl) return NextResponse.redirect(fallbackUrl)
     return NextResponse.redirect(new URL(`/qr-pause?slug=${slug}`, request.url))
   }
 
@@ -35,12 +41,12 @@ export async function GET(
     return NextResponse.redirect(new URL('/qr-introuvable', request.url))
   }
 
-  // Password protection — redirect to password page
+  // Password protection
   if (qr.password_hash) {
     return NextResponse.redirect(new URL(`/qr-password/${slug}`, request.url))
   }
 
-  // Detect request properties for smart routing
+  // Detect request context for smart routing
   const ua = request.headers.get('user-agent') || ''
   const acceptLang = request.headers.get('accept-language') || ''
   const country = request.headers.get('cf-ipcountry') || request.headers.get('x-vercel-ip-country') || ''
@@ -56,7 +62,7 @@ export async function GET(
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
   const dayStr = dayNames[now.getDay()]
 
-  // Fetch routing rules
+  // Smart routing rules
   const { data: rules } = await admin
     .from('routing_rules')
     .select('rule_type, condition, destination, priority')
@@ -95,7 +101,7 @@ export async function GET(
     }
   }
 
-  // Async scan tracking
+  // Async scan tracking (non-blocking)
   const isBot = /bot|crawler|spider|googlebot|bingbot|facebookexternalhit/i.test(ua)
 
   admin.from('scan_events').insert({

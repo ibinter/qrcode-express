@@ -3,6 +3,7 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import RoutingRulesManager from '@/components/dashboard/RoutingRulesManager'
+import QRSettingsPanel from '@/components/dashboard/QRSettingsPanel'
 
 export const instant = false
 
@@ -200,8 +201,17 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
 
         {/* Smart Routing — dynamic QRs only */}
         {qr.mode === 'dynamic' && (
-          <RoutingRulesManager qrId={id} initialRules={routingRules || []} />
+          <div className="mb-5">
+            <RoutingRulesManager qrId={id} initialRules={routingRules || []} />
+          </div>
         )}
+
+        {/* QR Settings (fallback URL, pause, archive) */}
+        <QRSettingsPanel
+          qrId={id}
+          initialFallbackUrl={(qr.design as Record<string, unknown>)?.fallback_url as string || ''}
+          initialStatus={qr.status}
+        />
       </div>
     </main>
   )

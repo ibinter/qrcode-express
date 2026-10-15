@@ -24,14 +24,23 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { content, name } = body
-  if (!content && !name) return NextResponse.json({ error: 'Nothing to update' }, { status: 400 })
+  const { content, name, status, fallback_url } = body
+  if (!content && !name && !status && fallback_url === undefined) {
+    return NextResponse.json({ error: 'Nothing to update' }, { status: 400 })
+  }
 
-  const patch: Record<string, string> = {}
+  const { data: existing } = await supabase.from('qr_codes').select('mode, content, design').eq('id', id).eq('user_id', user.id).single()
+
+  const patch: Record<string, unknown> = {}
   if (content) patch.content = content
   if (name) patch.name = name
+  if (status) patch.status = status
 
-  const { data: existing } = await supabase.from('qr_codes').select('mode, content').eq('id', id).eq('user_id', user.id).single()
+  // fallback_url stored in design JSONB (QR jamais mort)
+  if (fallback_url !== undefined) {
+    const currentDesign = (existing?.design || {}) as Record<string, unknown>
+    patch.design = { ...currentDesign, fallback_url: fallback_url || null }
+  }
 
   const { error } = await supabase
     .from('qr_codes')
