@@ -25,9 +25,11 @@ export interface QRDesign {
   bgColor: string
   moduleStyle: 'squares' | 'rounded' | 'dots'
   eyeStyle: 'square' | 'rounded'
-  frameStyle?: 'none' | 'simple' | 'rounded' | 'banner_bottom' | 'banner_top' | 'bubble'
+  frameStyle?: 'none' | 'simple' | 'rounded' | 'banner_bottom' | 'banner_top' | 'bubble' | 'scan_me' | 'scan_me_dark' | 'restaurant' | 'shopping' | 'coffee' | 'wifi' | 'phone' | 'gift'
   frameLabel?: string
   frameColor?: string
+  logo?: string
+  logoSize?: 'small' | 'medium' | 'large'
   logoUrl?: string
   errorCorrection: 'L' | 'M' | 'Q' | 'H'
 }
