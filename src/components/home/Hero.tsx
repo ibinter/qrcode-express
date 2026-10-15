@@ -1,84 +1,168 @@
 'use client'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
-const ROTATING_WORDS = [
-  'restaurant', 'boutique', 'événement', 'carte de visite',
-  'coupon promo', 'réseau Wi-Fi', 'bio links', 'billetterie',
-  'paiement QR', 'formulaire', 'équipe', 'catalogue',
+const SLIDES = [
+  {
+    id: 'menu',
+    tag: '🍽️ Menu Restaurant',
+    title: 'Votre menu\ntoujours à jour',
+    subtitle: 'Modifiez vos plats, prix et photos sans réimprimer. Vos clients scannent, ils voient la carte du jour.',
+    accent: '#FF6A00',
+    bg: 'from-[#041B4D] via-[#0d2d6e] to-[#1a1a2e]',
+    badge1: { icon: '🍽️', title: 'Menu mis à jour', sub: 'Sans réimpression', color: '#FF6A00' },
+    badge2: { icon: '📊', title: '+247 scans', sub: 'aujourd\'hui', dark: true },
+    badge3: { icon: '⚡', title: 'QR Dynamique', sub: 'Modifiable en temps réel', color: '#10b981' },
+    qrColor: '#FF6A00',
+    trust: ['Sans réimpression', 'Mise à jour instantanée', 'Menu PDF inclus'],
+  },
+  {
+    id: 'ticket',
+    tag: '🎟️ Billetterie',
+    title: 'Vendez vos\nbillets par QR',
+    subtitle: 'Créez un événement, gérez les inscriptions et émettez un billet QR unique par participant. Validation à l\'entrée en un scan.',
+    accent: '#7c3aed',
+    bg: 'from-[#1e0a3c] via-[#2d1158] to-[#1a0a2e]',
+    badge1: { icon: '🎟️', title: 'Billet scanné', sub: 'Entrée validée ✓', color: '#7c3aed' },
+    badge2: { icon: '👥', title: '84 inscrits', sub: 'sur 100 places', dark: true },
+    badge3: { icon: '✅', title: 'Anti-fraude', sub: 'Billet unique par scan', color: '#7c3aed' },
+    qrColor: '#7c3aed',
+    trust: ['Inscription en ligne', 'Billet QR unique', 'Validation à l\'entrée'],
+  },
+  {
+    id: 'payment',
+    tag: '💳 Paiement Mobile Money',
+    title: 'Encaissez\npar QR code',
+    subtitle: 'Wave, Orange Money, MTN MoMo. Vos clients scannent et paient en 10 secondes. Aucun terminal, aucune caisse.',
+    accent: '#16a34a',
+    bg: 'from-[#052e16] via-[#14532d] to-[#0a2010]',
+    badge1: { icon: '💳', title: 'Paiement reçu', sub: '15 000 FCFA', color: '#16a34a' },
+    badge2: { icon: '🌊', title: 'Wave · Orange · MTN', sub: 'Mobile Money', dark: true },
+    badge3: { icon: '⚡', title: 'Instantané', sub: 'Confirmation en 5s', color: '#16a34a' },
+    qrColor: '#16a34a',
+    trust: ['Wave + Orange + MTN', 'Montant fixe ou libre', 'Historique des paiements'],
+  },
+  {
+    id: 'form',
+    tag: '📋 Formulaire prospect',
+    title: 'Capturez vos\nprospects sans site',
+    subtitle: 'Créez un formulaire personnalisé accessible par QR. Collectez noms, emails, numéros — partagez en un scan.',
+    accent: '#0ea5e9',
+    bg: 'from-[#0c1a2e] via-[#0a2d5e] to-[#0c1a2e]',
+    badge1: { icon: '📋', title: 'Nouveau contact', sub: 'Formulaire soumis', color: '#0ea5e9' },
+    badge2: { icon: '📈', title: '+12 leads', sub: 'cette semaine', dark: true },
+    badge3: { icon: '📤', title: 'Export CSV', sub: 'Données exportables', color: '#0ea5e9' },
+    qrColor: '#0ea5e9',
+    trust: ['Champs personnalisés', 'Export des réponses', 'Notification WhatsApp'],
+  },
+  {
+    id: 'biolink',
+    tag: '🔗 Bio Links',
+    title: 'Tous vos liens\nen une page',
+    subtitle: 'Instagram, WhatsApp, site web, boutique — une seule page, un seul QR. Votre vitrine digitale en 30 secondes.',
+    accent: '#8b5cf6',
+    bg: 'from-[#1a0a3c] via-[#2d1a5e] to-[#1a0a3c]',
+    badge1: { icon: '🔗', title: 'Bio Links', sub: '8 liens actifs', color: '#8b5cf6' },
+    badge2: { icon: '📱', title: '+580 clics', sub: 'ce mois', dark: true },
+    badge3: { icon: '✨', title: 'Page personnalisée', sub: 'Vos couleurs & logo', color: '#8b5cf6' },
+    qrColor: '#8b5cf6',
+    trust: ['Page personnalisée', 'Instagram · TikTok · WhatsApp', 'Stats de clics incluses'],
+  },
 ]
 
-export default function Hero() {
-  const [wordIdx, setWordIdx] = useState(0)
-  const [visible, setVisible] = useState(true)
+// Deterministic QR pattern
+const QR_PATTERN = [1,1,1,1,1,1,1,1,0,0,1,0,0,1,1,0,1,0,1,0,1,1,0,0,1,0,0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,0,1,1,0,1]
 
+export default function Hero() {
+  const [current, setCurrent] = useState(0)
+  const [animating, setAnimating] = useState(false)
+  const [direction, setDirection] = useState<'next' | 'prev'>('next')
+
+  const goTo = useCallback((idx: number, dir: 'next' | 'prev' = 'next') => {
+    if (animating) return
+    setDirection(dir)
+    setAnimating(true)
+    setTimeout(() => {
+      setCurrent(idx)
+      setAnimating(false)
+    }, 400)
+  }, [animating])
+
+  const next = useCallback(() => goTo((current + 1) % SLIDES.length, 'next'), [current, goTo])
+  const prev = useCallback(() => goTo((current - 1 + SLIDES.length) % SLIDES.length, 'prev'), [current, goTo])
+
+  // Auto-advance every 4.5s
   useEffect(() => {
-    const interval = setInterval(() => {
-      setVisible(false)
-      setTimeout(() => {
-        setWordIdx((i) => (i + 1) % ROTATING_WORDS.length)
-        setVisible(true)
-      }, 300)
-    }, 2600)
-    return () => clearInterval(interval)
-  }, [])
+    const t = setInterval(next, 4500)
+    return () => clearInterval(t)
+  }, [next])
+
+  const s = SLIDES[current]
 
   return (
-    <section className="relative overflow-hidden bg-[#041B4D] text-white">
-      {/* Animated background orbs */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute -top-32 -left-32 w-96 h-96 rounded-full opacity-20"
-          style={{ background: 'radial-gradient(circle, #FF6A00 0%, transparent 70%)', animation: 'float1 8s ease-in-out infinite' }} />
-        <div className="absolute top-1/2 -right-40 w-[500px] h-[500px] rounded-full opacity-10"
-          style={{ background: 'radial-gradient(circle, #3b82f6 0%, transparent 70%)', animation: 'float2 10s ease-in-out infinite' }} />
-        <div className="absolute bottom-0 left-1/3 w-64 h-64 rounded-full opacity-15"
-          style={{ background: 'radial-gradient(circle, #FF6A00 0%, transparent 70%)', animation: 'float1 6s ease-in-out infinite reverse' }} />
-      </div>
-
+    <section className="relative overflow-hidden text-white" style={{ minHeight: 560 }}>
       <style>{`
-        @keyframes float1 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(30px,-20px) scale(1.1)} }
-        @keyframes float2 { 0%,100%{transform:translate(0,0) scale(1)} 50%{transform:translate(-20px,30px) scale(0.95)} }
-        @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes slideWord { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-        .anim-1{animation:fadeUp .7s ease both}
-        .anim-2{animation:fadeUp .7s .15s ease both}
-        .anim-3{animation:fadeUp .7s .3s ease both}
-        .anim-4{animation:fadeUp .7s .45s ease both}
-        .word-in{animation:slideWord .3s ease both}
-        .word-out{opacity:0;transform:translateY(-10px);transition:all .3s}
-        @keyframes qrFloat { 0%,100%{transform:translateY(0) rotate(-2deg)} 50%{transform:translateY(-12px) rotate(2deg)} }
-        @keyframes qrFloat2 { 0%,100%{transform:translateY(0) rotate(3deg)} 50%{transform:translateY(-8px) rotate(-1deg)} }
-        .qr-float{animation:qrFloat 4s ease-in-out infinite}
-        .qr-float2{animation:qrFloat2 5s ease-in-out infinite}
+        @keyframes slideInRight { from{opacity:0;transform:translateX(60px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes slideInLeft  { from{opacity:0;transform:translateX(-60px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes slideOutLeft { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(-60px)} }
+        @keyframes slideOutRight{ from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(60px)} }
+        @keyframes fadeInUp     { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes float1 { 0%,100%{transform:translateY(0) rotate(-2deg)} 50%{transform:translateY(-12px) rotate(2deg)} }
+        @keyframes float2 { 0%,100%{transform:translateY(0) rotate(3deg)} 50%{transform:translateY(-8px) rotate(-1deg)} }
+        @keyframes float3 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+        @keyframes bgPulse { 0%,100%{opacity:0.15} 50%{opacity:0.25} }
+        .slide-in-r { animation: slideInRight .4s ease forwards }
+        .slide-in-l { animation: slideInLeft .4s ease forwards }
+        .slide-out-l { animation: slideOutLeft .4s ease forwards }
+        .float1 { animation: float1 4s ease-in-out infinite }
+        .float2 { animation: float2 5s ease-in-out infinite }
+        .float3 { animation: float3 3.5s ease-in-out infinite }
+        .fadeup { animation: fadeInUp .5s ease forwards }
+        .bg-pulse { animation: bgPulse 3s ease-in-out infinite }
       `}</style>
 
-      <div className="relative max-w-6xl mx-auto px-4 py-20 md:py-28 flex flex-col md:flex-row items-center gap-12">
-        {/* Left: Text */}
-        <div className="flex-1 text-center md:text-left">
-          <p className="anim-1 inline-flex items-center gap-2 text-xs font-bold text-[#FF6A00] uppercase tracking-widest mb-5 bg-[#FF6A00]/10 px-3 py-1.5 rounded-full border border-[#FF6A00]/20">
-            ⚡ par IBIG SOFT · Made in Côte d&apos;Ivoire
-          </p>
+      {/* Dynamic gradient background */}
+      <div
+        className={`absolute inset-0 bg-gradient-to-br ${s.bg} transition-all duration-700`}
+      />
 
-          <h1 className="anim-2 text-4xl md:text-6xl font-extrabold leading-tight mb-4">
-            Le QR code<br />
-            de votre{' '}
-            <span
-              className={`text-[#FF6A00] inline-block transition-all duration-300 ${visible ? 'word-in' : 'word-out'}`}
-              style={{ minWidth: 200 }}
-            >
-              {ROTATING_WORDS[wordIdx]}
-            </span>
+      {/* Orbs */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden>
+        <div className="bg-pulse absolute -top-32 -left-32 w-96 h-96 rounded-full"
+          style={{ background: `radial-gradient(circle, ${s.accent}55 0%, transparent 70%)` }} />
+        <div className="bg-pulse absolute bottom-0 right-0 w-80 h-80 rounded-full"
+          style={{ background: `radial-gradient(circle, ${s.accent}33 0%, transparent 70%)`, animationDelay: '1.5s' }} />
+      </div>
+
+      <div className="relative max-w-6xl mx-auto px-4 py-16 md:py-24 flex flex-col md:flex-row items-center gap-10">
+
+        {/* LEFT — Text content */}
+        <div
+          key={`text-${current}`}
+          className={`flex-1 text-center md:text-left ${animating ? '' : 'fadeup'}`}
+        >
+          {/* Tag */}
+          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest mb-5 px-3 py-1.5 rounded-full border"
+            style={{ background: s.accent + '22', borderColor: s.accent + '44', color: s.accent }}>
+            {s.tag}
+          </div>
+
+          {/* Title */}
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight mb-5 whitespace-pre-line">
+            {s.title}
           </h1>
 
-          <p className="anim-3 text-lg md:text-xl text-blue-100/80 max-w-lg mb-8 leading-relaxed">
-            20+ types de QR codes. Menus, billetterie, paiements Mobile Money, formulaires, bio links, organisations — tout en un, fait pour l&apos;Afrique.
+          {/* Subtitle */}
+          <p className="text-lg md:text-xl text-white/70 max-w-lg mb-8 leading-relaxed">
+            {s.subtitle}
           </p>
 
-          <div className="anim-4 flex flex-col sm:flex-row gap-3 justify-center md:justify-start mb-8">
+          {/* CTAs */}
+          <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start mb-8">
             <Link
               href="#generateur"
-              className="px-8 py-3.5 rounded-xl font-bold text-white text-base shadow-lg hover:shadow-orange-500/30 hover:scale-105 transition-all duration-200"
-              style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}
+              className="px-8 py-3.5 rounded-xl font-bold text-white text-base shadow-lg hover:scale-105 transition-all duration-200"
+              style={{ background: `linear-gradient(135deg, ${s.accent}, ${s.accent}bb)` }}
             >
               Créer mon QR gratuit →
             </Link>
@@ -90,59 +174,128 @@ export default function Hero() {
             </Link>
           </div>
 
-          {/* Trust badges */}
-          <div className="anim-4 flex flex-wrap gap-x-5 gap-y-2 justify-center md:justify-start text-xs text-blue-300">
-            {['Sans inscription', 'PNG gratuit', 'Aucun filigrane', 'Wave · Orange · MTN'].map((t) => (
-              <span key={t} className="flex items-center gap-1"><span className="text-green-400">✓</span> {t}</span>
+          {/* Trust */}
+          <div className="flex flex-wrap gap-x-5 gap-y-2 justify-center md:justify-start text-xs text-white/50">
+            {s.trust.map((t) => (
+              <span key={t} className="flex items-center gap-1.5">
+                <span className="text-green-400">✓</span> {t}
+              </span>
             ))}
           </div>
         </div>
 
-        {/* Right: Floating QR mockups */}
-        <div className="relative flex-shrink-0 w-72 h-72 md:w-96 md:h-96">
+        {/* RIGHT — Floating mockup */}
+        <div key={`visual-${current}`} className={`relative flex-shrink-0 w-72 h-80 md:w-96 md:h-96 ${animating ? '' : 'fadeup'}`}>
+
           {/* Main QR card */}
-          <div className="qr-float absolute top-0 left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-2xl p-5 w-52">
+          <div className="float1 absolute top-4 left-1/2 -translate-x-1/2 bg-white rounded-2xl shadow-2xl p-5 w-52">
             <div className="bg-gray-50 rounded-xl p-3 mb-3">
               <div className="w-full aspect-square grid grid-cols-7 gap-0.5">
-                {[1,1,1,1,1,1,1,1,0,0,1,0,0,1,1,0,1,0,1,0,1,1,0,0,1,0,0,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,1,0,1,1,0,1].map((v, i) => (
-                  <div key={i} className={`rounded-sm ${v ? 'bg-[#041B4D]' : 'bg-transparent'}`} />
+                {QR_PATTERN.map((v, i) => (
+                  <div key={i} className="rounded-sm transition-colors duration-700"
+                    style={{ background: v ? s.qrColor : 'transparent' }} />
                 ))}
               </div>
             </div>
-            <p className="text-center text-[10px] font-bold text-[#041B4D] uppercase tracking-wide">SCAN ME</p>
-            <div className="mt-1 h-1 rounded-full" style={{ background: 'linear-gradient(90deg, #FF6A00, #041B4D)' }} />
+            <div className="flex items-center justify-between">
+              <p className="text-[10px] font-bold text-[#041B4D] uppercase tracking-wide">SCAN ME</p>
+              <span className="text-sm">{s.badge1.icon}</span>
+            </div>
+            <div className="mt-1.5 h-1.5 rounded-full transition-all duration-700"
+              style={{ background: `linear-gradient(90deg, ${s.accent}, ${s.qrColor}88)` }} />
           </div>
 
-          {/* Floating badge: Billetterie */}
-          <div className="qr-float2 absolute top-4 -right-2 md:-right-8 bg-white rounded-xl shadow-lg px-3 py-2 flex items-center gap-2 border border-gray-100">
-            <span className="text-lg">🎟️</span>
+          {/* Badge top-right */}
+          <div className="float2 absolute top-2 -right-2 md:-right-8 bg-white rounded-xl shadow-lg px-3 py-2.5 flex items-center gap-2 border border-gray-100 min-w-[130px]">
+            <span className="text-xl flex-shrink-0">{s.badge1.icon}</span>
             <div>
-              <p className="text-[10px] font-bold text-[#041B4D]">Billetterie QR</p>
-              <p className="text-[9px] text-gray-400">Inscription + ticket</p>
+              <p className="text-[11px] font-bold text-[#041B4D] leading-tight">{s.badge1.title}</p>
+              <p className="text-[10px] font-semibold mt-0.5" style={{ color: s.badge1.color }}>{s.badge1.sub}</p>
             </div>
           </div>
 
-          {/* Floating badge: Paiement */}
-          <div className="qr-float absolute bottom-8 -left-4 md:-left-10 bg-[#041B4D] border border-white/10 rounded-xl shadow-lg px-3 py-2">
-            <p className="text-[9px] text-blue-300 font-semibold">💳 Paiement reçu</p>
-            <p className="text-white font-extrabold text-base">+15 000 FCFA</p>
-            <div className="flex gap-1 mt-1 text-[9px] text-blue-200">
-              <span>🌊 Wave</span><span>🟠 Orange</span>
-            </div>
+          {/* Badge bottom-left */}
+          <div className="float3 absolute bottom-10 -left-4 md:-left-10 rounded-xl shadow-lg px-3.5 py-2.5 min-w-[130px]"
+            style={{ background: '#041B4D', border: '1px solid rgba(255,255,255,0.1)' }}>
+            <p className="text-[10px] text-blue-300 font-semibold">{s.badge2.icon} {s.badge2.title}</p>
+            <p className="text-white font-extrabold text-sm mt-0.5">{s.badge2.sub}</p>
           </div>
 
-          {/* Floating badge: Design */}
-          <div className="qr-float2 absolute bottom-4 -right-2 md:-right-6 bg-white rounded-xl shadow-lg px-3 py-2 border border-gray-100">
-            <p className="text-[10px] font-bold text-[#041B4D] mb-1">🏢 Organisations</p>
-            <p className="text-[9px] text-gray-400">Partagez en équipe</p>
+          {/* Badge bottom-right */}
+          <div className="float2 absolute bottom-2 -right-2 md:-right-6 bg-white rounded-xl shadow-lg px-3 py-2 border border-gray-100 min-w-[130px]" style={{ animationDelay: '1s' }}>
+            <p className="text-[11px] font-bold text-[#041B4D] mb-0.5">{s.badge3.icon} {s.badge3.title}</p>
+            <p className="text-[10px]" style={{ color: s.badge3.color }}>{s.badge3.sub}</p>
           </div>
         </div>
       </div>
 
+      {/* Slide controls */}
+      <div className="relative pb-8 flex flex-col items-center gap-4">
+        {/* Dots */}
+        <div className="flex items-center gap-2">
+          {SLIDES.map((sl, i) => (
+            <button
+              key={sl.id}
+              onClick={() => goTo(i, i > current ? 'next' : 'prev')}
+              aria-label={sl.tag}
+              className="transition-all duration-300 rounded-full"
+              style={{
+                width: i === current ? 28 : 8,
+                height: 8,
+                background: i === current ? s.accent : 'rgba(255,255,255,0.3)',
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Arrow buttons */}
+        <div className="absolute right-4 bottom-0 flex gap-2 mb-2 md:mb-4 md:right-8">
+          <button
+            onClick={prev}
+            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition-all hover:scale-105"
+            aria-label="Précédent"
+          >
+            ‹
+          </button>
+          <button
+            onClick={next}
+            className="w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 flex items-center justify-center text-white transition-all hover:scale-105"
+            aria-label="Suivant"
+          >
+            ›
+          </button>
+        </div>
+
+        {/* Slide counter */}
+        <p className="text-white/30 text-xs font-mono">
+          {String(current + 1).padStart(2, '0')} / {String(SLIDES.length).padStart(2, '0')}
+        </p>
+      </div>
+
+      {/* Progress bar */}
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-white/10">
+        <div
+          key={current}
+          className="h-full rounded-full transition-none"
+          style={{
+            background: s.accent,
+            animation: 'progress 4.5s linear forwards',
+            width: '100%',
+            transformOrigin: 'left',
+            transform: 'scaleX(0)',
+          }}
+        />
+      </div>
+      <style>{`
+        @keyframes progress { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+      `}</style>
+
       {/* Bottom wave */}
-      <div className="relative h-12 bg-white" style={{ marginTop: -1 }}>
-        <svg viewBox="0 0 1440 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute bottom-0 w-full" preserveAspectRatio="none">
-          <path d="M0 48L1440 48L1440 0C1200 40 960 48 720 40C480 32 240 0 0 24L0 48Z" fill="#041B4D"/>
+      <div className="relative h-10 bg-white" style={{ marginTop: -1 }}>
+        <svg viewBox="0 0 1440 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="absolute bottom-0 w-full" preserveAspectRatio="none">
+          <path d="M0 40L1440 40L1440 0C1200 32 960 40 720 32C480 24 240 0 0 18L0 40Z" fill="currentColor" className="text-[#041B4D]"
+            style={{ fill: SLIDES[current]?.bg.includes('052e16') ? '#052e16' : SLIDES[current]?.bg.includes('1e0a3c') ? '#1e0a3c' : SLIDES[current]?.bg.includes('0c1a2e') ? '#0c1a2e' : SLIDES[current]?.bg.includes('1a0a3c') ? '#1a0a3c' : '#041B4D' }}
+          />
         </svg>
       </div>
     </section>
