@@ -1,19 +1,38 @@
 'use client'
 import { useState } from 'react'
-import { Shield, Link2, Pause, Play, Trash2 } from 'lucide-react'
+import { Shield, Link2, Pause, Play, Trash2, BarChart2 } from 'lucide-react'
+
+interface UTMConfig {
+  source: string
+  medium: string
+  campaign: string
+  content: string
+  term: string
+}
 
 interface Props {
   qrId: string
   initialFallbackUrl: string
   initialStatus: string
+  initialUtm?: UTMConfig | null
 }
 
-export default function QRSettingsPanel({ qrId, initialFallbackUrl, initialStatus }: Props) {
+export default function QRSettingsPanel({ qrId, initialFallbackUrl, initialStatus, initialUtm }: Props) {
   const [fallbackUrl, setFallbackUrl] = useState(initialFallbackUrl || '')
   const [status, setStatus] = useState(initialStatus)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+
+  const [utm, setUtm] = useState<UTMConfig>({
+    source:   initialUtm?.source   ?? '',
+    medium:   initialUtm?.medium   ?? '',
+    campaign: initialUtm?.campaign ?? '',
+    content:  initialUtm?.content  ?? '',
+    term:     initialUtm?.term     ?? '',
+  })
+  const [utmSaving, setUtmSaving] = useState(false)
+  const [utmSaved, setUtmSaved] = useState(false)
 
   async function saveFallback() {
     setSaving(true); setSaved(false); setError('')
@@ -26,6 +45,18 @@ export default function QRSettingsPanel({ qrId, initialFallbackUrl, initialStatu
     setSaved(true)
     setTimeout(() => setSaved(false), 2000)
     setSaving(false)
+  }
+
+  async function saveUtm() {
+    setUtmSaving(true)
+    const hasValues = Object.values(utm).some(Boolean)
+    const res = await fetch(`/api/qr/${qrId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ utm: hasValues ? utm : null }),
+    })
+    if (res.ok) { setUtmSaved(true); setTimeout(() => setUtmSaved(false), 2000) }
+    setUtmSaving(false)
   }
 
   async function toggleStatus() {
@@ -78,6 +109,49 @@ export default function QRSettingsPanel({ qrId, initialFallbackUrl, initialStatu
         {fallbackUrl && (
           <p className="text-xs text-green-600 mt-1 flex items-center gap-1">
             <Shield size={10} /> QR protégé — les scanners seront toujours redirigés
+          </p>
+        )}
+      </div>
+
+      {/* UTM Parameters */}
+      <div className="border border-blue-100 rounded-xl p-4 bg-blue-50">
+        <div className="flex items-center gap-2 mb-2">
+          <BarChart2 size={14} className="text-blue-600" />
+          <p className="text-sm font-semibold text-blue-700">Paramètres UTM</p>
+        </div>
+        <p className="text-xs text-gray-600 mb-3">
+          Ajoutez automatiquement des paramètres UTM à chaque scan pour suivre vos campagnes dans Google Analytics.
+        </p>
+        <div className="grid grid-cols-2 gap-2 mb-3">
+          {([
+            { key: 'source',   label: 'Source',   placeholder: 'ex: qrcode' },
+            { key: 'medium',   label: 'Medium',   placeholder: 'ex: print' },
+            { key: 'campaign', label: 'Campagne', placeholder: 'ex: promo2025' },
+            { key: 'content',  label: 'Contenu',  placeholder: 'ex: flyer-a4' },
+          ] as const).map(({ key, label, placeholder }) => (
+            <div key={key}>
+              <label className="block text-xs text-gray-500 mb-1">{label}</label>
+              <input
+                type="text"
+                value={utm[key]}
+                onChange={(e) => setUtm((u) => ({ ...u, [key]: e.target.value }))}
+                placeholder={placeholder}
+                className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-blue-300"
+              />
+            </div>
+          ))}
+        </div>
+        <button
+          onClick={saveUtm}
+          disabled={utmSaving}
+          className="w-full py-2 rounded-lg text-xs font-semibold text-white disabled:opacity-50"
+          style={{ background: 'linear-gradient(135deg, #041B4D, #1a3a7a)' }}
+        >
+          {utmSaving ? '…' : utmSaved ? '✅ UTM sauvegardés' : 'Sauvegarder UTM'}
+        </button>
+        {utm.source && utm.medium && utm.campaign && (
+          <p className="text-xs text-blue-600 mt-2 break-all font-mono">
+            ?utm_source={utm.source}&utm_medium={utm.medium}&utm_campaign={utm.campaign}
           </p>
         )}
       </div>

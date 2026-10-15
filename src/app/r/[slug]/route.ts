@@ -101,6 +101,20 @@ export async function GET(
     }
   }
 
+  // Append UTM parameters if configured
+  const utmConfig = design.utm as Record<string, string> | undefined | null
+  if (utmConfig && destination.startsWith('http')) {
+    try {
+      const url = new URL(destination)
+      if (utmConfig.source)   url.searchParams.set('utm_source',   utmConfig.source)
+      if (utmConfig.medium)   url.searchParams.set('utm_medium',   utmConfig.medium)
+      if (utmConfig.campaign) url.searchParams.set('utm_campaign', utmConfig.campaign)
+      if (utmConfig.content)  url.searchParams.set('utm_content',  utmConfig.content)
+      if (utmConfig.term)     url.searchParams.set('utm_term',     utmConfig.term)
+      destination = url.toString()
+    } catch {}
+  }
+
   // Async scan tracking (non-blocking)
   const isBot = /bot|crawler|spider|googlebot|bingbot|facebookexternalhit/i.test(ua)
 

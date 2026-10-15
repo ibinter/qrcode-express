@@ -212,6 +212,7 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
           qrId={id}
           initialFallbackUrl={(qr.design as Record<string, unknown>)?.fallback_url as string || ''}
           initialStatus={qr.status}
+          initialUtm={(qr.design as Record<string, unknown>)?.utm as any || null}
         />
       </div>
     </main>
