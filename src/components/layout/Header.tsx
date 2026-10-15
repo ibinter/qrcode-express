@@ -46,6 +46,9 @@ export default function Header() {
               <Link href="/dashboard" className="text-sm font-semibold text-[#041B4D] hover:text-[#FF6A00] transition-colors">
                 📱 Mes QR
               </Link>
+              <Link href="/portefeuille" className="text-sm font-semibold text-gray-600 hover:text-[#FF6A00] transition-colors">
+                💰 Crédits
+              </Link>
               <Link href="/profil" className="text-sm font-semibold text-gray-600 hover:text-[#041B4D] transition-colors">
                 👤 Profil
               </Link>
@@ -86,6 +89,7 @@ export default function Header() {
           {user ? (
             <>
               <Link href="/dashboard" className="block font-semibold text-[#041B4D]" onClick={() => setOpen(false)}>📱 Mes QR codes</Link>
+              <Link href="/portefeuille" className="block text-gray-700" onClick={() => setOpen(false)}>💰 Mes crédits</Link>
               <Link href="/profil" className="block text-gray-700" onClick={() => setOpen(false)}>👤 Profil</Link>
               <button onClick={handleLogout} className="block text-red-500 text-sm font-medium">Déconnexion</button>
             </>

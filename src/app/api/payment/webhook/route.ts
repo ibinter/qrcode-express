@@ -9,7 +9,6 @@ const PLAN_DURATION_DAYS: Record<string, number> = {
 }
 
 function verifySignature(payload: string, signature: string): boolean {
-  // GeniusPay signe avec l'API Secret
   const secret = process.env.GENIUSPAY_WEBHOOK_SECRET || process.env.GENIUSPAY_API_SECRET
   if (!secret) return false
   const expected = createHmac('sha256', secret).update(payload).digest('hex')
@@ -26,7 +25,6 @@ export async function POST(request: NextRequest) {
 
   const event = JSON.parse(rawBody)
 
-  // Seulement traiter les paiements réussis
   if (event.status !== 'success' && event.event !== 'payment.success') {
     return NextResponse.json({ received: true })
   }
@@ -34,26 +32,36 @@ export async function POST(request: NextRequest) {
   const reference: string = event.reference
   const admin = createAdminClient()
 
-  // Récupérer la transaction
   const { data: tx } = await admin
     .from('transactions')
     .select('id, user_id, metadata, status')
     .eq('reference', reference)
     .single()
 
-  if (!tx || tx.status === 'completed') {
+  if (!tx || tx.status === 'success') {
     return NextResponse.json({ received: true })
   }
 
-  const plan = tx.metadata?.plan ?? 'essential'
+  const meta = (tx.metadata ?? {}) as Record<string, unknown>
+
+  // Marquer la transaction réussie
+  await admin.from('transactions').update({ status: 'success' }).eq('id', tx.id)
+
+  // Cas 1 : achat de crédits
+  if (meta.type === 'credits') {
+    const creditsToAdd = Number(meta.credits ?? 0)
+    if (creditsToAdd > 0) {
+      await admin.rpc('add_credits', { user_uuid: tx.user_id, amount: creditsToAdd })
+    }
+    return NextResponse.json({ received: true })
+  }
+
+  // Cas 2 : abonnement
+  const plan = (meta.plan as string) ?? 'essential'
   const days = PLAN_DURATION_DAYS[plan] ?? 30
   const now = new Date()
   const periodEnd = new Date(now.getTime() + days * 24 * 60 * 60 * 1000)
 
-  // Marquer la transaction complète
-  await admin.from('transactions').update({ status: 'completed' }).eq('id', tx.id)
-
-  // Créer ou mettre à jour la subscription
   const { data: existingSub } = await admin
     .from('subscriptions')
     .select('id')

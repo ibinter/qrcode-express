@@ -12,12 +12,14 @@ export default async function ProfilPage() {
 
   const admin = createAdminClient()
 
-  const [{ data: qrs }, { data: subscription }] = await Promise.all([
+  const [{ data: qrs }, { data: subscription }, { data: profile }] = await Promise.all([
     admin.from('qr_codes').select('id, scan_count, mode').eq('user_id', user.id).neq('status', 'archived'),
     admin.from('subscriptions').select('plan, status, period_end').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).single(),
+    admin.from('profiles').select('credits').eq('id', user.id).single(),
   ])
 
   const totalScans = qrs?.reduce((s, q) => s + (q.scan_count || 0), 0) ?? 0
+  const credits = profile?.credits ?? 0
   const dynamicCount = qrs?.filter((q) => q.mode === 'dynamic').length ?? 0
   const plan = subscription?.plan ?? 'gratuit'
   const planLabel = plan === 'pro' ? 'Pro' : plan === 'business' ? 'Business' : 'Gratuit'
@@ -46,7 +48,7 @@ export default async function ProfilPage() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-3 gap-3 mb-5">
+        <div className="grid grid-cols-2 gap-3 mb-5">
           {[
             { icon: '📱', label: 'QR codes', value: qrs?.length ?? 0 },
             { icon: '📊', label: 'Scans total', value: totalScans },
@@ -58,6 +60,14 @@ export default async function ProfilPage() {
               <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
             </div>
           ))}
+          {/* Crédits */}
+          <Link href="/portefeuille"
+            className="bg-white rounded-2xl border-2 border-[#FF6A00]/30 shadow-sm p-4 text-center hover:border-[#FF6A00] transition-colors group">
+            <p className="text-xl mb-1">💰</p>
+            <p className="text-2xl font-bold text-[#FF6A00]">{credits.toLocaleString('fr-FR')}</p>
+            <p className="text-xs text-gray-500 mt-0.5">Crédits</p>
+            <p className="text-xs text-[#FF6A00] font-semibold mt-1 opacity-0 group-hover:opacity-100 transition-opacity">Recharger →</p>
+          </Link>
         </div>
 
         {/* Subscription details */}
