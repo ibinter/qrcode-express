@@ -1,6 +1,8 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { notFound } from 'next/navigation'
 
+export const instant = false
+
 interface CouponData {
   title: string
   code?: string
