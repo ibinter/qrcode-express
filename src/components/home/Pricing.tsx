@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 
 const plans = [
@@ -8,39 +8,167 @@ const plans = [
     name: 'Gratuit',
     price: '0',
     unit: '',
+    badge: null,
     highlight: false,
-    features: ['QR statique illimité', 'PNG standard', 'Couleurs de base', 'Sans inscription'],
-    cta: 'Commencer',
+    desc: 'Pour découvrir la plateforme',
+    features: [
+      { text: 'QR statiques illimités', ok: true },
+      { text: 'Téléchargement PNG', ok: true },
+      { text: 'Design de base (couleurs)', ok: true },
+      { text: '11 types de QR', ok: true },
+      { text: 'Sans inscription', ok: true },
+      { text: 'QR dynamiques', ok: false },
+      { text: 'Logo personnalisé', ok: false },
+      { text: 'Analytics', ok: false },
+    ],
+    cta: 'Commencer gratuitement',
     href: '#generateur',
   },
   {
     id: 'essential',
     name: 'Essentiel',
-    price: '1 000',
+    price: '1 500',
     unit: 'FCFA / mois',
+    badge: null,
     highlight: false,
-    features: ['10 téléchargements Premium/mois', '5 QR dynamiques', 'Statistiques simples', 'vCard Plus'],
-    cta: 'Essayer 14 jours',
+    desc: 'Pour les indépendants',
+    features: [
+      { text: 'QR statiques illimités', ok: true },
+      { text: 'PNG + SVG + PDF', ok: true },
+      { text: '10 QR dynamiques', ok: true },
+      { text: 'Logo centré sur QR', ok: true },
+      { text: '14 styles de cadre', ok: true },
+      { text: 'Stats de base', ok: true },
+      { text: 'Menu / Coupon / Bio Links', ok: false },
+      { text: 'Analytics complets', ok: false },
+    ],
+    cta: 'Choisir Essentiel',
   },
   {
     id: 'pro',
     name: 'Pro',
-    price: '2 500',
+    price: '3 500',
     unit: 'FCFA / mois',
+    badge: '⭐ Populaire',
     highlight: true,
-    features: ['PNG HD + SVG + PDF illimité', '30 QR dynamiques', 'Pages métiers', 'Routage intelligent', 'Statistiques complètes'],
+    desc: 'Pour les professionnels',
+    features: [
+      { text: 'QR statiques illimités', ok: true },
+      { text: 'PNG + SVG + PDF', ok: true },
+      { text: '50 QR dynamiques', ok: true },
+      { text: 'Menu, Coupon, Bio Links', ok: true },
+      { text: 'Logo + 14 cadres', ok: true },
+      { text: 'Analytics 30 jours (appareils, pays)', ok: true },
+      { text: 'Édition QR en temps réel', ok: true },
+      { text: 'vCard Plus + PDF', ok: true },
+    ],
     cta: 'Choisir Pro',
   },
   {
     id: 'business',
     name: 'Business',
-    price: '6 000',
+    price: '8 000',
     unit: 'FCFA / mois',
+    badge: null,
     highlight: false,
-    features: ['150 QR dynamiques', '5 collaborateurs', 'Tests A/B', 'Pixels & coupons', 'Génération en lot (1 000 QR)'],
+    desc: 'Pour les équipes & agences',
+    features: [
+      { text: 'QR dynamiques illimités', ok: true },
+      { text: 'Tous les types Pro', ok: true },
+      { text: '5 collaborateurs', ok: true },
+      { text: 'Analytics avancés', ok: true },
+      { text: 'Génération en lot (1 000 QR)', ok: true },
+      { text: 'Tests A/B de contenu', ok: true },
+      { text: 'API REST', ok: true },
+      { text: 'Support prioritaire', ok: true },
+    ],
     cta: 'Choisir Business',
   },
 ]
+
+function PricingCard({ p, onPay, loading }: { p: typeof plans[0]; onPay: (id: string) => void; loading: string | null }) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.style.opacity = '0'
+    el.style.transform = 'translateY(24px)'
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        el.style.transition = 'opacity .5s ease, transform .5s ease'
+        el.style.opacity = '1'
+        el.style.transform = 'translateY(0)'
+        observer.disconnect()
+      }
+    }, { threshold: 0.1 })
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <div
+      ref={ref}
+      className={`relative rounded-2xl flex flex-col transition-all duration-300 hover:-translate-y-1 ${
+        p.highlight
+          ? 'border-2 border-[#FF6A00] shadow-xl shadow-orange-500/10 bg-white scale-105 z-10'
+          : 'border border-gray-200 shadow-sm bg-white'
+      }`}
+    >
+      {p.badge && (
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+          <span className="bg-[#FF6A00] text-white text-xs font-bold px-4 py-1 rounded-full shadow-md whitespace-nowrap">
+            {p.badge}
+          </span>
+        </div>
+      )}
+
+      <div className="p-6 border-b border-gray-100">
+        <h3 className="font-bold text-[#041B4D] text-lg mb-0.5">{p.name}</h3>
+        <p className="text-xs text-gray-400 mb-4">{p.desc}</p>
+        <div className="flex items-end gap-1">
+          <span className="text-4xl font-extrabold text-[#041B4D]">{p.price}</span>
+          {p.unit && <span className="text-sm text-gray-400 mb-1">{p.unit}</span>}
+        </div>
+      </div>
+
+      <ul className="flex-1 p-6 space-y-2.5">
+        {p.features.map((f) => (
+          <li key={f.text} className="flex items-start gap-2.5 text-sm">
+            <span className={`mt-0.5 flex-shrink-0 font-bold ${f.ok ? 'text-green-500' : 'text-gray-300'}`}>
+              {f.ok ? '✓' : '✗'}
+            </span>
+            <span className={f.ok ? 'text-gray-700' : 'text-gray-350 line-through'}>{f.text}</span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="p-6 pt-0">
+        {p.id === 'free' ? (
+          <a
+            href="#generateur"
+            className="block w-full text-center py-2.5 rounded-xl font-semibold text-sm border-2 border-[#041B4D] text-[#041B4D] hover:bg-[#041B4D] hover:text-white transition-colors"
+          >
+            {p.cta}
+          </a>
+        ) : (
+          <button
+            onClick={() => onPay(p.id)}
+            disabled={loading === p.id}
+            className={`w-full py-2.5 rounded-xl font-bold text-sm transition-all duration-200 disabled:opacity-60 ${
+              p.highlight
+                ? 'text-white shadow-md hover:shadow-lg'
+                : 'border-2 border-[#041B4D] text-[#041B4D] hover:bg-[#041B4D] hover:text-white'
+            }`}
+            style={p.highlight ? { background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' } : {}}
+          >
+            {loading === p.id ? 'Redirection…' : p.cta}
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
 
 export default function Pricing() {
   const [loading, setLoading] = useState<string | null>(null)
@@ -53,76 +181,69 @@ export default function Pricing() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ plan: planId }),
     })
-
     if (res.status === 401) {
       router.push(`/connexion?redirect=/&plan=${planId}`)
+      setLoading(null)
       return
     }
-
     const data = await res.json()
     if (data.payment_url) {
       window.location.href = data.payment_url
     } else {
       alert('Erreur lors de l\'initiation du paiement. Réessayez.')
+      setLoading(null)
     }
-    setLoading(null)
   }
 
   return (
-    <section className="py-16 px-4">
+    <section id="pricing" className="py-20 px-4 bg-gray-50">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center text-[#041B4D] mb-2">Tarifs simples</h2>
-        <p className="text-center text-gray-500 mb-10">Sans engagement · Payez en Mobile Money · Pause possible</p>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-          {plans.map((p) => (
-            <div
-              key={p.name}
-              className={`rounded-2xl p-6 border-2 flex flex-col ${p.highlight ? 'border-[#FF6A00] shadow-lg' : 'border-gray-200'}`}
-            >
-              {p.highlight && (
-                <span className="text-xs font-bold text-white bg-[#FF6A00] px-3 py-1 rounded-full self-start mb-3">
-                  Populaire
-                </span>
-              )}
-              <h3 className="font-bold text-[#041B4D] text-lg">{p.name}</h3>
-              <div className="my-3">
-                <span className="text-3xl font-extrabold text-[#041B4D]">{p.price}</span>
-                {p.unit && <span className="text-sm text-gray-400 ml-1">{p.unit}</span>}
-              </div>
-              <ul className="space-y-2 text-sm text-gray-600 flex-1 mb-6">
-                {p.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2">
-                    <span className="text-green-500 mt-0.5">✓</span> {f}
-                  </li>
-                ))}
-              </ul>
+        <div className="text-center mb-14">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-[#041B4D] mb-3">
+            Tarifs simples et transparents
+          </h2>
+          <p className="text-gray-500 text-lg">
+            Sans engagement · Mobile Money · Résiliable à tout moment
+          </p>
+        </div>
 
-              {p.id === 'free' ? (
-                <a
-                  href="#generateur"
-                  className="text-center py-2 rounded-lg font-semibold text-sm border border-[#041B4D] text-[#041B4D] hover:bg-[#041B4D] hover:text-white transition-colors"
-                >
-                  {p.cta}
-                </a>
-              ) : (
-                <button
-                  onClick={() => handlePay(p.id)}
-                  disabled={loading === p.id}
-                  className={`py-2 rounded-lg font-semibold text-sm transition-colors disabled:opacity-60 ${
-                    p.highlight
-                      ? 'bg-[#FF6A00] text-white hover:bg-orange-600'
-                      : 'border border-[#041B4D] text-[#041B4D] hover:bg-[#041B4D] hover:text-white'
-                  }`}
-                >
-                  {loading === p.id ? 'Redirection…' : p.cta}
-                </button>
-              )}
-            </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-start">
+          {plans.map((p) => (
+            <PricingCard key={p.id} p={p} onPay={handlePay} loading={loading} />
           ))}
         </div>
-        <p className="text-center text-sm text-gray-400 mt-6">
-          Orange Money, Wave, MTN, Moov, carte bancaire via GeniusPay
-        </p>
+
+        {/* Payment methods */}
+        <div className="mt-10 text-center">
+          <p className="text-sm text-gray-400 mb-3 font-medium">Méthodes de paiement acceptées</p>
+          <div className="flex flex-wrap justify-center gap-3">
+            {['🟠 Orange Money', '🔵 Wave', '🟡 MTN Mobile Money', '🟢 Moov Money', '💳 Carte bancaire'].map((m) => (
+              <span key={m} className="text-xs bg-white border border-gray-200 px-3 py-1.5 rounded-full text-gray-600 font-medium shadow-sm">
+                {m}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        {/* FAQ mini */}
+        <div className="mt-10 max-w-2xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <h3 className="font-bold text-[#041B4D] mb-4 text-center">Questions fréquentes</h3>
+          <div className="space-y-3 text-sm">
+            {[
+              ['Puis-je annuler à tout moment ?', 'Oui, aucun engagement. Vous gérez votre abonnement depuis votre profil.'],
+              ['Les QR statiques expirent-ils ?', 'Non. Vos QR statiques fonctionnent pour toujours, même sans abonnement.'],
+              ['Que se passe-t-il si je descends de plan ?', 'Vos QR dynamiques passent en lecture seule. Vos données sont conservées 30 jours.'],
+            ].map(([q, a]) => (
+              <details key={q} className="group border border-gray-100 rounded-xl overflow-hidden">
+                <summary className="flex items-center justify-between px-4 py-3 cursor-pointer font-semibold text-[#041B4D] hover:bg-gray-50">
+                  {q}
+                  <span className="text-gray-400 group-open:rotate-180 transition-transform">▾</span>
+                </summary>
+                <p className="px-4 pb-3 text-gray-500">{a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
   )
