@@ -1,5 +1,7 @@
 'use client'
+import { useState, useRef } from 'react'
 import { QRType } from '@/lib/types'
+import { Upload, FileText, X } from 'lucide-react'
 
 interface Props {
   type: QRType
@@ -22,6 +24,79 @@ function Field({ label, name, type = 'text', placeholder, data, onChange, requir
         required={required}
         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]"
       />
+    </div>
+  )
+}
+
+function PDFForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState('')
+  const [dragging, setDragging] = useState(false)
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  async function uploadFile(file: File) {
+    if (!file || file.type !== 'application/pdf') { setError('Fichier PDF uniquement.'); return }
+    if (file.size > 10 * 1024 * 1024) { setError('Max 10 Mo.'); return }
+    setUploading(true); setError('')
+    const form = new FormData()
+    form.append('file', file)
+    const res = await fetch('/api/upload/pdf', { method: 'POST', body: form })
+    const json = await res.json()
+    if (json.url) {
+      onChange({ ...data, pdf_url: json.url, pdf_name: file.name })
+    } else {
+      setError(json.error || 'Erreur upload.')
+    }
+    setUploading(false)
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs text-gray-500">Le QR code ouvrira directement votre PDF sur mobile et desktop.</p>
+
+      {data.pdf_url ? (
+        <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+          <FileText size={20} className="text-green-600 shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-green-800 truncate">{data.pdf_name || 'PDF uploadé'}</p>
+            <p className="text-xs text-green-600 truncate">{data.pdf_url}</p>
+          </div>
+          <button onClick={() => onChange({ ...data, pdf_url: '', pdf_name: '' })} className="text-gray-400 hover:text-red-500">
+            <X size={16} />
+          </button>
+        </div>
+      ) : (
+        <div
+          onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
+          onDragLeave={() => setDragging(false)}
+          onDrop={(e) => { e.preventDefault(); setDragging(false); const f = e.dataTransfer.files[0]; if (f) uploadFile(f) }}
+          onClick={() => inputRef.current?.click()}
+          className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
+            dragging ? 'border-[#FF6A00] bg-orange-50' : 'border-gray-200 hover:border-[#FF6A00]/50'
+          }`}
+        >
+          <input ref={inputRef} type="file" accept="application/pdf" className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadFile(f) }} />
+          <Upload size={28} className="mx-auto mb-2 text-gray-400" />
+          {uploading ? (
+            <p className="text-sm text-[#FF6A00] font-semibold">Upload en cours…</p>
+          ) : (
+            <>
+              <p className="text-sm font-semibold text-gray-700">Glissez votre PDF ici</p>
+              <p className="text-xs text-gray-400 mt-1">ou cliquez pour choisir un fichier · Max 10 Mo</p>
+            </>
+          )}
+        </div>
+      )}
+
+      {error && <p className="text-xs text-red-500">{error}</p>}
+
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-1">Ou coller un lien PDF direct</label>
+        <input type="url" value={data.pdf_url || ''} placeholder="https://exemple.com/document.pdf"
+          onChange={(e) => onChange({ ...data, pdf_url: e.target.value })}
+          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      </div>
     </div>
   )
 }
@@ -94,6 +169,8 @@ export default function QRContentForm({ type, data, onChange }: Props) {
           />
         </div>
       </>
+    case 'pdf':
+      return <PDFForm data={data} onChange={onChange} />
     case 'social':
       return <Field label="Lien du profil" name="url" type="url" placeholder="https://facebook.com/votrepage" data={data} onChange={onChange} required />
     case 'location':

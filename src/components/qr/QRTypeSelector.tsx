@@ -10,6 +10,7 @@ const QR_TYPES: { type: QRType; label: string; icon: string }[] = [
   { type: 'email', label: 'E-mail', icon: '✉️' },
   { type: 'phone', label: 'Téléphone', icon: '📞' },
   { type: 'sms', label: 'SMS', icon: '💬' },
+  { type: 'pdf', label: 'PDF', icon: '📄' },
   { type: 'social', label: 'Réseaux sociaux', icon: '📱' },
   { type: 'location', label: 'Localisation', icon: '📍' },
 ]
