@@ -20,7 +20,7 @@ const DEFAULT_DESIGN: QRDesign = {
 }
 
 // Types toujours dynamiques (landing page dédiée)
-const ALWAYS_DYNAMIC = ['menu', 'coupon', 'biolink', 'vcard_plus', 'catalog', 'review', 'event'] as const
+const ALWAYS_DYNAMIC = ['menu', 'coupon', 'biolink', 'vcard_plus', 'catalog', 'review', 'event', 'lead'] as const
 // Types qui peuvent devenir dynamiques via toggle (suivi + URL modifiable)
 const SUPPORTS_DYNAMIC = ['url', 'whatsapp', 'social', 'pdf', 'email', 'phone', 'sms', 'location', 'event', 'vcard', 'vcard_plus', 'app'] as const
 
@@ -70,6 +70,7 @@ export default function QRGenerator() {
     if (type === 'catalog') return formData.catalog_json || ''
     if (type === 'review') return formData.review_json || ''
     if (type === 'event') return formData.event_json || ''
+    if (type === 'lead') return formData.lead_json || ''
     return buildQRContent(type, formData)
   }
 
@@ -82,6 +83,7 @@ export default function QRGenerator() {
       if (type === 'catalog') return JSON.parse(formData.catalog_json || '{}').store || 'Catalogue'
       if (type === 'review')  return JSON.parse(formData.review_json  || '{}').business || 'Avis clients'
       if (type === 'event')   return JSON.parse(formData.event_json   || '{}').name || 'Événement'
+      if (type === 'lead')    return JSON.parse(formData.lead_json    || '{}').title || 'Formulaire'
     } catch {}
     return formData.url || formData.text || formData.nom || `QR ${type}`
   }
@@ -120,7 +122,7 @@ export default function QRGenerator() {
       }
       const origin = window.location.origin
       if (isAlwaysDynamic) {
-        const pathMap: Record<string, string> = { menu: 'menu', coupon: 'coupon', biolink: 'bio', vcard_plus: 'vcard', catalog: 'catalog', review: 'review', event: 'event' }
+        const pathMap: Record<string, string> = { menu: 'menu', coupon: 'coupon', biolink: 'bio', vcard_plus: 'vcard', catalog: 'catalog', review: 'review', event: 'event', lead: 'form' }
         setSavedUrl(`${origin}/${pathMap[type]}/${data.qr.id}`)
       } else {
         // URL-based dynamic: use /r/slug redirect for tracking

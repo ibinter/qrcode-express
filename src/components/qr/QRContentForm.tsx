@@ -387,6 +387,8 @@ export default function QRContentForm({ type, data, onChange }: Props) {
       </>
     case 'event':
       return <EventForm data={data} onChange={onChange} />
+    case 'lead':
+      return <LeadForm data={data} onChange={onChange} />
     case 'vcard_plus': {
       const vp = data.vcard_json ? JSON.parse(data.vcard_json) : {}
       function updateVP(patch: object) {
@@ -641,6 +643,108 @@ function EventForm({ data, onChange }: { data: Record<string, unknown>; onChange
       <input value={(parsed.logo as string) || ''} onChange={(e) => update({ logo: e.target.value })}
         placeholder="URL logo/bannière (optionnel)"
         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
+    </div>
+  )
+}
+
+type LeadField = { id: string; type: 'text' | 'email' | 'tel' | 'textarea' | 'select'; label: string; required: boolean; options?: string }
+
+function LeadForm({ data, onChange }: { data: Record<string, unknown>; onChange: (d: Record<string, unknown>) => void }) {
+  const raw = typeof data.lead_json === 'string' ? data.lead_json : ''
+  let parsed: Record<string, unknown> = {}
+  try { parsed = raw ? JSON.parse(raw) : {} } catch {}
+
+  const fields: LeadField[] = Array.isArray(parsed.fields) ? parsed.fields as LeadField[] : []
+
+  function update(patch: Record<string, unknown>) {
+    onChange({ ...data, lead_json: JSON.stringify({ ...parsed, ...patch }) })
+  }
+
+  function addField() {
+    const newField: LeadField = { id: Date.now().toString(), type: 'text', label: '', required: false }
+    update({ fields: [...fields, newField] })
+  }
+
+  function removeField(id: string) {
+    update({ fields: fields.filter((f) => f.id !== id) })
+  }
+
+  function updateField(id: string, patch: Partial<LeadField>) {
+    update({ fields: fields.map((f) => f.id === id ? { ...f, ...patch } : f) })
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs text-gray-500 bg-purple-50 rounded-lg p-3 leading-relaxed">
+        📋 <strong>Formulaire prospects</strong> : collectez des contacts via QR code. Chaque soumission est enregistrée dans votre tableau de bord.
+      </p>
+      <input value={(parsed.title as string) || ''} onChange={(e) => update({ title: e.target.value })}
+        placeholder="Titre du formulaire *" required
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/40" />
+      <textarea value={(parsed.description as string) || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description / accroche" rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/40 resize-none" />
+
+      {/* Fields builder */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-semibold text-gray-600">Champs du formulaire</p>
+          <button type="button" onClick={addField}
+            className="text-xs px-2.5 py-1 rounded-lg bg-purple-100 text-purple-700 font-semibold hover:bg-purple-200 transition-colors">
+            + Ajouter un champ
+          </button>
+        </div>
+        {fields.length === 0 && (
+          <p className="text-xs text-gray-400 text-center py-3">Aucun champ. Cliquez sur &quot;+ Ajouter&quot;.</p>
+        )}
+        {fields.map((field) => (
+          <div key={field.id} className="bg-gray-50 rounded-lg p-3 space-y-2">
+            <div className="flex items-center gap-2">
+              <input value={field.label} onChange={(e) => updateField(field.id, { label: e.target.value })}
+                placeholder="Libellé du champ"
+                className="flex-1 border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-purple-300" />
+              <select value={field.type} onChange={(e) => updateField(field.id, { type: e.target.value as LeadField['type'] })}
+                className="border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none">
+                <option value="text">Texte</option>
+                <option value="email">E-mail</option>
+                <option value="tel">Téléphone</option>
+                <option value="textarea">Paragraphe</option>
+                <option value="select">Liste</option>
+              </select>
+              <button type="button" onClick={() => removeField(field.id)}
+                className="text-red-400 hover:text-red-600 text-sm px-1">✕</button>
+            </div>
+            {field.type === 'select' && (
+              <input value={field.options || ''} onChange={(e) => updateField(field.id, { options: e.target.value })}
+                placeholder="Options séparées par des virgules (ex: Option A, Option B)"
+                className="w-full border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-purple-300" />
+            )}
+            <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+              <input type="checkbox" checked={field.required} onChange={(e) => updateField(field.id, { required: e.target.checked })}
+                className="rounded" />
+              Champ obligatoire
+            </label>
+          </div>
+        ))}
+      </div>
+
+      <input value={(parsed.success_message as string) || ''} onChange={(e) => update({ success_message: e.target.value })}
+        placeholder="Message de confirmation (ex: Merci ! Nous vous recontacterons.)"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/40" />
+      <input type="url" value={(parsed.redirect_url as string) || ''} onChange={(e) => update({ redirect_url: e.target.value })}
+        placeholder="URL de redirection après envoi (optionnel)"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/40" />
+      <input value={(parsed.whatsapp as string) || ''} onChange={(e) => update({ whatsapp: e.target.value })}
+        placeholder="WhatsApp pour recevoir les soumissions (ex: +22507...)"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/40" />
+      <div className="flex items-center gap-3">
+        <label className="text-xs text-gray-500 whitespace-nowrap">Couleur accent</label>
+        <input type="color" value={(parsed.color as string) || '#7C3AED'} onChange={(e) => update({ color: e.target.value })}
+          className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
+      </div>
+      <input value={(parsed.logo as string) || ''} onChange={(e) => update({ logo: e.target.value })}
+        placeholder="URL logo (optionnel)"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/40" />
     </div>
   )
 }

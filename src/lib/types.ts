@@ -18,6 +18,7 @@ export type QRType =
   | 'coupon'
   | 'catalog'
   | 'review'
+  | 'lead'
 
 export type QRMode = 'static' | 'dynamic'
 
