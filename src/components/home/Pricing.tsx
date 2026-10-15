@@ -271,6 +271,42 @@ export default function Pricing() {
           )
         })()}
 
+        {/* À la carte — sans compte */}
+        <div className="mt-8 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+          <div className="px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xl">⚡</span>
+                <h3 className="font-extrabold text-[#041B4D] text-lg">Formule Libre — Sans compte</h3>
+                <span className="text-[10px] font-bold bg-[#FF6A00]/10 text-[#FF6A00] border border-[#FF6A00]/20 px-2 py-0.5 rounded-full">À LA CARTE</span>
+              </div>
+              <p className="text-sm text-gray-500">Payez uniquement ce dont vous avez besoin, une seule fois. Aucun abonnement, aucun compte requis.</p>
+            </div>
+            <a href="#generateur"
+              className="flex-shrink-0 px-5 py-2.5 rounded-xl font-bold text-sm text-white hover:opacity-90 transition-opacity"
+              style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}>
+              Créer un QR →
+            </a>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
+            {[
+              { icon: '🖼️', label: 'PNG standard', price: '0 FCFA', sub: 'toujours gratuit' },
+              { icon: '🎨', label: 'PNG HD + logo', price: '500 FCFA', sub: 'par téléchargement' },
+              { icon: '✏️', label: 'SVG vectoriel', price: '500 FCFA', sub: 'par téléchargement' },
+              { icon: '📄', label: 'PDF imprimable', price: '500 FCFA', sub: 'par téléchargement' },
+              { icon: '🖼️', label: 'Cadre premium', price: '500 FCFA', sub: 'par QR généré' },
+              { icon: '🔄', label: 'QR dynamique', price: '1 000 FCFA', sub: 'valable 30 jours' },
+            ].map((item) => (
+              <div key={item.label} className="flex flex-col items-center text-center px-4 py-5 hover:bg-gray-50 transition-colors">
+                <span className="text-2xl mb-2">{item.icon}</span>
+                <p className="text-xs font-bold text-[#041B4D] mb-1 leading-tight">{item.label}</p>
+                <p className="text-base font-extrabold text-[#FF6A00]">{item.price}</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">{item.sub}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Payment methods */}
         <div className="mt-10 text-center">
           <p className="text-sm text-gray-400 mb-3 font-medium">Méthodes de paiement acceptées</p>
@@ -288,8 +324,9 @@ export default function Pricing() {
           <h3 className="font-bold text-[#041B4D] mb-4 text-center">Questions fréquentes</h3>
           <div className="space-y-3 text-sm">
             {[
-              ['Puis-je annuler à tout moment ?', 'Oui, aucun engagement. Vous gérez votre abonnement depuis votre profil.'],
-              ['Les QR statiques expirent-ils ?', 'Non. Vos QR statiques fonctionnent pour toujours, même sans abonnement.'],
+              ['Puis-je utiliser la plateforme sans créer un compte ?', 'Oui ! Avec la Formule Libre, vous payez chaque service à l\'unité (SVG, PDF, logo, QR dynamique) sans inscription.'],
+              ['Puis-je annuler mon abonnement à tout moment ?', 'Oui, aucun engagement. Vous gérez votre abonnement depuis votre profil, aucun frais caché.'],
+              ['Les QR statiques expirent-ils ?', 'Non. Vos QR statiques fonctionnent pour toujours, même sans abonnement ni compte.'],
               ['Que se passe-t-il si je descends de plan ?', 'Vos QR dynamiques passent en lecture seule. Vos données sont conservées 30 jours.'],
             ].map(([q, a]) => (
               <details key={q} className="group border border-gray-100 rounded-xl overflow-hidden">
