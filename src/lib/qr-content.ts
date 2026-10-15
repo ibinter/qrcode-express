@@ -44,8 +44,10 @@ export function buildQRContent(type: QRType, data: Record<string, string>): stri
       const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'
       return data.catalog_json ? `${origin}/catalog/__ID__` : ''
     }
-    case 'review':
-      return data.url || ''
+    case 'review': {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'
+      return data.review_json ? `${origin}/review/__ID__` : ''
+    }
     default:
       return data.url || data.text || ''
   }

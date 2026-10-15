@@ -435,14 +435,7 @@ export default function QRContentForm({ type, data, onChange }: Props) {
     case 'catalog':
       return <CatalogForm data={data} onChange={onChange} />
     case 'review':
-      return (
-        <div className="space-y-3">
-          <p className="text-xs text-gray-500">Redirigez vos clients vers votre page d&apos;avis en un scan.</p>
-          <Field label="Nom de l'établissement" name="nom" placeholder="Restaurant Le Palmier" data={data} onChange={onChange} required />
-          <Field label="URL Google Maps / Trustpilot / Facebook" name="url" type="url" placeholder="https://g.page/r/..." data={data} onChange={onChange} required />
-          <Field label="Message d'invitation (optionnel)" name="message" placeholder="Laissez-nous un avis en 30 secondes !" data={data} onChange={onChange} />
-        </div>
-      )
+      return <ReviewForm data={data} onChange={onChange} />
     default:
       return <Field label="URL / Contenu" name="url" placeholder="https://" data={data} onChange={onChange} />
   }
@@ -548,6 +541,50 @@ function CatalogForm({ data, onChange }: { data: Record<string, string>; onChang
           + Ajouter une catégorie
         </button>
       </div>
+    </div>
+  )
+}
+
+function ReviewForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const parsed = data.review_json ? JSON.parse(data.review_json) : {
+    business: '', logo: '', color: '#FF6A00', message: 'Votre avis compte beaucoup pour nous !',
+    positive_url: '', threshold: 4, whatsapp: '',
+  }
+
+  function update(patch: object) {
+    onChange({ ...data, review_json: JSON.stringify({ ...parsed, ...patch }) })
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs text-gray-500">
+        ⭐ <strong>Review gating</strong> : les clients satisfaits (≥ seuil) sont envoyés vers Google/Trustpilot. Les insatisfaits reçoivent un formulaire privé.
+      </p>
+      <input value={parsed.business} onChange={(e) => update({ business: e.target.value })}
+        placeholder="Nom de l'établissement *" required
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      <input value={parsed.message} onChange={(e) => update({ message: e.target.value })}
+        placeholder="Message d'invitation (ex: Laissez-nous un avis !)"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      <input type="url" value={parsed.positive_url} onChange={(e) => update({ positive_url: e.target.value })}
+        placeholder="URL Google Maps / Trustpilot / Facebook *" required
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      <input value={parsed.whatsapp} onChange={(e) => update({ whatsapp: e.target.value })}
+        placeholder="WhatsApp pour recevoir les avis négatifs (ex: +22507...)"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      <div className="flex items-center gap-3">
+        <label className="text-xs text-gray-500 whitespace-nowrap">Seuil positif ≥</label>
+        <select value={parsed.threshold} onChange={(e) => update({ threshold: Number(e.target.value) })}
+          className="border border-gray-200 rounded-lg px-2 py-1.5 text-sm focus:outline-none">
+          {[3,4,5].map((n) => <option key={n} value={n}>{n} étoiles</option>)}
+        </select>
+        <label className="text-xs text-gray-500 ml-2 whitespace-nowrap">Couleur</label>
+        <input type="color" value={parsed.color || '#FF6A00'} onChange={(e) => update({ color: e.target.value })}
+          className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
+      </div>
+      <input value={parsed.logo || ''} onChange={(e) => update({ logo: e.target.value })}
+        placeholder="URL logo (optionnel)"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
     </div>
   )
 }
