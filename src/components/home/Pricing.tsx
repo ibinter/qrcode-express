@@ -12,7 +12,7 @@ const plans = [
     highlight: false,
     desc: 'Pour découvrir la plateforme',
     features: [
-      { text: '3 QR statiques max', ok: true },
+      { text: '10 QR statiques', ok: true },
       { text: 'PNG uniquement', ok: true },
       { text: 'Couleurs de base', ok: true },
       { text: 'Sans inscription', ok: true },
@@ -83,6 +83,27 @@ const plans = [
       { text: 'Support prioritaire WhatsApp', ok: true },
     ],
     cta: 'Choisir Business',
+  },
+  {
+    id: 'enterprise',
+    name: 'Entreprise',
+    price: 'Sur mesure',
+    unit: '',
+    badge: '🏢 Illimité',
+    highlight: false,
+    desc: 'Pour les grandes structures',
+    features: [
+      { text: 'QR codes illimités', ok: true },
+      { text: 'QR dynamiques illimités', ok: true },
+      { text: 'Tous les types de QR', ok: true },
+      { text: 'Collaborateurs illimités', ok: true },
+      { text: 'Génération en lot illimitée', ok: true },
+      { text: 'API REST illimitée', ok: true },
+      { text: 'White label (votre marque)', ok: true },
+      { text: 'SLA + Support dédié', ok: true },
+    ],
+    cta: 'Nous contacter',
+    href: 'https://wa.me/2250778551234?text=Bonjour%2C%20je%20souhaite%20un%20devis%20Entreprise%20pour%20QR%20CODE%20EXPRESS',
   },
 ]
 
@@ -207,11 +228,48 @@ export default function Pricing() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-start">
-          {plans.map((p) => (
+        {/* 4 plans principaux */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 items-start mb-6">
+          {plans.filter(p => p.id !== 'enterprise').map((p) => (
             <PricingCard key={p.id} p={p} onPay={handlePay} loading={loading} />
           ))}
         </div>
+
+        {/* Plan Entreprise — bannière pleine largeur */}
+        {(() => {
+          const ent = plans.find(p => p.id === 'enterprise')!
+          return (
+            <div className="rounded-2xl overflow-hidden border-2 border-[#041B4D] shadow-lg mb-8"
+              style={{ background: 'linear-gradient(135deg, #041B4D 0%, #0d2d6e 60%, #1a1a2e 100%)' }}>
+              <div className="flex flex-col md:flex-row items-center gap-6 p-7">
+                <div className="flex-1 text-white">
+                  <div className="flex items-center gap-3 mb-3">
+                    <span className="text-3xl">🏢</span>
+                    <div>
+                      <h3 className="font-extrabold text-2xl">{ent.name}</h3>
+                      <p className="text-blue-300 text-sm">{ent.desc}</p>
+                    </div>
+                  </div>
+                  <p className="text-blue-200 text-sm mb-4">
+                    Solution sur mesure pour grandes structures, administrations et agences — volumes importants, intégration API, white label.
+                  </p>
+                  <a href={ent.href} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white text-sm shadow-lg hover:scale-105 transition-transform"
+                    style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}>
+                    💬 Nous contacter sur WhatsApp →
+                  </a>
+                </div>
+                <div className="grid grid-cols-2 gap-2 flex-shrink-0 w-full md:w-auto">
+                  {ent.features.map(f => (
+                    <div key={f.text} className="flex items-center gap-2 text-sm text-white/90 bg-white/5 rounded-xl px-3 py-2 border border-white/10">
+                      <span className="text-green-400 font-bold">✓</span> {f.text}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )
+        })()}
 
         {/* Payment methods */}
         <div className="mt-10 text-center">
