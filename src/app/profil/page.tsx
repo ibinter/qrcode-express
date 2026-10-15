@@ -14,7 +14,7 @@ export default async function ProfilPage() {
 
   const [{ data: qrs }, { data: subscription }] = await Promise.all([
     admin.from('qr_codes').select('id, scan_count, mode').eq('user_id', user.id).neq('status', 'archived'),
-    admin.from('subscriptions').select('plan, status, current_period_end').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).single(),
+    admin.from('subscriptions').select('plan, status, period_end').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1).single(),
   ])
 
   const totalScans = qrs?.reduce((s, q) => s + (q.scan_count || 0), 0) ?? 0
@@ -75,11 +75,11 @@ export default async function ProfilPage() {
                   {subscription.status === 'active' ? 'Actif' : subscription.status}
                 </span>
               </div>
-              {subscription.current_period_end && (
+              {subscription.period_end && (
                 <div className="flex justify-between">
                   <span className="text-gray-500">Renouvellement</span>
                   <span className="font-semibold text-[#041B4D]">
-                    {new Date(subscription.current_period_end).toLocaleDateString('fr-FR')}
+                    {new Date(subscription.period_end).toLocaleDateString('fr-FR')}
                   </span>
                 </div>
               )}

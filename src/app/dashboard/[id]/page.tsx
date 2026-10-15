@@ -2,12 +2,13 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
+import RoutingRulesManager from '@/components/dashboard/RoutingRulesManager'
 
 export const instant = false
 
 const TYPE_LABELS: Record<string, string> = {
-  url: 'URL', whatsapp: 'WhatsApp', vcard: 'Contact', wifi: 'Wi-Fi', text: 'Texte',
-  email: 'E-mail', phone: 'Téléphone', sms: 'SMS', pdf: 'PDF', app: 'App Store',
+  url: 'URL', whatsapp: 'WhatsApp', vcard: 'Contact', vcard_plus: 'Carte Pro', wifi: 'Wi-Fi', text: 'Texte',
+  email: 'E-mail', phone: 'Téléphone', sms: 'SMS', pdf: 'PDF', app: 'App Store', event: 'Événement',
   menu: 'Menu', coupon: 'Coupon', biolink: 'Bio Links', social: 'Réseaux', location: 'Localisation',
 }
 
@@ -90,6 +91,16 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
   })
   const topCountries = Object.entries(countryMap).sort((a, b) => b[1] - a[1]).slice(0, 5)
 
+  // Destination history (for dynamic QRs)
+  const { data: destinations } = qr.mode === 'dynamic'
+    ? await admin.from('qr_destinations').select('destination, is_active, set_at').eq('qr_id', id).order('set_at', { ascending: false }).limit(10)
+    : { data: null }
+
+  // Routing rules
+  const { data: routingRules } = qr.mode === 'dynamic'
+    ? await admin.from('routing_rules').select('*').eq('qr_id', id).order('priority', { ascending: false })
+    : { data: null }
+
   return (
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
@@ -128,7 +139,7 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
         </div>
 
         {/* Countries + Device */}
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-2 gap-4 mb-5">
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <h2 className="text-sm font-bold text-[#041B4D] mb-3">Appareils</h2>
             {[{ k: 'mobile', label: '📱 Mobile' }, { k: 'desktop', label: '💻 Desktop' }, { k: 'tablet', label: '📟 Tablette' }].map(({ k, label }) => {
@@ -168,6 +179,29 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
             })}
           </div>
         </div>
+
+        {/* Destination history — dynamic QRs only */}
+        {destinations && destinations.length > 0 && (
+          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-5">
+            <h2 className="text-sm font-bold text-[#041B4D] mb-3">Historique des destinations</h2>
+            <div className="space-y-2">
+              {destinations.map((d, i) => (
+                <div key={i} className="flex items-center gap-3 text-xs">
+                  <span className={`px-2 py-0.5 rounded-full font-semibold shrink-0 ${d.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
+                    {d.is_active ? '● Actuel' : 'Ancien'}
+                  </span>
+                  <span className="flex-1 truncate font-mono text-gray-700">{d.destination}</span>
+                  <span className="text-gray-400 shrink-0">{new Date(d.set_at).toLocaleDateString('fr-FR')}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Smart Routing — dynamic QRs only */}
+        {qr.mode === 'dynamic' && (
+          <RoutingRulesManager qrId={id} initialRules={routingRules || []} />
+        )}
       </div>
     </main>
   )

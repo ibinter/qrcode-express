@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   const admin = createAdminClient()
   const { error: txError } = await admin.from('transactions').insert({
     user_id: user.id,
-    type: 'subscription',
+    type: 'debit',
     amount: planConfig.amount,
     currency: 'XOF',
     description: planConfig.label,

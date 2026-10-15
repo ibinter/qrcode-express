@@ -2,7 +2,7 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
 
-interface QRRow { id: string; name: string; type: string; content: string }
+interface QRRow { id: string; name: string; type: string; mode: string; content: string; slug?: string }
 
 interface Props {
   qr: QRRow
@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function EditQRModal({ qr, onClose, onSaved }: Props) {
-  const isDynamic = ['menu', 'coupon', 'biolink'].includes(qr.type)
+  const isDynamic = ['menu', 'coupon', 'biolink', 'vcard_plus'].includes(qr.type)
   const [name, setName] = useState(qr.name)
   const [content, setContent] = useState(qr.content)
   const [saving, setSaving] = useState(false)

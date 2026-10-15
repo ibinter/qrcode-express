@@ -385,6 +385,53 @@ export default function QRContentForm({ type, data, onChange }: Props) {
         <Field label="Latitude" name="lat" placeholder="5.3484" data={data} onChange={onChange} required />
         <Field label="Longitude" name="lng" placeholder="-4.0167" data={data} onChange={onChange} required />
       </>
+    case 'event':
+      return <>
+        <Field label="Titre de l'événement" name="title" placeholder="Conférence IBIG 2025" data={data} onChange={onChange} required />
+        <Field label="Début" name="start" type="datetime-local" data={data} onChange={onChange} required />
+        <Field label="Fin" name="end" type="datetime-local" data={data} onChange={onChange} />
+        <Field label="Lieu" name="location" placeholder="Cocody, Abidjan" data={data} onChange={onChange} />
+        <div className="mb-4">
+          <label className="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+          <textarea value={data.description || ''} onChange={(e) => onChange({ ...data, description: e.target.value })}
+            placeholder="Détails de l'événement…" rows={3}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+        </div>
+      </>
+    case 'vcard_plus': {
+      const vp = data.vcard_json ? JSON.parse(data.vcard_json) : {}
+      function updateVP(patch: object) {
+        onChange({ ...data, vcard_json: JSON.stringify({ ...vp, ...patch }) })
+      }
+      return (
+        <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+          <p className="text-xs text-gray-500">Carte de visite digitale avec photo et liens sociaux</p>
+          <input value={vp.name || ''} onChange={(e) => updateVP({ name: e.target.value })}
+            placeholder="Nom complet" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+          <input value={vp.title || ''} onChange={(e) => updateVP({ title: e.target.value })}
+            placeholder="Poste / Titre (ex: Directeur Commercial)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+          <input value={vp.company || ''} onChange={(e) => updateVP({ company: e.target.value })}
+            placeholder="Entreprise" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+          <input value={vp.phone || ''} onChange={(e) => updateVP({ phone: e.target.value })}
+            placeholder="Téléphone" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+          <input value={vp.email || ''} onChange={(e) => updateVP({ email: e.target.value })}
+            placeholder="E-mail" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+          <input value={vp.website || ''} onChange={(e) => updateVP({ website: e.target.value })}
+            placeholder="Site web" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+          <input value={vp.photo || ''} onChange={(e) => updateVP({ photo: e.target.value })}
+            placeholder="URL photo de profil (optionnel)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+          <input value={vp.whatsapp || ''} onChange={(e) => updateVP({ whatsapp: e.target.value })}
+            placeholder="WhatsApp (ex: +22507000000)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+          <input value={vp.linkedin || ''} onChange={(e) => updateVP({ linkedin: e.target.value })}
+            placeholder="LinkedIn URL" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+          <div className="flex items-center gap-2">
+            <label className="text-xs text-gray-500">Couleur accent</label>
+            <input type="color" value={vp.color || '#041B4D'} onChange={(e) => updateVP({ color: e.target.value })}
+              className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
+          </div>
+        </div>
+      )
+    }
     default:
       return <Field label="URL / Contenu" name="url" placeholder="https://" data={data} onChange={onChange} />
   }

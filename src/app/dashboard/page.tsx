@@ -6,8 +6,8 @@ import QRDashboardCards from '@/components/dashboard/QRDashboardCards'
 export const instant = false
 
 const TYPE_ICONS: Record<string, string> = {
-  url: '🔗', whatsapp: '💬', vcard: '👤', wifi: '📶', text: '📝',
-  email: '✉️', phone: '📞', sms: '💬', pdf: '📄', app: '📲',
+  url: '🔗', whatsapp: '💬', vcard: '👤', vcard_plus: '🪪', wifi: '📶', text: '📝',
+  email: '✉️', phone: '📞', sms: '💬', pdf: '📄', app: '📲', event: '📅',
   menu: '🍽️', coupon: '🎫', biolink: '🔗', social: '📱', location: '📍',
 }
 

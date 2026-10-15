@@ -11,6 +11,7 @@ interface QRRow {
   type: string
   mode: string
   content: string
+  slug?: string
   scan_count: number
   status: string
   created_at: string
@@ -22,11 +23,15 @@ interface Props {
   typeIcons: Record<string, string>
 }
 
-const DYNAMIC_PATHS: Record<string, string> = { menu: 'menu', coupon: 'coupon', biolink: 'bio' }
+const DYNAMIC_PATHS: Record<string, string> = { menu: 'menu', coupon: 'coupon', biolink: 'bio', vcard_plus: 'vcard' }
 
 function getPublicUrl(qr: QRRow): string {
   if (qr.mode === 'dynamic' && DYNAMIC_PATHS[qr.type]) {
     return `${window.location.origin}/${DYNAMIC_PATHS[qr.type]}/${qr.id}`
+  }
+  // Slug-based dynamic QRs (url, whatsapp, etc. with dynamic mode)
+  if (qr.mode === 'dynamic' && qr.slug) {
+    return `${window.location.origin}/r/${qr.slug}`
   }
   if (qr.type === 'app') return `${window.location.origin}/app/${qr.id}`
   return qr.content
@@ -74,9 +79,12 @@ export default function QRDashboardCards({ qrs, typeIcons }: Props) {
           <div key={qr.id} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex flex-col gap-3">
             {/* Top row */}
             <div className="flex items-start gap-3">
-              <QRCodeMini content={qr.mode === 'dynamic' && DYNAMIC_PATHS[qr.type]
-                ? `${typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'}/${DYNAMIC_PATHS[qr.type]}/${qr.id}`
-                : qr.content}
+              <QRCodeMini content={
+                qr.mode === 'dynamic' && DYNAMIC_PATHS[qr.type]
+                  ? `${typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'}/${DYNAMIC_PATHS[qr.type]}/${qr.id}`
+                  : qr.mode === 'dynamic' && qr.slug
+                  ? `${typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'}/r/${qr.slug}`
+                  : qr.content}
                 color={qr.design?.fgColor || '#041B4D'}
               />
               <div className="flex-1 min-w-0">

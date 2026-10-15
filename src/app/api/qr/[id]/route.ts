@@ -31,6 +31,8 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (content) patch.content = content
   if (name) patch.name = name
 
+  const { data: existing } = await supabase.from('qr_codes').select('mode, content').eq('id', id).eq('user_id', user.id).single()
+
   const { error } = await supabase
     .from('qr_codes')
     .update(patch)
@@ -38,5 +40,12 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     .eq('user_id', user.id)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Track destination change for dynamic QRs
+  if (content && existing?.mode === 'dynamic' && existing.content !== content) {
+    await supabase.from('qr_destinations').update({ is_active: false }).eq('qr_id', id)
+    await supabase.from('qr_destinations').insert({ qr_id: id, destination: content, is_active: true, set_by: user.id })
+  }
+
   return NextResponse.json({ ok: true })
 }
