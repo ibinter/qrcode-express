@@ -15,6 +15,7 @@ export type QRType =
   | 'biolink'
   | 'app'
   | 'menu'
+  | 'coupon'
   | 'catalog'
   | 'review'
 
