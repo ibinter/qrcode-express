@@ -3,8 +3,6 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import QRDashboardCards from '@/components/dashboard/QRDashboardCards'
 
-export const dynamic = 'force-dynamic'
-
 const TYPE_ICONS: Record<string, string> = {
   url: '🔗', whatsapp: '💬', vcard: '👤', wifi: '📶', text: '📝',
   email: '✉️', phone: '📞', sms: '💬', pdf: '📄', app: '📲',

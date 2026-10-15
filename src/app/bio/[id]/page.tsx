@@ -1,8 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { notFound } from 'next/navigation'
 
-export const dynamic = 'force-dynamic'
-
 const SOCIAL_ICONS: Record<string, string> = {
   instagram: '📷', tiktok: '🎵', facebook: '👤', twitter: '🐦', x: '🐦',
   linkedin: '💼', youtube: '▶️', whatsapp: '💬', website: '🌐',

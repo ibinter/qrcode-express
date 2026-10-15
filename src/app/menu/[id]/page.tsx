@@ -1,7 +1,6 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { notFound } from 'next/navigation'
 
-export const dynamic = 'force-dynamic'
 
 interface MenuItem { name: string; price: string; description?: string }
 interface MenuCategory { category: string; items: MenuItem[] }
