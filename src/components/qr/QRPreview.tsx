@@ -228,6 +228,18 @@ export default function QRPreview({ content, design }: Props) {
     return () => clearTimeout(timer)
   }, [hasFrame, design, content, w, h, qrX, qrY, frameStyle, frameColor, frameLabel])
 
+  const downloadPDF = () => {
+    const src = hasFrame && canvasRef.current
+      ? canvasRef.current.toDataURL('image/png')
+      : qrNodeRef.current?.querySelector('canvas') instanceof HTMLCanvasElement
+        ? (qrNodeRef.current.querySelector('canvas') as HTMLCanvasElement).toDataURL('image/png')
+        : null
+    if (!src) return
+    const win = window.open('', '_blank')!
+    win.document.write(`<html><head><title>QR Code Express</title><style>body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;}img{max-width:400px;}</style></head><body><img src="${src}" onload="window.print();window.close()"/></body></html>`)
+    win.document.close()
+  }
+
   const download = async () => {
     if (hasFrame && canvasRef.current) {
       const url = canvasRef.current.toDataURL('image/png')
@@ -264,16 +276,23 @@ export default function QRPreview({ content, design }: Props) {
         )}
       </div>
 
-      <button onClick={download} disabled={!content || loading}
-        className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-40"
-        style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}>
-        <Download size={16} />
-        Télécharger PNG (gratuit)
-      </button>
-
-      <p className="text-xs text-gray-400 text-center">
-        PNG HD, SVG, PDF disponibles dès 500 FCFA
-      </p>
+      <div className="flex gap-2 w-full justify-center">
+        <button onClick={download} disabled={!content || loading}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-40"
+          style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}>
+          <Download size={16} />
+          PNG
+        </button>
+        <button onClick={() => qrInstance?.download({ name: 'qrcode-express', extension: 'svg' })}
+          disabled={!qrInstance || loading}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40 transition-colors">
+          SVG
+        </button>
+        <button onClick={downloadPDF} disabled={!content || loading}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl font-semibold text-sm border border-gray-200 text-gray-700 hover:bg-gray-50 disabled:opacity-40 transition-colors">
+          PDF
+        </button>
+      </div>
     </div>
   )
 }
