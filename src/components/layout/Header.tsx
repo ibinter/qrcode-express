@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { Menu, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import Logo from '@/components/ui/Logo'
 
 export default function Header() {
   const [open, setOpen] = useState(false)
@@ -26,11 +27,7 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl font-bold" style={{ color: '#041B4D' }}>
-            QR <span style={{ color: '#FF6A00' }}>CODE</span> EXPRESS
-          </span>
-        </Link>
+        <Logo size="sm" />
 
         {/* Nav desktop */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">

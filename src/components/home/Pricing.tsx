@@ -8,6 +8,7 @@ type Plan = {
   name: string
   price: string
   unit: string
+  equiv?: string
   badge: string | null
   highlight: boolean
   desc: string
@@ -93,6 +94,7 @@ const plans: Plan[] = [
     name: 'Essentiel',
     price: '1 500',
     unit: 'FCFA / mois',
+    equiv: '≈ 2,29 € · 2,42 $',
     badge: null,
     highlight: false,
     color: '#3b82f6',
@@ -162,6 +164,7 @@ const plans: Plan[] = [
     name: 'Pro',
     price: '3 500',
     unit: 'FCFA / mois',
+    equiv: '≈ 5,34 € · 5,65 $',
     badge: '⭐ Populaire',
     highlight: true,
     color: '#FF6A00',
@@ -238,6 +241,7 @@ const plans: Plan[] = [
     name: 'Business',
     price: '8 000',
     unit: 'FCFA / mois',
+    equiv: '≈ 12,20 € · 12,90 $',
     badge: null,
     highlight: false,
     color: '#041B4D',
@@ -363,6 +367,7 @@ function PricingCard({ p, onPay, loading }: { p: Plan; onPay: (id: string) => vo
           <span className="text-4xl font-extrabold text-[#041B4D]">{p.price}</span>
           {p.unit && <span className="text-sm text-gray-400 mb-1">{p.unit}</span>}
         </div>
+        {p.equiv && <p className="text-xs text-gray-400 mt-1">{p.equiv}</p>}
       </div>
 
       {/* Compact features (always visible) */}
@@ -639,6 +644,7 @@ export default function Pricing() {
           <h3 className="font-bold text-[#041B4D] mb-4 text-center">Questions fréquentes</h3>
           <div className="space-y-3 text-sm">
             {[
+              ['Quelle est la différence entre un QR statique et un QR dynamique ?', 'Un QR statique encode les données directement : il ne peut plus être modifié après création. Un QR dynamique pointe vers une URL de redirection modifiable à tout moment — sans réimprimer le QR. Idéal pour un menu restaurant, une promo ou une fiche produit.'],
               ['Puis-je utiliser la plateforme sans créer un compte ?', 'Oui ! Avec la Formule Libre, vous payez chaque service à l\'unité (SVG, PDF, logo, QR dynamique) sans inscription.'],
               ['La billetterie est-elle disponible sur le plan gratuit ?', 'Non. La billetterie QR (inscription + billet unique par participant) est disponible à partir du plan Pro à 3 500 FCFA/mois.'],
               ['Comment fonctionne le paiement Mobile Money QR ?', 'Vous créez un QR de paiement, vos clients scannent et paient via Wave, Orange Money ou MTN MoMo. Disponible à partir du plan Pro.'],
