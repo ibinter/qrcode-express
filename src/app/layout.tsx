@@ -104,7 +104,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Suspense>
           <IntlShell>{children}</IntlShell>
         </Suspense>
-        <WhatsAppBubble />
+        <Suspense><WhatsAppBubble /></Suspense>
         <script dangerouslySetInnerHTML={{ __html: `
           if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js'));

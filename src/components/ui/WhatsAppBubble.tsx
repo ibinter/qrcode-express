@@ -1,8 +1,21 @@
 'use client'
 import { useState } from 'react'
+import { usePathname } from 'next/navigation'
+
+// Pages clients (affaires des clients) — bulle cachée
+const CLIENT_PREFIXES = [
+  '/event/', '/vcard/', '/menu/', '/form/', '/coupon/', '/bio/',
+  '/pay/', '/ticket/', '/business/', '/catalog/', '/gallery/',
+  '/review/', '/video/', '/r/', '/qr-password/',
+  '/dashboard', '/admin', '/profil', '/portefeuille', '/parrainage', '/org',
+]
 
 export default function WhatsAppBubble() {
+  const pathname = usePathname()
   const [hovered, setHovered] = useState(false)
+
+  const isClientPage = CLIENT_PREFIXES.some((p) => pathname.startsWith(p))
+  if (isClientPage) return null
 
   return (
     <a
