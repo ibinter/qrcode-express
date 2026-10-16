@@ -14,12 +14,12 @@ export async function GET(
 
   const { data: qr, error } = await admin
     .from('qr_codes')
-    .select('id, content, status, expires_at, max_scans, scan_count, password_hash, type, design, user_id, users(plan)')
+    .select('id, content, status, expires_at, max_scans, scan_count, password_hash, type, design, user_id, profiles(plan)')
     .eq('slug', slug)
     .eq('mode', 'dynamic')
     .single()
 
-  const ownerPlan = ((qr as any)?.users?.plan ?? 'free') as Plan
+  const ownerPlan = ((qr as any)?.profiles?.plan ?? 'free') as Plan
 
   if (error || !qr) {
     return NextResponse.redirect(new URL('/qr-introuvable', request.url))
