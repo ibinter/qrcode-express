@@ -1,8 +1,58 @@
 ﻿'use client'
 import { useState, useRef } from 'react'
 import { QRType } from '@/lib/types'
-import { Upload, FileText, X } from 'lucide-react'
+import { Upload, FileText, X, Link2 } from 'lucide-react'
 import ImageUploadField from './ImageUploadField'
+
+function ShortenButton({ url, onShortened }: { url: string; onShortened: (short: string) => void }) {
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+  const [done, setDone] = useState(false)
+
+  if (!url || !url.startsWith('http')) return null
+
+  async function shorten() {
+    setLoading(true); setError('')
+    try {
+      const res = await fetch('/api/shorten', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      })
+      const json = await res.json()
+      if (json.shortUrl) {
+        onShortened(json.shortUrl)
+        setDone(true)
+      } else {
+        setError(json.error || 'Erreur')
+      }
+    } catch {
+      setError('Erreur réseau')
+    }
+    setLoading(false)
+  }
+
+  return (
+    <div className="mt-1.5">
+      {done ? (
+        <p className="text-xs text-green-600 font-semibold flex items-center gap-1">
+          <Link2 size={12} /> Lien raccourci ✓
+        </p>
+      ) : (
+        <button
+          type="button"
+          onClick={shorten}
+          disabled={loading}
+          className="flex items-center gap-1.5 text-xs font-semibold text-[#FF6A00] hover:text-orange-700 transition-colors disabled:opacity-50"
+        >
+          <Link2 size={12} />
+          {loading ? 'Raccourcissement…' : '⚡ Raccourcir ce lien'}
+        </button>
+      )}
+      {error && <p className="text-xs text-red-500 mt-0.5">{error}</p>}
+    </div>
+  )
+}
 
 interface Props {
   type: QRType
@@ -326,15 +376,18 @@ function PDFForm({ data, onChange }: { data: Record<string, string>; onChange: (
       <p className="text-xs text-gray-500">Le QR code ouvrira directement votre PDF sur mobile et desktop.</p>
 
       {data.pdf_url ? (
-        <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-          <FileText size={20} className="text-green-600 shrink-0" />
-          <div className="flex-1 min-w-0">
-            <p className="text-sm font-semibold text-green-800 truncate">{data.pdf_name || 'PDF uploadé'}</p>
-            <p className="text-xs text-green-600 truncate">{data.pdf_url}</p>
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+            <FileText size={20} className="text-green-600 shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-green-800 truncate">{data.pdf_name || 'PDF uploadé'}</p>
+              <p className="text-xs text-green-600 truncate">{data.pdf_url}</p>
+            </div>
+            <button onClick={() => onChange({ ...data, pdf_url: '', pdf_name: '' })} className="text-gray-400 hover:text-red-500">
+              <X size={16} />
+            </button>
           </div>
-          <button onClick={() => onChange({ ...data, pdf_url: '', pdf_name: '' })} className="text-gray-400 hover:text-red-500">
-            <X size={16} />
-          </button>
+          <ShortenButton url={data.pdf_url} onShortened={(short) => onChange({ ...data, pdf_url: short })} />
         </div>
       ) : (
         <div
@@ -375,7 +428,20 @@ function PDFForm({ data, onChange }: { data: Record<string, string>; onChange: (
 export default function QRContentForm({ type, data, onChange }: Props) {
   switch (type) {
     case 'url':
-      return <Field label="URL du site web" name="url" type="url" placeholder="https://monsite.com" data={data} onChange={onChange} required />
+      return (
+        <div className="mb-4">
+          <label className="block text-sm font-semibold text-gray-700 mb-1">URL du site web</label>
+          <input
+            type="url"
+            value={data.url || ''}
+            onChange={(e) => onChange({ ...data, url: e.target.value })}
+            placeholder="https://monsite.com"
+            required
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]"
+          />
+          <ShortenButton url={data.url || ''} onShortened={(short) => onChange({ ...data, url: short })} />
+        </div>
+      )
     case 'text':
       return (
         <div className="mb-4">
