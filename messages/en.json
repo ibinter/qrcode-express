@@ -125,7 +125,13 @@
       "security_title": "Security & Reliability",
       "security_desc": "Supabase + Vercel infrastructure. Encrypted data, RLS enabled, secure links. Your QRs never go down.",
       "multilingual_title": "Multilingual pages fr / en / ar",
-      "multilingual_desc": "Your public pages (vCard, menu, coupon, form…) display automatically in French, English or Arabic based on the visitor's language. Full RTL support for Arabic."
+      "multilingual_desc": "Your public pages (vCard, menu, coupon, form…) display automatically in French, English or Arabic based on the visitor's language. Full RTL support for Arabic.",
+      "ai_title": "AI-powered artistic QR codes",
+      "ai_desc": "Transform your QR into a work of art with ControlNet AI. Nature, city, space, vintage — 8 styles or custom prompt. QR codes that get noticed at first glance.",
+      "bulk_title": "Bulk import (CSV)",
+      "bulk_desc": "Import up to 500 QR codes via CSV in seconds. Automatic ZIP export of all high-resolution PNGs. Perfect for large campaigns.",
+      "print_title": "Print-ready export",
+      "print_desc": "PNG up to 2048px (4K), A4 PDF with print dimensions, unlimited vector SVG for CMYK. Your QRs ready for professional printers."
     }
   },
   "howItWorks": {
