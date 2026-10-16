@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import { t } from '@/lib/i18n'
+import type { Lang } from '@/lib/i18n'
 
 type FormField = { id: string; type: string; label: string; required: boolean; options?: string }
 
@@ -9,9 +11,10 @@ interface Props {
   successMessage: string
   redirectUrl: string
   accentColor: string
+  lang?: Lang
 }
 
-export default function LeadFormClient({ formId, fields, successMessage, redirectUrl, accentColor }: Props) {
+export default function LeadFormClient({ formId, fields, successMessage, redirectUrl, accentColor, lang = 'fr' }: Props) {
   const [values, setValues] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -107,7 +110,7 @@ export default function LeadFormClient({ formId, fields, successMessage, redirec
         className="w-full py-3 rounded-xl font-bold text-white text-sm disabled:opacity-50 transition-opacity"
         style={{ background: accentColor }}
       >
-        {loading ? 'Envoi en cours…' : 'Envoyer'}
+        {loading ? t(lang, 'loading') : t(lang, 'form_submit')}
       </button>
     </form>
   )

@@ -1,14 +1,19 @@
 'use client'
 import Link from 'next/link'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Menu, X } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import Logo from '@/components/ui/Logo'
+import LanguageSelector from './LanguageSelector'
+import { useTranslations } from 'next-intl'
 
 export default function Header() {
+  const t = useTranslations('nav')
   const [open, setOpen] = useState(false)
   const [user, setUser] = useState<any>(null)
+  const [scrolled, setScrolled] = useState(false)
   const supabase = createClient()
+  const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => setUser(data.user))
@@ -18,88 +23,143 @@ export default function Header() {
     return () => subscription.unsubscribe()
   }, [])
 
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 8)
+    window.addEventListener('scroll', handler, { passive: true })
+    return () => window.removeEventListener('scroll', handler)
+  }, [])
+
+  // Close menu on outside click
+  useEffect(() => {
+    if (!open) return
+    const handler = (e: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [open])
+
+  // Close menu on route change (Escape key)
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [])
+
   async function handleLogout() {
     await supabase.auth.signOut()
     window.location.href = '/'
   }
 
+  const close = () => setOpen(false)
+
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+    <header
+      ref={menuRef}
+      className={`sticky top-0 z-50 bg-white border-b transition-shadow duration-200 ${
+        scrolled ? 'shadow-md border-gray-200' : 'shadow-sm border-gray-100'
+      }`}
+    >
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
         <Logo size="sm" />
 
         {/* Nav desktop */}
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
-          <Link href="/#generateur" className="hover:text-[#FF6A00] transition-colors">Créer un QR</Link>
-          <Link href="/tarifs" className="hover:text-[#FF6A00] transition-colors">Tarifs</Link>
-          <Link href="/fonctionnalites" className="hover:text-[#FF6A00] transition-colors">Fonctionnalités</Link>
+          <Link href="/#generateur" className="hover:text-[#FF6A00] transition-colors">{t('create')}</Link>
+          <Link href="/tarifs" className="hover:text-[#FF6A00] transition-colors">{t('pricing')}</Link>
+          <Link href="/fonctionnalites" className="hover:text-[#FF6A00] transition-colors">{t('features')}</Link>
         </nav>
 
-        {/* Actions */}
+        {/* Actions desktop */}
         <div className="hidden md:flex items-center gap-3">
           {user ? (
             <>
-              <Link href="/dashboard" className="text-sm font-semibold text-[#041B4D] hover:text-[#FF6A00] transition-colors">
-                📱 Mes QR
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-bold text-white transition-opacity hover:opacity-90"
+                style={{ background: 'linear-gradient(135deg, #041B4D, #0d2d6e)' }}
+              >
+                ← Dashboard
               </Link>
               <Link href="/portefeuille" className="text-sm font-semibold text-gray-600 hover:text-[#FF6A00] transition-colors">
-                💰 Crédits
+                💰 {t('credits')}
               </Link>
               <Link href="/profil" className="text-sm font-semibold text-gray-600 hover:text-[#041B4D] transition-colors">
-                👤 Profil
+                👤 {t('profile')}
               </Link>
               <button
                 onClick={handleLogout}
                 className="px-4 py-2 rounded-lg text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors"
               >
-                Déconnexion
+                {t('logout')}
               </button>
             </>
           ) : (
             <>
-              <Link href="/connexion" className="text-sm font-medium text-gray-700 hover:text-[#041B4D]">
-                Connexion
+              <Link href="/connexion" className="text-sm font-medium text-gray-700 hover:text-[#041B4D] transition-colors">
+                {t('login')}
               </Link>
               <Link
                 href="/inscription"
                 className="px-4 py-2 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90"
                 style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}
               >
-                Commencer gratuitement
+                {t('signup')}
               </Link>
             </>
           )}
+          <LanguageSelector />
         </div>
 
         {/* Mobile toggle */}
-        <button className="md:hidden p-2" onClick={() => setOpen(!open)}>
-          {open ? <X size={22} /> : <Menu size={22} />}
-        </button>
+        <div className="md:hidden flex items-center gap-2">
+          <LanguageSelector />
+          <button
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            onClick={() => setOpen(v => !v)}
+            aria-label={open ? 'Fermer le menu' : 'Ouvrir le menu'}
+            aria-expanded={open}
+          >
+            <div className="relative w-[22px] h-[22px]">
+              <span className={`absolute inset-0 transition-all duration-200 ${open ? 'opacity-100 rotate-0' : 'opacity-0 rotate-90'}`}>
+                <X size={22} />
+              </span>
+              <span className={`absolute inset-0 transition-all duration-200 ${open ? 'opacity-0 -rotate-90' : 'opacity-100 rotate-0'}`}>
+                <Menu size={22} />
+              </span>
+            </div>
+          </button>
+        </div>
       </div>
 
-      {/* Menu mobile */}
-      {open && (
-        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-3">
-          <Link href="/#generateur" className="block text-gray-700" onClick={() => setOpen(false)}>Créer un QR</Link>
-          <Link href="/tarifs" className="block text-gray-700" onClick={() => setOpen(false)}>Tarifs</Link>
+      {/* Menu mobile — animé avec max-height */}
+      <div
+        className="md:hidden overflow-hidden transition-all duration-300 ease-in-out"
+        style={{ maxHeight: open ? '400px' : '0px', opacity: open ? 1 : 0 }}
+        aria-hidden={!open}
+      >
+        <div className="border-t border-gray-100 bg-white px-4 py-2 flex flex-col">
+          <Link href="/#generateur" className="py-3 text-base text-gray-700 border-b border-gray-50 active:text-[#FF6A00]" onClick={close}>{t('create')}</Link>
+          <Link href="/tarifs" className="py-3 text-base text-gray-700 border-b border-gray-50 active:text-[#FF6A00]" onClick={close}>{t('pricing')}</Link>
+          <Link href="/fonctionnalites" className="py-3 text-base text-gray-700 border-b border-gray-50 active:text-[#FF6A00]" onClick={close}>{t('features')}</Link>
           {user ? (
             <>
-              <Link href="/dashboard" className="block font-semibold text-[#041B4D]" onClick={() => setOpen(false)}>📱 Mes QR codes</Link>
-              <Link href="/portefeuille" className="block text-gray-700" onClick={() => setOpen(false)}>💰 Mes crédits</Link>
-              <Link href="/profil" className="block text-gray-700" onClick={() => setOpen(false)}>👤 Profil</Link>
-              <button onClick={handleLogout} className="block text-red-500 text-sm font-medium">Déconnexion</button>
+              <Link href="/dashboard" className="py-3 text-base font-bold text-[#FF6A00] border-b border-gray-50" onClick={close}>← Dashboard</Link>
+              <Link href="/portefeuille" className="py-3 text-base text-gray-700 border-b border-gray-50" onClick={close}>💰 {t('credits')}</Link>
+              <Link href="/profil" className="py-3 text-base text-gray-700 border-b border-gray-50" onClick={close}>👤 {t('profile')}</Link>
+              <button onClick={() => { close(); handleLogout() }} className="py-3 text-base text-red-500 font-medium text-left">{t('logout')}</button>
             </>
           ) : (
             <>
-              <Link href="/connexion" className="block text-gray-700" onClick={() => setOpen(false)}>Connexion</Link>
-              <Link href="/inscription" className="block font-semibold text-[#FF6A00]" onClick={() => setOpen(false)}>
-                Commencer gratuitement →
+              <Link href="/connexion" className="py-3 text-base text-gray-700 border-b border-gray-50" onClick={close}>{t('login')}</Link>
+              <Link href="/inscription" className="py-3 text-base font-semibold text-[#FF6A00]" onClick={close}>
+                {t('signup')} →
               </Link>
             </>
           )}
         </div>
-      )}
+      </div>
     </header>
   )
 }

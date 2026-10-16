@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { rateLimit, getIp } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
+
+  // 20 form submissions per IP per hour per form
+  const { ok } = rateLimit(`form:${getIp(req)}:${id}`, 20, 60 * 60 * 1000)
+  if (!ok) return NextResponse.json({ error: 'Trop de soumissions. Réessayez dans une heure.' }, { status: 429 })
+
   const { data } = await req.json()
 
   if (!data || typeof data !== 'object') {

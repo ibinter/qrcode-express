@@ -1,5 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import QRCodeStyling from 'qr-code-styling'
 
 interface Reward {
   id: string
@@ -21,146 +22,231 @@ interface Props {
   referredCredits: number
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string }> = {
-  confirmed: { label: '✅ Confirmé', color: 'text-green-700 bg-green-50' },
-  pending:   { label: '⏳ En attente', color: 'text-yellow-700 bg-yellow-50' },
-  cancelled: { label: '❌ Annulé', color: 'text-red-700 bg-red-50' },
-}
-
 export default function ReferralDashboard({
-  referralCode, referralLink, totalEarned, totalReferrals, confirmedReferrals,
-  currentCredits, rewards, referrerCredits, referredCredits,
+  referralCode,
+  referralLink,
+  totalEarned,
+  totalReferrals,
+  confirmedReferrals,
+  currentCredits,
+  rewards,
+  referrerCredits,
+  referredCredits,
 }: Props) {
   const [copied, setCopied] = useState(false)
-  const [copiedCode, setCopiedCode] = useState(false)
+  const [showQR, setShowQR] = useState(false)
+  const qrRef = useRef<HTMLDivElement>(null)
+  const qrInstance = useRef<QRCodeStyling | null>(null)
 
-  function copyLink() {
-    navigator.clipboard.writeText(referralLink)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2500)
+  useEffect(() => {
+    if (!showQR || !qrRef.current) return
+    if (qrInstance.current) {
+      qrInstance.current.update({ data: referralLink })
+      return
+    }
+    qrInstance.current = new QRCodeStyling({
+      width: 200,
+      height: 200,
+      data: referralLink,
+      dotsOptions: { type: 'dots', color: '#041B4D' },
+      cornersSquareOptions: { type: 'extra-rounded', color: '#FF6A00' },
+      cornersDotOptions: { type: 'dot', color: '#FF6A00' },
+      backgroundOptions: { color: '#FFFFFF' },
+      imageOptions: { crossOrigin: 'anonymous', margin: 4 },
+    })
+    qrInstance.current.append(qrRef.current)
+  }, [showQR, referralLink])
+
+  function downloadQR() {
+    qrInstance.current?.download({ name: 'parrainage-qr', extension: 'png' })
   }
 
-  function copyCode() {
-    navigator.clipboard.writeText(referralCode)
-    setCopiedCode(true)
-    setTimeout(() => setCopiedCode(false), 2500)
-  }
-
-  function shareWhatsApp() {
-    const msg = encodeURIComponent(
-      `🎁 Rejoins QR CODE EXPRESS et crée des QR codes professionnels !\n\nUtilise mon lien de parrainage pour obtenir ${referredCredits} crédits offerts :\n${referralLink}`
-    )
-    window.open(`https://wa.me/?text=${msg}`, '_blank')
+  async function copyLink() {
+    try {
+      await navigator.clipboard.writeText(referralLink)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // fallback
+      const el = document.createElement('textarea')
+      el.value = referralLink
+      document.body.appendChild(el)
+      el.select()
+      document.execCommand('copy')
+      document.body.removeChild(el)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
   }
 
   return (
     <div className="space-y-5">
       {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-3">
         {[
-          { icon: '👥', value: totalReferrals, label: 'Filleuls invités' },
-          { icon: '✅', value: confirmedReferrals, label: 'Confirmés' },
-          { icon: '🪙', value: totalEarned, label: 'Crédits gagnés' },
+          { icon: '👥', label: 'Parrainés', value: totalReferrals },
+          { icon: '✅', label: 'Confirmés', value: confirmedReferrals },
+          { icon: '💰', label: 'Crédits gagnés', value: totalEarned },
         ].map((s) => (
           <div key={s.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center">
-            <p className="text-2xl mb-1">{s.icon}</p>
-            <p className="text-2xl font-extrabold text-[#041B4D]">{s.value}</p>
-            <p className="text-xs text-gray-500 mt-0.5">{s.label}</p>
+            <p className="text-xl mb-1">{s.icon}</p>
+            <p className="text-2xl font-bold text-[#041B4D]">{s.value}</p>
+            <p className="text-[10px] text-gray-500 mt-0.5">{s.label}</p>
           </div>
         ))}
       </div>
 
-      {/* Referral link card */}
+      {/* Referral link */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
         <h2 className="text-sm font-bold text-[#041B4D] mb-1">Votre lien de parrainage</h2>
-        <p className="text-xs text-gray-500 mb-4">
-          Partagez ce lien. Vous gagnez <strong>{referrerCredits} crédits</strong> à chaque inscription confirmée.
+        <p className="text-xs text-gray-500 mb-3">
+          Code : <span className="font-mono font-semibold text-[#FF6A00]">{referralCode}</span>
         </p>
-
-        {/* Link display */}
-        <div className="flex items-center gap-2 bg-gray-50 rounded-xl p-3 mb-3">
-          <p className="flex-1 text-xs font-mono text-gray-700 truncate">{referralLink}</p>
-          <button onClick={copyLink}
-            className="px-3 py-1.5 rounded-lg bg-[#041B4D] text-white text-xs font-bold whitespace-nowrap hover:bg-[#041B4D]/90 transition-colors">
-            {copied ? '✅ Copié !' : '📋 Copier'}
-          </button>
-        </div>
-
-        {/* Code */}
-        <div className="flex items-center gap-3 mb-4">
-          <div className="flex-1 bg-gradient-to-r from-[#041B4D] to-[#0a2d6e] rounded-xl p-3 flex items-center justify-between">
-            <div>
-              <p className="text-[10px] text-white/60 uppercase tracking-wider">Code parrainage</p>
-              <p className="text-xl font-extrabold text-white tracking-widest">{referralCode}</p>
-            </div>
-            <button onClick={copyCode}
-              className="text-white/80 hover:text-white text-xs font-semibold transition-colors">
-              {copiedCode ? '✅' : '📋'}
-            </button>
+        <div className="flex items-center gap-2">
+          <div className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-3 py-2.5 text-xs text-gray-600 font-mono truncate">
+            {referralLink}
           </div>
+          <button
+            onClick={copyLink}
+            className={`flex-shrink-0 px-4 py-2.5 rounded-xl text-xs font-bold transition-all ${
+              copied ? 'bg-green-500 text-white' : 'bg-[#FF6A00] text-white hover:opacity-90'
+            }`}
+          >
+            {copied ? '✓ Copié' : 'Copier'}
+          </button>
         </div>
 
         {/* Share buttons */}
-        <div className="grid grid-cols-2 gap-3">
-          <button onClick={shareWhatsApp}
-            className="flex items-center justify-center gap-2 py-2.5 rounded-xl bg-green-500 text-white text-sm font-bold hover:bg-green-600 transition-colors">
-            <span>📲</span> WhatsApp
-          </button>
-          <button onClick={copyLink}
-            className="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 text-gray-700 text-sm font-bold hover:bg-gray-50 transition-colors">
-            <span>🔗</span> Copier le lien
-          </button>
+        <div className="grid grid-cols-2 gap-2 mt-3">
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(`Rejoins QR CODE EXPRESS avec mon lien et gagne ${referredCredits} crédits offerts ! ${referralLink}`)}`}
+            target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-green-500 text-white text-xs font-semibold hover:opacity-90 transition-opacity"
+          >
+            💬 WhatsApp
+          </a>
+          <a
+            href={`https://x.com/intent/tweet?text=${encodeURIComponent(`Je gagne des crédits sur @QRCodeExpress ! Inscris-toi avec mon lien et reçois ${referredCredits} crédits offerts`)}&url=${encodeURIComponent(referralLink)}`}
+            target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-[#1DA1F2] text-white text-xs font-semibold hover:opacity-90 transition-opacity"
+          >
+            𝕏 Twitter
+          </a>
+          <a
+            href={`sms:?body=${encodeURIComponent(`Rejoins QR CODE EXPRESS et gagne ${referredCredits} crédits : ${referralLink}`)}`}
+            className="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-blue-500 text-white text-xs font-semibold hover:opacity-90 transition-opacity"
+          >
+            📱 SMS
+          </a>
+          <a
+            href={`mailto:?subject=Rejoins QR CODE EXPRESS&body=${encodeURIComponent(`Je t'invite à rejoindre QR CODE EXPRESS et tu reçois ${referredCredits} crédits offerts !\n\n${referralLink}`)}`}
+            className="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-gray-100 text-gray-700 text-xs font-semibold hover:bg-gray-200 transition-colors"
+          >
+            ✉️ Email
+          </a>
         </div>
+
+        {/* QR code toggle */}
+        <button
+          onClick={() => setShowQR(v => !v)}
+          className="w-full mt-3 flex items-center justify-center gap-1.5 py-2 rounded-xl border border-gray-200 text-xs font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+        >
+          {showQR ? '▲ Masquer le QR code' : '▦ Afficher mon QR code de parrainage'}
+        </button>
+
+        {showQR && (
+          <div className="mt-3 flex flex-col items-center gap-3 py-4 border border-dashed border-orange-200 rounded-2xl bg-orange-50">
+            <p className="text-xs text-gray-500 text-center">Scannez ce code pour rejoindre via mon lien</p>
+            <div ref={qrRef} className="rounded-xl overflow-hidden shadow-sm" />
+            <button
+              onClick={downloadQR}
+              className="px-4 py-2 rounded-xl bg-[#FF6A00] text-white text-xs font-bold hover:opacity-90 transition-opacity"
+            >
+              ⬇ Télécharger le QR code
+            </button>
+          </div>
+        )}
       </div>
 
+      {/* Progression vers prochaine récompense */}
+      {(() => {
+        const MILESTONES = [1, 3, 5, 10, 20, 50]
+        const next = MILESTONES.find(m => m > confirmedReferrals) ?? null
+        if (next === null) return null
+        const prev = MILESTONES[MILESTONES.indexOf(next) - 1] ?? 0
+        const progress = next > prev ? Math.round(((confirmedReferrals - prev) / (next - prev)) * 100) : 100
+        const bonusCredits = next * referrerCredits
+        return (
+          <div className="bg-white rounded-2xl border border-orange-100 shadow-sm p-5">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-sm font-bold text-[#041B4D]">🏆 Prochain palier</h2>
+              <span className="text-xs text-orange-500 font-bold">{confirmedReferrals}/{next} filleuls</span>
+            </div>
+            <div className="h-3 bg-gray-100 rounded-full overflow-hidden mb-2">
+              <div className="h-full rounded-full transition-all duration-700"
+                style={{ width: `${progress}%`, background: 'linear-gradient(to right, #FF6A00, #f97316)' }} />
+            </div>
+            <p className="text-xs text-gray-500">
+              Plus que <strong>{next - confirmedReferrals} filleul{next - confirmedReferrals > 1 ? 's' : ''}</strong> pour débloquer{' '}
+              <strong className="text-orange-500">+{referrerCredits} crédits bonus</strong>
+              {next >= 5 && <span className="ml-1 text-xs bg-purple-50 text-purple-600 px-1.5 py-0.5 rounded-full font-bold">🎖️ Badge Champion</span>}
+            </p>
+          </div>
+        )
+      })()}
+
       {/* How it works */}
-      <div className="bg-gradient-to-br from-[#FF6A00]/10 to-[#041B4D]/5 rounded-2xl border border-[#FF6A00]/20 p-5">
-        <h2 className="text-sm font-bold text-[#041B4D] mb-3">🎯 Comment ça marche</h2>
+      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+        <h2 className="text-sm font-bold text-[#041B4D] mb-3">Comment ça marche ?</h2>
         <div className="space-y-3">
           {[
-            { step: '1', text: `Partagez votre lien ou code à un ami`, color: 'bg-[#FF6A00]' },
-            { step: '2', text: `Votre ami s'inscrit via votre lien`, color: 'bg-[#041B4D]' },
-            { step: '3', text: `Il reçoit ${referredCredits} crédits de bienvenue`, color: 'bg-green-500' },
-            { step: '4', text: `Vous recevez ${referrerCredits} crédits automatiquement`, color: 'bg-green-500' },
-          ].map(({ step, text, color }) => (
-            <div key={step} className="flex items-center gap-3">
-              <span className={`w-6 h-6 rounded-full ${color} text-white text-xs font-bold flex items-center justify-center flex-shrink-0`}>{step}</span>
-              <p className="text-sm text-gray-700">{text}</p>
+            { n: '1', text: `Partagez votre lien à vos amis` },
+            { n: '2', text: `Ils s'inscrivent et reçoivent ${referredCredits} crédits offerts` },
+            { n: '3', text: `Vous gagnez ${referrerCredits} crédits dès confirmation` },
+          ].map((step) => (
+            <div key={step.n} className="flex items-start gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-[#FF6A00] text-white text-xs font-bold flex items-center justify-center">
+                {step.n}
+              </span>
+              <p className="text-sm text-gray-600 pt-0.5">{step.text}</p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Referral history */}
+      {/* Rewards list */}
       {rewards.length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-          <h2 className="text-sm font-bold text-[#041B4D] mb-3">Historique des filleuls</h2>
+          <h2 className="text-sm font-bold text-[#041B4D] mb-3">Mes filleuls</h2>
           <div className="space-y-2">
-            {rewards.map((r) => {
-              const cfg = STATUS_CONFIG[r.status] || STATUS_CONFIG.pending
-              return (
-                <div key={r.id} className="flex items-center gap-3 text-xs">
-                  <span className="text-lg">👤</span>
-                  <div className="flex-1">
-                    <p className="font-semibold text-gray-700">{r.referred_name || 'Filleul'}</p>
-                    <p className="text-gray-400">{new Date(r.created_at).toLocaleDateString('fr-FR')}</p>
+            {rewards.map((r) => (
+              <div key={r.id} className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-sm font-bold text-gray-500">
+                    {r.referred_name?.[0]?.toUpperCase() ?? '?'}
                   </div>
-                  <span className={`px-2 py-1 rounded-full font-semibold ${cfg.color}`}>{cfg.label}</span>
-                  {r.status === 'confirmed' && (
-                    <span className="text-green-600 font-bold">+{r.credits_given} cr.</span>
-                  )}
+                  <div>
+                    <p className="text-xs font-semibold text-[#041B4D]">{r.referred_name ?? 'Anonyme'}</p>
+                    <p className="text-[10px] text-gray-400">{new Date(r.created_at).toLocaleDateString('fr-FR')}</p>
+                  </div>
                 </div>
-              )
-            })}
+                <div className="text-right">
+                  <p className="text-xs font-bold text-[#FF6A00]">+{r.credits_given} crédits</p>
+                  <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
+                    r.status === 'confirmed' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
+                  }`}>{r.status === 'confirmed' ? 'Confirmé' : 'En attente'}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
 
       {rewards.length === 0 && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 text-center">
-          <p className="text-4xl mb-2">🚀</p>
-          <p className="font-semibold text-[#041B4D]">Aucun filleul pour l&apos;instant</p>
-          <p className="text-sm text-gray-400 mt-1">Partagez votre lien pour commencer à gagner des crédits !</p>
+        <div className="bg-gray-50 rounded-2xl border border-gray-100 p-8 text-center">
+          <p className="text-3xl mb-3">🎯</p>
+          <p className="text-sm font-semibold text-gray-600">Aucun filleul pour l'instant</p>
+          <p className="text-xs text-gray-400 mt-1">Partagez votre lien pour commencer à gagner des crédits !</p>
         </div>
       )}
     </div>

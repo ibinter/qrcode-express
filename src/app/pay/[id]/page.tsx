@@ -5,10 +5,33 @@ import PaymentButton from './PaymentButton'
 
 export const instant = false
 
+import { buildMeta } from '@/lib/og-meta'
+import type { Metadata } from 'next'
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const admin = createAdminClient()
+  const { data: qr } = await admin.from('qr_codes').select('content').eq('id', id).eq('type', 'payment').single()
+  if (!qr) return buildMeta({ title: 'Paiement' })
+  let p: { title?: string; description?: string; amount?: string; currency?: string } = {}
+  try { p = JSON.parse(qr.content) } catch {}
+  const desc = p.amount ? `${p.amount} ${p.currency || 'FCFA'}${p.description ? ' · ' + p.description : ''}` : p.description
+  return buildMeta({ title: p.title || 'Paiement', description: desc })
+}
+
 const METHOD_CONFIG: Record<string, { label: string; icon: string; color: string }> = {
-  wave:   { label: 'Wave',         icon: '🌊', color: 'bg-blue-50 border-blue-200 text-blue-700' },
-  orange: { label: 'Orange Money', icon: '🟠', color: 'bg-orange-50 border-orange-200 text-orange-700' },
-  mtn:    { label: 'MTN MoMo',     icon: '🟡', color: 'bg-yellow-50 border-yellow-200 text-yellow-700' },
+  // Stripe
+  stripe:   { label: 'Carte bancaire',  icon: '💳', color: 'bg-indigo-50 border-indigo-200 text-indigo-700' },
+  // Afrique de l'Ouest
+  wave:     { label: 'Wave',            icon: '🌊', color: 'bg-blue-50 border-blue-200 text-blue-700' },
+  orange:   { label: 'Orange Money',    icon: '🟠', color: 'bg-orange-50 border-orange-200 text-orange-700' },
+  mtn:      { label: 'MTN MoMo',        icon: '🟡', color: 'bg-yellow-50 border-yellow-200 text-yellow-700' },
+  moov:     { label: 'Moov Money',      icon: '🔵', color: 'bg-sky-50 border-sky-200 text-sky-700' },
+  free:     { label: 'Free Money',      icon: '🟣', color: 'bg-purple-50 border-purple-200 text-purple-700' },
+  // Afrique de l'Est & Centrale
+  mpesa:    { label: 'M-Pesa',          icon: '🟢', color: 'bg-green-50 border-green-200 text-green-700' },
+  airtel:   { label: 'Airtel Money',    icon: '🔴', color: 'bg-red-50 border-red-200 text-red-700' },
+  zamtel:   { label: 'Zamtel Kwacha',   icon: '🟤', color: 'bg-amber-50 border-amber-200 text-amber-700' },
 }
 
 export default async function PayPage({ params }: { params: Promise<{ id: string }> }) {

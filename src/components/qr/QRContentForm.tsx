@@ -1,7 +1,8 @@
-'use client'
+﻿'use client'
 import { useState, useRef } from 'react'
 import { QRType } from '@/lib/types'
 import { Upload, FileText, X } from 'lucide-react'
+import ImageUploadField from './ImageUploadField'
 
 interface Props {
   type: QRType
@@ -118,19 +119,24 @@ function CouponForm({ data, onChange }: { data: Record<string, string>; onChange
         <input type="date" value={parsed.expires || ''} onChange={(e) => update({ expires: e.target.value })}
           className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
       </div>
+      <ImageUploadField label="Logo / Image" value={parsed.logo || ''} onChange={(url) => update({ logo: url })} hint="Optionnel" />
     </div>
   )
 }
 
 function BioForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
-  const parsed = data.bio_json ? JSON.parse(data.bio_json) : { name: '', bio: '', color: '#FF6A00', links: [] }
+  const parsed = data.bio_json ? JSON.parse(data.bio_json) : {
+    name: '', bio: '', color: '#FF6A00', theme: 'light', links: [],
+    cover: '', avatar: '', title: '', company: '', phone: '', email: '', whatsapp: '',
+    show_vcard: true,
+  }
 
   function update(patch: object) {
     onChange({ ...data, bio_json: JSON.stringify({ ...parsed, ...patch }) })
   }
 
   function addLink() {
-    update({ links: [...(parsed.links || []), { label: '', url: '', network: 'autre' }] })
+    update({ links: [...(parsed.links || []), { label: '', url: '', network: 'instagram' }] })
   }
 
   function updateLink(i: number, field: string, value: string) {
@@ -143,32 +149,98 @@ function BioForm({ data, onChange }: { data: Record<string, string>; onChange: (
     update({ links: parsed.links.filter((_: any, idx: number) => idx !== i) })
   }
 
-  const networks = ['instagram', 'tiktok', 'facebook', 'twitter', 'linkedin', 'youtube', 'whatsapp', 'website', 'telegram', 'autre']
+  function moveLink(i: number, dir: -1 | 1) {
+    const links = [...(parsed.links || [])]
+    const j = i + dir
+    if (j < 0 || j >= links.length) return
+    ;[links[i], links[j]] = [links[j], links[i]]
+    update({ links })
+  }
+
+  const networks = [
+    'instagram', 'tiktok', 'facebook', 'twitter', 'x', 'linkedin', 'youtube',
+    'whatsapp', 'telegram', 'snapchat', 'pinterest', 'website', 'autre',
+  ]
+
+  const themes = [
+    { value: 'light', label: '☀️ Clair' },
+    { value: 'dark', label: '🌙 Sombre' },
+    { value: 'gradient', label: '🌈 Gradient' },
+  ]
+
+  const inp = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40"
+  const sec = "text-xs font-bold text-gray-400 uppercase tracking-widest pt-2 pb-1 border-t border-gray-100 mt-1"
 
   return (
-    <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
+    <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
+
+      {/* Identité */}
       <input value={parsed.name || ''} onChange={(e) => update({ name: e.target.value })}
-        placeholder="Nom ou pseudo" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
-      <input value={parsed.bio || ''} onChange={(e) => update({ bio: e.target.value })}
-        placeholder="Bio / description courte" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+        placeholder="Nom complet ou pseudo *" className={inp} />
+      <textarea value={parsed.bio || ''} onChange={(e) => update({ bio: e.target.value })}
+        placeholder="Bio / description courte" rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+
+      {/* Section pro */}
+      <p className={sec}>Infos professionnelles</p>
+      <input value={parsed.title || ''} onChange={(e) => update({ title: e.target.value })}
+        placeholder="Titre / poste (ex: Designer UX)" className={inp} />
+      <input value={parsed.company || ''} onChange={(e) => update({ company: e.target.value })}
+        placeholder="Entreprise / marque" className={inp} />
+
+      {/* Contact direct */}
+      <p className={sec}>Contact rapide</p>
+      <input type="tel" value={parsed.phone || ''} onChange={(e) => update({ phone: e.target.value })}
+        placeholder="Téléphone (ex: +22600000000)" className={inp} />
+      <input type="tel" value={parsed.whatsapp || ''} onChange={(e) => update({ whatsapp: e.target.value })}
+        placeholder="WhatsApp (numéro)" className={inp} />
+      <input type="email" value={parsed.email || ''} onChange={(e) => update({ email: e.target.value })}
+        placeholder="E-mail de contact" className={inp} />
+
+      {/* Visuels */}
+      <p className={sec}>Visuels</p>
+      <ImageUploadField label="Photo de profil (avatar)" value={parsed.avatar || ''} onChange={(url) => update({ avatar: url })} hint="Optionnel" />
+      <ImageUploadField label="Photo de couverture (bannière)" value={parsed.cover || ''} onChange={(url) => update({ cover: url })} hint="Optionnel" />
+
+      {/* Thème + couleur */}
+      <p className={sec}>Apparence</p>
+      <div className="flex gap-2">
+        {themes.map(t => (
+          <button key={t.value} onClick={() => update({ theme: t.value })}
+            className={`flex-1 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${parsed.theme === t.value ? 'bg-[#041B4D] text-white border-[#041B4D]' : 'bg-white text-gray-600 border-gray-200'}`}>
+            {t.label}
+          </button>
+        ))}
+      </div>
       <div className="flex items-center gap-2">
-        <label className="text-xs text-gray-500">Couleur accent</label>
+        <label className="text-xs text-gray-500 flex-1">Couleur accent</label>
         <input type="color" value={parsed.color || '#FF6A00'} onChange={(e) => update({ color: e.target.value })}
           className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
       </div>
+      <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+        <input type="checkbox" checked={parsed.show_vcard !== false} onChange={(e) => update({ show_vcard: e.target.checked })} className="rounded" />
+        Afficher bouton "Enregistrer le contact"
+      </label>
 
-      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider pt-1">Liens</p>
+      {/* Liens */}
+      <p className={sec}>Liens & réseaux sociaux</p>
       {(parsed.links || []).map((link: any, i: number) => (
-        <div key={i} className="flex gap-2 items-center">
-          <select value={link.network || 'autre'} onChange={(e) => updateLink(i, 'network', e.target.value)}
-            className="border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none w-28">
-            {networks.map((n) => <option key={n} value={n}>{n}</option>)}
-          </select>
+        <div key={i} className="bg-gray-50 rounded-xl p-2 space-y-1.5 border border-gray-100">
+          <div className="flex gap-2 items-center">
+            <select value={link.network || 'autre'} onChange={(e) => updateLink(i, 'network', e.target.value)}
+              className="border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none w-32 bg-white">
+              {networks.map((n) => <option key={n} value={n}>{n}</option>)}
+            </select>
+            <div className="flex gap-1 ml-auto">
+              <button onClick={() => moveLink(i, -1)} className="text-gray-400 text-xs px-1 hover:text-gray-600">↑</button>
+              <button onClick={() => moveLink(i, 1)} className="text-gray-400 text-xs px-1 hover:text-gray-600">↓</button>
+              <button onClick={() => removeLink(i)} className="text-red-400 text-xs px-1 hover:text-red-600">✕</button>
+            </div>
+          </div>
           <input value={link.label} onChange={(e) => updateLink(i, 'label', e.target.value)}
-            placeholder="Texte du bouton" className="flex-1 border border-gray-100 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
+            placeholder="Texte du bouton" className="w-full border border-gray-100 rounded-lg px-2 py-1.5 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#FF6A00]/40" />
           <input value={link.url} onChange={(e) => updateLink(i, 'url', e.target.value)}
-            placeholder="URL" className="flex-1 border border-gray-100 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
-          <button onClick={() => removeLink(i)} className="text-red-400 text-xs hover:text-red-600">✕</button>
+            placeholder="URL (https://...)" className="w-full border border-gray-100 rounded-lg px-2 py-1.5 text-xs bg-white focus:outline-none focus:ring-1 focus:ring-[#FF6A00]/40" />
         </div>
       ))}
       <button onClick={addLink} className="w-full py-2 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors">
@@ -179,7 +251,7 @@ function BioForm({ data, onChange }: { data: Record<string, string>; onChange: (
 }
 
 function AppForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qrcode-express-ibig.vercel.app'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qrcode-express.com'
 
   function updateApp(patch: Partial<{ ios: string; android: string; fallback: string }>) {
     const current = data.app_json ? JSON.parse(data.app_json) : {}
@@ -396,29 +468,61 @@ export default function QRContentForm({ type, data, onChange }: Props) {
       function updateVP(patch: object) {
         onChange({ ...data, vcard_json: JSON.stringify({ ...vp, ...patch }) })
       }
+      const vcInp = "w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40"
+      const vcSec = "text-xs font-bold text-gray-400 uppercase tracking-widest pt-2 pb-1 border-t border-gray-100 mt-1"
+      const vcThemes = [{ v: 'light', l: '☀️ Clair' }, { v: 'dark', l: '🌙 Sombre' }, { v: 'gradient', l: '🌈 Gradient' }]
       return (
-        <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-1">
-          <p className="text-xs text-gray-500">Carte de visite digitale avec photo et liens sociaux</p>
+        <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
+          <p className={vcSec}>Identité</p>
           <input value={vp.name || ''} onChange={(e) => updateVP({ name: e.target.value })}
-            placeholder="Nom complet" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+            placeholder="Nom complet *" className={vcInp} />
           <input value={vp.title || ''} onChange={(e) => updateVP({ title: e.target.value })}
-            placeholder="Poste / Titre (ex: Directeur Commercial)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+            placeholder="Poste / Titre (ex: Directeur Commercial)" className={vcInp} />
           <input value={vp.company || ''} onChange={(e) => updateVP({ company: e.target.value })}
-            placeholder="Entreprise" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
-          <input value={vp.phone || ''} onChange={(e) => updateVP({ phone: e.target.value })}
-            placeholder="Téléphone" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
-          <input value={vp.email || ''} onChange={(e) => updateVP({ email: e.target.value })}
-            placeholder="E-mail" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+            placeholder="Entreprise / Organisation" className={vcInp} />
+          <textarea value={vp.note || ''} onChange={(e) => updateVP({ note: e.target.value })}
+            placeholder="Note courte / slogan" rows={2}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+
+          <p className={vcSec}>Contact</p>
+          <input type="tel" value={vp.phone || ''} onChange={(e) => updateVP({ phone: e.target.value })}
+            placeholder="Téléphone principal" className={vcInp} />
+          <input type="tel" value={vp.phone2 || ''} onChange={(e) => updateVP({ phone2: e.target.value })}
+            placeholder="Téléphone professionnel (optionnel)" className={vcInp} />
+          <input type="tel" value={vp.whatsapp || ''} onChange={(e) => updateVP({ whatsapp: e.target.value })}
+            placeholder="WhatsApp (ex: +22507000000)" className={vcInp} />
+          <input type="email" value={vp.email || ''} onChange={(e) => updateVP({ email: e.target.value })}
+            placeholder="E-mail personnel" className={vcInp} />
+          <input type="email" value={vp.email2 || ''} onChange={(e) => updateVP({ email2: e.target.value })}
+            placeholder="E-mail professionnel (optionnel)" className={vcInp} />
           <input value={vp.website || ''} onChange={(e) => updateVP({ website: e.target.value })}
-            placeholder="Site web" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
-          <input value={vp.photo || ''} onChange={(e) => updateVP({ photo: e.target.value })}
-            placeholder="URL photo de profil (optionnel)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
-          <input value={vp.whatsapp || ''} onChange={(e) => updateVP({ whatsapp: e.target.value })}
-            placeholder="WhatsApp (ex: +22507000000)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+            placeholder="Site web (https://...)" className={vcInp} />
+          <input value={vp.address || ''} onChange={(e) => updateVP({ address: e.target.value })}
+            placeholder="Adresse (optionnel)" className={vcInp} />
+
+          <p className={vcSec}>Réseaux sociaux</p>
           <input value={vp.linkedin || ''} onChange={(e) => updateVP({ linkedin: e.target.value })}
-            placeholder="LinkedIn URL" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+            placeholder="LinkedIn URL" className={vcInp} />
+          <input value={vp.instagram || ''} onChange={(e) => updateVP({ instagram: e.target.value })}
+            placeholder="Instagram URL" className={vcInp} />
+          <input value={vp.twitter || ''} onChange={(e) => updateVP({ twitter: e.target.value })}
+            placeholder="Twitter / X URL" className={vcInp} />
+          <input value={vp.facebook || ''} onChange={(e) => updateVP({ facebook: e.target.value })}
+            placeholder="Facebook URL" className={vcInp} />
+
+          <p className={vcSec}>Visuels & apparence</p>
+          <ImageUploadField label="Photo de profil" value={vp.photo || ''} onChange={(url) => updateVP({ photo: url })} hint="Optionnel" />
+          <ImageUploadField label="Photo de couverture" value={vp.cover || ''} onChange={(url) => updateVP({ cover: url })} hint="Optionnel" />
+          <div className="flex gap-2">
+            {vcThemes.map(t => (
+              <button key={t.v} onClick={() => updateVP({ theme: t.v })}
+                className={`flex-1 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${vp.theme === t.v ? 'bg-[#041B4D] text-white border-[#041B4D]' : 'bg-white text-gray-600 border-gray-200'}`}>
+                {t.l}
+              </button>
+            ))}
+          </div>
           <div className="flex items-center gap-2">
-            <label className="text-xs text-gray-500">Couleur accent</label>
+            <label className="text-xs text-gray-500 flex-1">Couleur accent</label>
             <input type="color" value={vp.color || '#041B4D'} onChange={(e) => updateVP({ color: e.target.value })}
               className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
           </div>
@@ -429,6 +533,14 @@ export default function QRContentForm({ type, data, onChange }: Props) {
       return <CatalogForm data={data} onChange={onChange} />
     case 'review':
       return <ReviewForm data={data} onChange={onChange} />
+    case 'business':
+      return <BusinessForm data={data} onChange={onChange} />
+    case 'gallery':
+      return <GalleryForm data={data} onChange={onChange} />
+    case 'video':
+      return <VideoForm data={data} onChange={onChange} />
+    case 'audio':
+      return <AudioForm data={data} onChange={onChange} />
     default:
       return <Field label="URL / Contenu" name="url" placeholder="https://" data={data} onChange={onChange} />
   }
@@ -495,8 +607,7 @@ function CatalogForm({ data, onChange }: { data: Record<string, string>; onChang
           <option value="XAF">XAF</option>
         </select>
       </div>
-      <input value={parsed.logo || ''} onChange={(e) => update({ logo: e.target.value })}
-        placeholder="URL logo (optionnel)" className={inp} />
+      <ImageUploadField label="Logo de la boutique" value={parsed.logo || ''} onChange={(url) => update({ logo: url })} hint="Optionnel" />
       <div className="flex items-center gap-2">
         <label className="text-xs text-gray-500 shrink-0">Couleur accent</label>
         <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
@@ -523,8 +634,7 @@ function CatalogForm({ data, onChange }: { data: Record<string, string>; onChang
                 </div>
                 <input value={p.description || ''} onChange={(e) => updateProduct(ci, pi, 'description', e.target.value)}
                   placeholder="Description courte (optionnel)" className="w-full border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
-                <input value={p.image || ''} onChange={(e) => updateProduct(ci, pi, 'image', e.target.value)}
-                  placeholder="URL image (optionnel)" className="w-full border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
+                <ImageUploadField label="Photo du produit" value={p.image || ''} onChange={(url) => updateProduct(ci, pi, 'image', url)} hint="Optionnel" />
               </div>
             ))}
             <button onClick={() => addProduct(ci)} className="text-xs text-[#FF6A00] font-semibold hover:underline">+ Ajouter un produit</button>
@@ -575,9 +685,7 @@ function ReviewForm({ data, onChange }: { data: Record<string, string>; onChange
         <input type="color" value={parsed.color || '#FF6A00'} onChange={(e) => update({ color: e.target.value })}
           className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
       </div>
-      <input value={parsed.logo || ''} onChange={(e) => update({ logo: e.target.value })}
-        placeholder="URL logo (optionnel)"
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+      <ImageUploadField label="Logo" value={parsed.logo || ''} onChange={(url) => update({ logo: url })} hint="Optionnel" />
     </div>
   )
 }
@@ -642,9 +750,7 @@ function EventForm({ data, onChange }: { data: Record<string, string>; onChange:
         <input type="color" value={(parsed.color as string) || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
           className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
       </div>
-      <input value={(parsed.logo as string) || ''} onChange={(e) => update({ logo: e.target.value })}
-        placeholder="URL logo/bannière (optionnel)"
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
+      <ImageUploadField label="Logo / Bannière" value={(parsed.logo as string) || ''} onChange={(url) => update({ logo: url })} hint="Optionnel — affiché en haut de la page événement" />
     </div>
   )
 }
@@ -744,9 +850,7 @@ function LeadForm({ data, onChange }: { data: Record<string, string>; onChange: 
         <input type="color" value={(parsed.color as string) || '#7C3AED'} onChange={(e) => update({ color: e.target.value })}
           className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
       </div>
-      <input value={(parsed.logo as string) || ''} onChange={(e) => update({ logo: e.target.value })}
-        placeholder="URL logo (optionnel)"
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-400/40" />
+      <ImageUploadField label="Logo" value={(parsed.logo as string) || ''} onChange={(url) => update({ logo: url })} hint="Optionnel" />
     </div>
   )
 }
@@ -760,7 +864,7 @@ function PaymentForm({ data, onChange }: { data: Record<string, string>; onChang
     onChange({ ...data, payment_json: JSON.stringify({ ...parsed, ...fields }) })
   }
 
-  const methods: string[] = Array.isArray(parsed.methods) ? parsed.methods as string[] : ['wave', 'orange', 'mtn']
+  const methods: string[] = Array.isArray(parsed.methods) ? parsed.methods as string[] : ['stripe', 'wave', 'orange', 'mtn']
 
   function toggleMethod(m: string) {
     const next = methods.includes(m) ? methods.filter((x) => x !== m) : [...methods, m]
@@ -770,7 +874,7 @@ function PaymentForm({ data, onChange }: { data: Record<string, string>; onChang
   return (
     <div className="space-y-3">
       <p className="text-xs text-gray-500 bg-green-50 rounded-lg p-3 leading-relaxed">
-        💳 <strong>QR de paiement Mobile Money</strong> : vos clients scannent et paient directement via Wave, Orange Money ou MTN MoMo.
+        💳 <strong>QR de paiement universel</strong> : carte bancaire (Stripe), Wave, Orange Money, MTN MoMo, Moov, Free Money, M-Pesa, Airtel Money et plus — via GeniusPay.
       </p>
       <input value={(parsed.merchant as string) || ''} onChange={(e) => update({ merchant: e.target.value })}
         placeholder="Nom du marchand / établissement *" required
@@ -795,16 +899,21 @@ function PaymentForm({ data, onChange }: { data: Record<string, string>; onChang
         </div>
       </div>
       <div>
-        <p className="text-xs text-gray-500 mb-2">Méthodes acceptées</p>
-        <div className="flex gap-3">
+        <p className="text-xs text-gray-500 mb-2">Méthodes acceptées <span className="text-gray-400">(GeniusPay gère la sélection finale)</span></p>
+        <div className="grid grid-cols-3 gap-2">
           {[
-            { id: 'wave', label: '🌊 Wave', color: 'bg-blue-100 text-blue-700 border-blue-200' },
+            { id: 'stripe', label: '💳 Carte', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' },
+            { id: 'wave',   label: '🌊 Wave',   color: 'bg-blue-100 text-blue-700 border-blue-200' },
             { id: 'orange', label: '🟠 Orange', color: 'bg-orange-100 text-orange-700 border-orange-200' },
-            { id: 'mtn', label: '🟡 MTN', color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
+            { id: 'mtn',    label: '🟡 MTN',    color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
+            { id: 'moov',   label: '🔵 Moov',   color: 'bg-sky-100 text-sky-700 border-sky-200' },
+            { id: 'free',   label: '🟣 Free',   color: 'bg-purple-100 text-purple-700 border-purple-200' },
+            { id: 'mpesa',  label: '🟢 M-Pesa', color: 'bg-green-100 text-green-700 border-green-200' },
+            { id: 'airtel', label: '🔴 Airtel', color: 'bg-red-100 text-red-700 border-red-200' },
           ].map(({ id, label, color }) => (
             <button key={id} type="button"
               onClick={() => toggleMethod(id)}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg border transition-all ${methods.includes(id) ? color : 'bg-gray-50 text-gray-400 border-gray-200'}`}>
+              className={`py-2 text-xs font-semibold rounded-lg border transition-all ${methods.includes(id) ? color : 'bg-gray-50 text-gray-400 border-gray-200'}`}>
               {label}
             </button>
           ))}
@@ -818,9 +927,349 @@ function PaymentForm({ data, onChange }: { data: Record<string, string>; onChang
         <input type="color" value={(parsed.color as string) || '#16A34A'} onChange={(e) => update({ color: e.target.value })}
           className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
       </div>
-      <input value={(parsed.logo as string) || ''} onChange={(e) => update({ logo: e.target.value })}
-        placeholder="URL logo marchand (optionnel)"
-        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-400/40" />
+      <ImageUploadField label="Logo marchand" value={(parsed.logo as string) || ''} onChange={(url) => update({ logo: url })} hint="Optionnel" />
+    </div>
+  )
+}
+
+// ─── BUSINESS PAGE ─────────────────────────────────────────────────────────
+
+const BUSINESS_CATEGORIES = [
+  'Restaurant / Café', 'Boutique / Mode', 'Hôtel / Hébergement', 'Salon de beauté / Coiffure',
+  'Pharmacie / Santé', 'Agence immobilière', 'Agence de voyage', 'Garage / Auto',
+  'École / Formation', 'Cabinet médical', 'Studio photo / Vidéo', 'Événementiel',
+  'E-commerce / Livraison', 'Banque / Finance', 'Autre',
+]
+
+function BusinessForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const raw = typeof data.business_json === 'string' ? data.business_json : ''
+  let parsed: Record<string, unknown> = {}
+  try { parsed = raw ? JSON.parse(raw) : {} } catch {}
+
+  function update(fields: Record<string, unknown>) {
+    onChange({ ...data, business_json: JSON.stringify({ ...parsed, ...fields }) })
+  }
+
+  const galleries: string[] = Array.isArray(parsed.gallery) ? parsed.gallery as string[] : []
+  const hours: Record<string, {open:string;close:string;closed:boolean}> = (parsed.hours as any) || {}
+  const socials: Record<string, string> = (parsed.socials as any) || {}
+  const ctaBtns: {label:string;url:string;icon:string}[] = Array.isArray(parsed.cta_buttons) ? parsed.cta_buttons as any : []
+
+  const days = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche']
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40'
+
+  return (
+    <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+      <p className="text-xs text-gray-500 bg-orange-50 rounded-lg p-3 leading-relaxed">
+        🏪 <strong>Page Business</strong> : mini site web professionnel avec photo de couverture, horaires, boutons CTA, réseaux sociaux et galerie.
+      </p>
+
+      {/* Identité */}
+      <div className="space-y-2">
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Identité</p>
+        <input value={(parsed.name as string) || ''} onChange={(e) => update({ name: e.target.value })}
+          placeholder="Nom de l'établissement *" required className={inp} />
+        <select value={(parsed.category as string) || ''} onChange={(e) => update({ category: e.target.value })} className={inp}>
+          <option value="">Catégorie…</option>
+          {BUSINESS_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+        <textarea value={(parsed.tagline as string) || ''} onChange={(e) => update({ tagline: e.target.value })}
+          placeholder="Slogan (ex: Le meilleur attiéké de la ville)" rows={2}
+          className={`${inp} resize-none`} />
+        <textarea value={(parsed.description as string) || ''} onChange={(e) => update({ description: e.target.value })}
+          placeholder="Description détaillée…" rows={3}
+          className={`${inp} resize-none`} />
+      </div>
+
+      {/* Médias */}
+      <div className="space-y-2">
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Médias</p>
+        <ImageUploadField label="Photo de couverture" value={(parsed.cover as string) || ''} onChange={(url) => update({ cover: url })} hint="Bannière — 1200×400 recommandé" />
+        <ImageUploadField label="Logo" value={(parsed.logo as string) || ''} onChange={(url) => update({ logo: url })} hint="Format carré — 400×400" />
+        <div className="flex items-center gap-3">
+          <label className="text-xs text-gray-500 whitespace-nowrap">Couleur accent</label>
+          <input type="color" value={(parsed.color as string) || '#FF6A00'} onChange={(e) => update({ color: e.target.value })}
+            className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
+          <select value={(parsed.theme as string) || 'light'} onChange={(e) => update({ theme: e.target.value })} className="border border-gray-200 rounded-lg px-2 py-1.5 text-xs">
+            <option value="light">Thème clair</option>
+            <option value="dark">Thème sombre</option>
+            <option value="gradient">Dégradé</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Contact */}
+      <div className="space-y-2">
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Contact</p>
+        <input value={(parsed.phone as string) || ''} onChange={(e) => update({ phone: e.target.value })}
+          placeholder="Téléphone" className={inp} />
+        <input value={(parsed.whatsapp as string) || ''} onChange={(e) => update({ whatsapp: e.target.value })}
+          placeholder="WhatsApp (ex: +22507...)" className={inp} />
+        <input value={(parsed.email as string) || ''} onChange={(e) => update({ email: e.target.value })}
+          placeholder="E-mail" className={inp} />
+        <input value={(parsed.website as string) || ''} onChange={(e) => update({ website: e.target.value })}
+          placeholder="Site web (https://...)" className={inp} />
+        <input value={(parsed.address as string) || ''} onChange={(e) => update({ address: e.target.value })}
+          placeholder="Adresse complète" className={inp} />
+        <input value={(parsed.map_url as string) || ''} onChange={(e) => update({ map_url: e.target.value })}
+          placeholder="Lien Google Maps (https://maps.google.com/...)" className={inp} />
+      </div>
+
+      {/* Boutons CTA personnalisés */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Boutons d'action</p>
+          <button type="button" onClick={() => update({ cta_buttons: [...ctaBtns, { label: '', url: '', icon: '🔗' }] })}
+            className="text-xs px-2 py-1 rounded bg-orange-100 text-orange-700 font-semibold">+ Ajouter</button>
+        </div>
+        {ctaBtns.map((btn, i) => (
+          <div key={i} className="flex gap-1.5 items-center">
+            <input value={btn.icon} onChange={(e) => { const a=[...ctaBtns]; a[i]={...a[i],icon:e.target.value}; update({cta_buttons:a}) }}
+              placeholder="🔗" className="w-10 border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-center focus:outline-none" maxLength={4} />
+            <input value={btn.label} onChange={(e) => { const a=[...ctaBtns]; a[i]={...a[i],label:e.target.value}; update({cta_buttons:a}) }}
+              placeholder="Texte du bouton" className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
+            <input value={btn.url} onChange={(e) => { const a=[...ctaBtns]; a[i]={...a[i],url:e.target.value}; update({cta_buttons:a}) }}
+              placeholder="URL ou tel: ou wa.me/..." className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
+            <button onClick={() => update({ cta_buttons: ctaBtns.filter((_,j)=>j!==i) })} className="text-red-400 text-xs">✕</button>
+          </div>
+        ))}
+      </div>
+
+      {/* Horaires */}
+      <div className="space-y-2">
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Horaires d'ouverture</p>
+        {days.map((day) => {
+          const key = day.toLowerCase()
+          const h = hours[key] || { open: '08:00', close: '18:00', closed: false }
+          return (
+            <div key={day} className="flex items-center gap-2">
+              <span className="text-xs text-gray-600 w-16 shrink-0">{day}</span>
+              <label className="flex items-center gap-1 cursor-pointer">
+                <input type="checkbox" checked={!!h.closed} onChange={(e) => update({ hours: { ...hours, [key]: { ...h, closed: e.target.checked } } })}
+                  className="rounded" />
+                <span className="text-xs text-gray-400">Fermé</span>
+              </label>
+              {!h.closed && <>
+                <input type="time" value={h.open} onChange={(e) => update({ hours: { ...hours, [key]: { ...h, open: e.target.value } } })}
+                  className="flex-1 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none" />
+                <span className="text-xs text-gray-400">→</span>
+                <input type="time" value={h.close} onChange={(e) => update({ hours: { ...hours, [key]: { ...h, close: e.target.value } } })}
+                  className="flex-1 border border-gray-200 rounded px-2 py-1 text-xs focus:outline-none" />
+              </>}
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Réseaux sociaux */}
+      <div className="space-y-2">
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Réseaux sociaux</p>
+        {[['instagram','📷 Instagram'],['facebook','👤 Facebook'],['tiktok','🎵 TikTok'],['youtube','▶️ YouTube'],['twitter','🐦 Twitter/X'],['linkedin','💼 LinkedIn']].map(([key,label]) => (
+          <input key={key} value={socials[key] || ''} onChange={(e) => update({ socials: { ...socials, [key]: e.target.value } })}
+            placeholder={`${label} URL`} className={inp} />
+        ))}
+      </div>
+
+      {/* Galerie */}
+      <div className="space-y-2">
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Galerie photos <span className="font-normal text-gray-400">(max 8)</span></p>
+        <div className="grid grid-cols-2 gap-2">
+          {Array.from({ length: Math.min(galleries.length + 1, 8) }).map((_, i) => (
+            <ImageUploadField key={i} label={`Photo ${i + 1}`} value={galleries[i] || ''}
+              onChange={(url) => {
+                const g = [...galleries]; g[i] = url
+                update({ gallery: g.filter(Boolean) })
+              }} hint="" />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── GALLERY ───────────────────────────────────────────────────────────────
+
+function GalleryForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const raw = typeof data.gallery_json === 'string' ? data.gallery_json : ''
+  let parsed: Record<string, unknown> = {}
+  try { parsed = raw ? JSON.parse(raw) : {} } catch {}
+
+  function update(fields: Record<string, unknown>) {
+    onChange({ ...data, gallery_json: JSON.stringify({ ...parsed, ...fields }) })
+  }
+
+  const photos: string[] = Array.isArray(parsed.photos) ? parsed.photos as string[] : []
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40'
+
+  return (
+    <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+      <p className="text-xs text-gray-500 bg-orange-50 rounded-lg p-3">
+        🖼️ <strong>Galerie Photos</strong> : portfolio, album événement, catalogue — avec lightbox et navigation tactile.
+      </p>
+      <input value={(parsed.title as string) || ''} onChange={(e) => update({ title: e.target.value })}
+        placeholder="Titre de la galerie *" className={inp} />
+      <textarea value={(parsed.description as string) || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description (optionnel)" rows={2} className={`${inp} resize-none`} />
+      <div className="flex gap-3 items-center">
+        <select value={(parsed.layout as string) || 'grid'} onChange={(e) => update({ layout: e.target.value })} className="border border-gray-200 rounded-lg px-2 py-1.5 text-sm flex-1">
+          <option value="grid">Grille uniforme</option>
+          <option value="masonry">Masonry (Pinterest)</option>
+          <option value="slideshow">Diaporama</option>
+        </select>
+        <input type="color" value={(parsed.color as string) || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
+          className="w-9 h-9 rounded cursor-pointer border border-gray-200" title="Couleur accent" />
+      </div>
+      <ImageUploadField label="Logo (optionnel)" value={(parsed.logo as string) || ''} onChange={(url) => update({ logo: url })} hint="" />
+
+      <div>
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Photos <span className="font-normal text-gray-400">(max 20)</span></p>
+        <div className="grid grid-cols-2 gap-2">
+          {Array.from({ length: Math.min(photos.length + 1, 20) }).map((_, i) => (
+            <ImageUploadField key={i} label={`Photo ${i + 1}`} value={photos[i] || ''}
+              onChange={(url) => {
+                const p = [...photos]; p[i] = url
+                update({ photos: p.filter(Boolean) })
+              }} hint="" />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── VIDEO ─────────────────────────────────────────────────────────────────
+
+function VideoForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const raw = typeof data.video_json === 'string' ? data.video_json : ''
+  let parsed: Record<string, unknown> = {}
+  try { parsed = raw ? JSON.parse(raw) : {} } catch {}
+
+  function update(fields: Record<string, unknown>) {
+    onChange({ ...data, video_json: JSON.stringify({ ...parsed, ...fields }) })
+  }
+
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40'
+
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-gray-500 bg-orange-50 rounded-lg p-3">
+        ▶️ <strong>QR Vidéo</strong> : lien YouTube, Vimeo ou vidéo directe — s'ouvre en plein écran avec lecteur intégré et autoplay.
+      </p>
+      <input value={(parsed.title as string) || ''} onChange={(e) => update({ title: e.target.value })}
+        placeholder="Titre de la vidéo *" className={inp} />
+      <div>
+        <label className="text-xs font-semibold text-gray-600 mb-1 block">Lien vidéo *</label>
+        <input type="url" value={(parsed.video_url as string) || ''} onChange={(e) => update({ video_url: e.target.value })}
+          placeholder="https://youtube.com/watch?v=... ou https://vimeo.com/... ou .mp4 direct"
+          className={inp} />
+        <p className="text-xs text-gray-400 mt-1">YouTube, Vimeo, TikTok, ou fichier MP4 direct acceptés</p>
+      </div>
+      <textarea value={(parsed.description as string) || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description (optionnel)" rows={2} className={`${inp} resize-none`} />
+      <ImageUploadField label="Thumbnail personnalisé" value={(parsed.thumbnail as string) || ''} onChange={(url) => update({ thumbnail: url })} hint="Optionnel — généré automatiquement pour YouTube" />
+      <ImageUploadField label="Logo (optionnel)" value={(parsed.logo as string) || ''} onChange={(url) => update({ logo: url })} hint="" />
+      <div className="flex gap-3 items-center flex-wrap">
+        <label className="text-xs text-gray-500 whitespace-nowrap">Couleur accent</label>
+        <input type="color" value={(parsed.color as string) || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
+          className="w-9 h-9 rounded cursor-pointer border border-gray-200" />
+        <label className="flex items-center gap-2 text-xs cursor-pointer">
+          <input type="checkbox" checked={!!(parsed.autoplay)} onChange={(e) => update({ autoplay: e.target.checked })} />
+          <span>Autoplay (muet)</span>
+        </label>
+        <label className="flex items-center gap-2 text-xs cursor-pointer">
+          <input type="checkbox" checked={!!(parsed.loop)} onChange={(e) => update({ loop: e.target.checked })} />
+          <span>Boucle</span>
+        </label>
+      </div>
+      {/* CTA optionnel sous la vidéo */}
+      <div>
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Bouton CTA sous la vidéo (optionnel)</p>
+        <div className="flex gap-2">
+          <input value={(parsed.cta_label as string) || ''} onChange={(e) => update({ cta_label: e.target.value })}
+            placeholder="ex: Commander maintenant" className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
+          <input value={(parsed.cta_url as string) || ''} onChange={(e) => update({ cta_url: e.target.value })}
+            placeholder="URL" className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── AUDIO ─────────────────────────────────────────────────────────────────
+
+function AudioForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const raw = typeof data.audio_json === 'string' ? data.audio_json : ''
+  let parsed: Record<string, unknown> = {}
+  try { parsed = raw ? JSON.parse(raw) : {} } catch {}
+
+  function update(fields: Record<string, unknown>) {
+    onChange({ ...data, audio_json: JSON.stringify({ ...parsed, ...fields }) })
+  }
+
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40'
+  const playlist: {title:string;url:string;duration?:string}[] = Array.isArray(parsed.playlist) ? parsed.playlist as any : []
+
+  return (
+    <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+      <p className="text-xs text-gray-500 bg-orange-50 rounded-lg p-3">
+        🎵 <strong>QR Audio</strong> : lecteur MP3 stylé avec playlist, cover art, barre de progression. Idéal pour musique, podcast, menu audio, annonce.
+      </p>
+      <input value={(parsed.title as string) || ''} onChange={(e) => update({ title: e.target.value })}
+        placeholder="Titre de l'album / podcast *" className={inp} />
+      <input value={(parsed.artist as string) || ''} onChange={(e) => update({ artist: e.target.value })}
+        placeholder="Artiste / auteur" className={inp} />
+      <textarea value={(parsed.description as string) || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description (optionnel)" rows={2} className={`${inp} resize-none`} />
+
+      <ImageUploadField label="Cover art" value={(parsed.cover as string) || ''} onChange={(url) => update({ cover: url })} hint="Format carré — 800×800 recommandé" />
+      <ImageUploadField label="Logo (optionnel)" value={(parsed.logo as string) || ''} onChange={(url) => update({ logo: url })} hint="" />
+
+      <div className="flex gap-3 items-center flex-wrap">
+        <label className="text-xs text-gray-500 whitespace-nowrap">Couleur accent</label>
+        <input type="color" value={(parsed.color as string) || '#7C3AED'} onChange={(e) => update({ color: e.target.value })}
+          className="w-9 h-9 rounded cursor-pointer border border-gray-200" />
+        <select value={(parsed.theme as string) || 'dark'} onChange={(e) => update({ theme: e.target.value })} className="border border-gray-200 rounded-lg px-2 py-1.5 text-xs">
+          <option value="dark">Lecteur sombre</option>
+          <option value="light">Lecteur clair</option>
+          <option value="gradient">Dégradé vibrant</option>
+        </select>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Playlist</p>
+          <button type="button" onClick={() => update({ playlist: [...playlist, { title: '', url: '', duration: '' }] })}
+            className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-700 font-semibold">+ Ajouter un titre</button>
+        </div>
+        {playlist.length === 0 && (
+          <p className="text-xs text-gray-400 text-center py-3 border-2 border-dashed border-gray-200 rounded-xl">Cliquez sur &quot;+ Ajouter&quot; pour créer votre playlist</p>
+        )}
+        {playlist.map((track, i) => (
+          <div key={i} className="bg-gray-50 rounded-xl p-3 mb-2 space-y-2">
+            <div className="flex gap-2 items-center">
+              <span className="text-xs font-bold text-gray-400 w-5">{i + 1}.</span>
+              <input value={track.title} onChange={(e) => { const p=[...playlist]; p[i]={...p[i],title:e.target.value}; update({playlist:p}) }}
+                placeholder="Titre du morceau" className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
+              <input value={track.duration||''} onChange={(e) => { const p=[...playlist]; p[i]={...p[i],duration:e.target.value}; update({playlist:p}) }}
+                placeholder="ex: 3:45" className="w-16 border border-gray-200 rounded-lg px-2 py-1.5 text-xs text-center focus:outline-none" />
+              <button onClick={() => update({ playlist: playlist.filter((_,j)=>j!==i) })} className="text-red-400 text-xs">✕</button>
+            </div>
+            <input type="url" value={track.url} onChange={(e) => { const p=[...playlist]; p[i]={...p[i],url:e.target.value}; update({playlist:p}) }}
+              placeholder="Lien MP3 direct (https://...mp3)" className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
+          </div>
+        ))}
+      </div>
+
+      {/* CTA */}
+      <div>
+        <p className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Bouton CTA (optionnel)</p>
+        <div className="flex gap-2">
+          <input value={(parsed.cta_label as string) || ''} onChange={(e) => update({ cta_label: e.target.value })}
+            placeholder="ex: Télécharger l'album" className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
+          <input value={(parsed.cta_url as string) || ''} onChange={(e) => update({ cta_url: e.target.value })}
+            placeholder="URL" className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
+        </div>
+      </div>
     </div>
   )
 }

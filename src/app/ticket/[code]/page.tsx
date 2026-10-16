@@ -41,7 +41,7 @@ export default async function TicketPage({ params }: { params: Promise<{ code: s
     cancelled: { bg: 'bg-red-50',    border: 'border-red-200',    text: 'text-red-700',    label: '❌ Billet annulé',   icon: '❌' },
   }[ticket.status as 'valid' | 'used' | 'cancelled'] ?? { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-600', label: ticket.status, icon: '❓' }
 
-  const ticketUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://qrcode-express-ibig.vercel.app'}/ticket/${code}`
+  const ticketUrl = `${process.env.NEXT_PUBLIC_BASE_URL || 'https://qrcode-express.com'}/ticket/${code}`
 
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-start py-10 px-4">

@@ -1,7 +1,14 @@
-import { createClient } from '@/lib/supabase/server'
+import type { Metadata } from 'next'
+﻿import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
+import Header from '@/components/layout/Header'
 import ReferralDashboard from './ReferralDashboard'
+
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+}
 
 export const instant = false
 
@@ -15,11 +22,34 @@ export default async function ParrainagePage() {
 
   const admin = createAdminClient()
 
-  const { data: profile } = await admin
+  let { data: profile } = await admin
     .from('profiles')
     .select('referral_code, credits, full_name')
     .eq('id', user.id)
     .single()
+
+  // Ensure profile exists and has a referral_code
+  if (!profile || !profile.referral_code) {
+    const code = Math.random().toString(36).substring(2, 10).toUpperCase()
+    const { data: upserted } = await admin
+      .from('profiles')
+      .upsert(
+        { id: user.id, referral_code: code },
+        { onConflict: 'id', ignoreDuplicates: false }
+      )
+      .select('referral_code, credits, full_name')
+      .single()
+    if (upserted) profile = upserted
+    else {
+      // upsert may not return if referral_code was already set by concurrent request — refetch
+      const { data: refetched } = await admin
+        .from('profiles')
+        .select('referral_code, credits, full_name')
+        .eq('id', user.id)
+        .single()
+      if (refetched) profile = refetched
+    }
+  }
 
   // Referrals I made
   const { data: rewards } = await admin
@@ -32,11 +62,13 @@ export default async function ParrainagePage() {
     .filter((r) => r.status === 'confirmed')
     .reduce((sum, r) => sum + r.credits_given, 0)
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qrcode-express-ibig.vercel.app'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qrcode-express.com'
   const referralLink = `${appUrl}/inscription?ref=${profile?.referral_code || ''}`
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <>
+      <Header />
+      <main className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <h1 className="text-xl font-bold text-[#041B4D] mb-1">🎁 Parrainage</h1>
         <p className="text-sm text-gray-500 mb-6">
@@ -63,5 +95,6 @@ export default async function ParrainagePage() {
         />
       </div>
     </main>
+    </>
   )
 }

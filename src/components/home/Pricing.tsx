@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 type Feature = { text: string; ok: boolean; note?: string }
 type Plan = {
@@ -18,308 +19,147 @@ type Plan = {
   href?: string
 }
 
-const plans: Plan[] = [
-  {
-    id: 'free',
-    name: 'Gratuit',
-    price: '0',
-    unit: '',
-    badge: null,
-    highlight: false,
-    color: '#64748b',
-    desc: 'Pour découvrir la plateforme',
-    cta: 'Essayer gratuitement',
-    href: '#generateur',
-    groups: [
-      {
-        label: '📱 QR Codes',
-        features: [
-          { text: '10 QR statiques', ok: true },
-          { text: 'PNG uniquement', ok: true },
-          { text: 'Couleurs de base', ok: true },
-          { text: 'Sans inscription requise', ok: true },
-          { text: 'SVG / PDF', ok: false },
-          { text: 'QR dynamiques', ok: false },
-        ],
-      },
-      {
-        label: '🎨 Design',
-        features: [
-          { text: 'Logo centré', ok: false },
-          { text: '14 styles de cadre', ok: false },
-          { text: 'Formes de modules', ok: false },
-        ],
-      },
-      {
-        label: '📊 Analytics',
-        features: [
-          { text: 'Statistiques', ok: false },
-          { text: 'Analytics pays & appareils', ok: false },
-        ],
-      },
-      {
-        label: '🎟️ Billetterie & événements',
-        features: [
-          { text: 'Billetterie QR', ok: false },
-        ],
-      },
-      {
-        label: '💳 Paiement Mobile Money',
-        features: [
-          { text: 'Paiements Wave / Orange / MTN', ok: false },
-        ],
-      },
-      {
-        label: '📋 Formulaires & prospects',
-        features: [
-          { text: 'Formulaires de capture', ok: false },
-        ],
-      },
-      {
-        label: '🏢 Équipes',
-        features: [
-          { text: 'Organisations & collaborateurs', ok: false },
-        ],
-      },
-      {
-        label: '🎁 Parrainage',
-        features: [
-          { text: 'Programme de parrainage', ok: false },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'essential',
-    name: 'Essentiel',
-    price: '1 500',
-    unit: 'FCFA / mois',
-    equiv: '≈ 2,29 € · 2,42 $',
-    badge: null,
-    highlight: false,
-    color: '#3b82f6',
-    desc: 'Pour les indépendants',
-    cta: 'Choisir Essentiel',
-    groups: [
-      {
-        label: '📱 QR Codes',
-        features: [
-          { text: '20 QR statiques', ok: true },
-          { text: 'PNG + SVG + PDF', ok: true },
-          { text: '5 QR dynamiques', ok: true },
-          { text: 'Modification sans réimpression', ok: true },
-          { text: 'Scan illimité', ok: true },
-          { text: 'QR dynamiques illimités', ok: false },
-        ],
-      },
-      {
-        label: '🎨 Design',
-        features: [
-          { text: 'Logo centré sur QR', ok: true },
-          { text: '14 styles de cadre', ok: true },
-          { text: 'Formes de modules', ok: true },
-        ],
-      },
-      {
-        label: '📊 Analytics',
-        features: [
-          { text: 'Stats de base (30 jours)', ok: true },
-          { text: 'Analytics pays & appareils', ok: false },
-        ],
-      },
-      {
-        label: '🎟️ Billetterie & événements',
-        features: [
-          { text: 'Billetterie QR', ok: false },
-        ],
-      },
-      {
-        label: '💳 Paiement Mobile Money',
-        features: [
-          { text: 'Paiements Wave / Orange / MTN', ok: false },
-        ],
-      },
-      {
-        label: '📋 Formulaires & prospects',
-        features: [
-          { text: 'Formulaires de capture', ok: false },
-        ],
-      },
-      {
-        label: '🏢 Équipes',
-        features: [
-          { text: 'Organisations & collaborateurs', ok: false },
-        ],
-      },
-      {
-        label: '🎁 Parrainage',
-        features: [
-          { text: 'Programme de parrainage', ok: true },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    price: '3 500',
-    unit: 'FCFA / mois',
-    equiv: '≈ 5,34 € · 5,65 $',
-    badge: '⭐ Populaire',
-    highlight: true,
-    color: '#FF6A00',
-    desc: 'Pour les professionnels',
-    cta: 'Choisir Pro',
-    groups: [
-      {
-        label: '📱 QR Codes',
-        features: [
-          { text: 'QR statiques illimités', ok: true },
-          { text: 'PNG + SVG + PDF illimité', ok: true },
-          { text: '50 QR dynamiques', ok: true },
-          { text: 'Menu, Coupon, Bio Links, Catalogue', ok: true },
-          { text: 'vCard Plus + App Store + PDF', ok: true },
-          { text: 'Édition en temps réel', ok: true },
-        ],
-      },
-      {
-        label: '🎨 Design',
-        features: [
-          { text: 'Logo + 14 cadres + modules', ok: true },
-          { text: 'Export HD haute résolution', ok: true },
-          { text: 'Avis clients (Google Review QR)', ok: true },
-        ],
-      },
-      {
-        label: '📊 Analytics',
-        features: [
-          { text: 'Analytics complets 90 jours', ok: true },
-          { text: 'Pays, appareils, OS', ok: true },
-        ],
-      },
-      {
-        label: '🎟️ Billetterie & événements',
-        features: [
-          { text: '5 événements actifs', ok: true },
-          { text: 'Inscription + billet QR unique', ok: true },
-          { text: 'Validation scan à l\'entrée', ok: true },
-        ],
-      },
-      {
-        label: '💳 Paiement Mobile Money',
-        features: [
-          { text: 'Wave + Orange Money + MTN MoMo', ok: true },
-          { text: 'Montant fixe ou libre', ok: true },
-          { text: 'Historique des paiements reçus', ok: true },
-        ],
-      },
-      {
-        label: '📋 Formulaires & prospects',
-        features: [
-          { text: '5 formulaires actifs', ok: true },
-          { text: 'Champs personnalisés', ok: true },
-          { text: 'Export des réponses', ok: true },
-        ],
-      },
-      {
-        label: '🏢 Équipes',
-        features: [
-          { text: 'Organisations & collaborateurs', ok: false },
-        ],
-      },
-      {
-        label: '🎁 Parrainage',
-        features: [
-          { text: 'Programme de parrainage', ok: true },
-          { text: 'Lien personnalisé + crédits', ok: true },
-        ],
-      },
-    ],
-  },
-  {
-    id: 'business',
-    name: 'Business',
-    price: '8 000',
-    unit: 'FCFA / mois',
-    equiv: '≈ 12,20 € · 12,90 $',
-    badge: null,
-    highlight: false,
-    color: '#041B4D',
-    desc: 'Pour les équipes & agences',
-    cta: 'Choisir Business',
-    groups: [
-      {
-        label: '📱 QR Codes',
-        features: [
-          { text: 'QR dynamiques illimités', ok: true },
-          { text: 'Tous les types Pro inclus', ok: true },
-          { text: 'Génération en lot (1 000 QR)', ok: true },
-          { text: 'Tests A/B de contenu', ok: true },
-          { text: 'API REST', ok: true },
-          { text: 'Scan illimité', ok: true },
-        ],
-      },
-      {
-        label: '🎨 Design',
-        features: [
-          { text: 'Tous les designs Pro', ok: true },
-          { text: 'Export en masse', ok: true },
-          { text: 'Personnalisation avancée', ok: true },
-        ],
-      },
-      {
-        label: '📊 Analytics',
-        features: [
-          { text: 'Analytics avancés illimités', ok: true },
-          { text: 'Rapports & exports CSV', ok: true },
-        ],
-      },
-      {
-        label: '🎟️ Billetterie & événements',
-        features: [
-          { text: 'Événements illimités', ok: true },
-          { text: 'Capacité illimitée par événement', ok: true },
-          { text: 'Validation multi-agents', ok: true },
-        ],
-      },
-      {
-        label: '💳 Paiement Mobile Money',
-        features: [
-          { text: 'Paiements QR illimités', ok: true },
-          { text: 'Wave + Orange + MTN + carte', ok: true },
-          { text: 'Tableau de bord des encaissements', ok: true },
-        ],
-      },
-      {
-        label: '📋 Formulaires & prospects',
-        features: [
-          { text: 'Formulaires illimités', ok: true },
-          { text: 'Export CSV des soumissions', ok: true },
-          { text: 'Notification WhatsApp des réponses', ok: true },
-        ],
-      },
-      {
-        label: '🏢 Équipes',
-        features: [
-          { text: '5 collaborateurs inclus', ok: true },
-          { text: 'Rôles : admin / éditeur / lecteur', ok: true },
-          { text: 'Invitations par email', ok: true },
-        ],
-      },
-      {
-        label: '🎁 Parrainage',
-        features: [
-          { text: 'Programme de parrainage', ok: true },
-          { text: 'Support prioritaire WhatsApp', ok: true },
-        ],
-      },
-    ],
-  },
+const planGroups = [
+  // Free
+  [
+    { label: '📱 QR Codes', features: [
+      { text: '10 QR statiques', ok: true },
+      { text: 'PNG uniquement', ok: true },
+      { text: 'Couleurs de base', ok: true },
+      { text: 'Sans inscription requise', ok: true },
+      { text: 'SVG / PDF', ok: false },
+      { text: 'QR dynamiques', ok: false },
+    ]},
+    { label: '🎨 Design', features: [
+      { text: 'Logo centré', ok: false },
+      { text: '14 styles de cadre', ok: false },
+      { text: 'Formes de modules', ok: false },
+    ]},
+    { label: '📊 Analytics', features: [
+      { text: 'Statistiques', ok: false },
+      { text: 'Analytics pays & appareils', ok: false },
+    ]},
+    { label: '🎟️ Billetterie & événements', features: [{ text: 'Billetterie QR', ok: false }]},
+    { label: '💳 Paiement Mobile Money', features: [{ text: 'Paiements Wave / Orange / MTN', ok: false }]},
+    { label: '📋 Formulaires & prospects', features: [{ text: 'Formulaires de capture', ok: false }]},
+    { label: '🏢 Équipes', features: [{ text: 'Organisations & collaborateurs', ok: false }]},
+    { label: '🎁 Parrainage', features: [{ text: 'Programme de parrainage', ok: false }]},
+  ],
+  // Essential
+  [
+    { label: '📱 QR Codes', features: [
+      { text: '20 QR statiques', ok: true },
+      { text: 'PNG + SVG + PDF', ok: true },
+      { text: '5 QR dynamiques', ok: true },
+      { text: 'Modification sans réimpression', ok: true },
+      { text: 'Scan illimité', ok: true },
+      { text: 'QR dynamiques illimités', ok: false },
+    ]},
+    { label: '🎨 Design', features: [
+      { text: 'Logo centré sur QR', ok: true },
+      { text: '14 styles de cadre', ok: true },
+      { text: 'Formes de modules', ok: true },
+    ]},
+    { label: '📊 Analytics', features: [
+      { text: 'Stats de base (30 jours)', ok: true },
+      { text: 'Analytics pays & appareils', ok: false },
+    ]},
+    { label: '🎟️ Billetterie & événements', features: [{ text: 'Billetterie QR', ok: false }]},
+    { label: '💳 Paiement Mobile Money', features: [{ text: 'Paiements Wave / Orange / MTN', ok: false }]},
+    { label: '📋 Formulaires & prospects', features: [{ text: 'Formulaires de capture', ok: false }]},
+    { label: '🏢 Équipes', features: [{ text: 'Organisations & collaborateurs', ok: false }]},
+    { label: '🎁 Parrainage', features: [{ text: 'Programme de parrainage', ok: true }]},
+  ],
+  // Pro
+  [
+    { label: '📱 QR Codes', features: [
+      { text: 'QR statiques illimités', ok: true },
+      { text: 'PNG + SVG + PDF illimité', ok: true },
+      { text: '50 QR dynamiques', ok: true },
+      { text: 'Menu, Coupon, Bio Links, Catalogue', ok: true },
+      { text: 'vCard Plus + App Store + PDF', ok: true },
+      { text: 'Édition en temps réel', ok: true },
+    ]},
+    { label: '🎨 Design', features: [
+      { text: 'Logo + 14 cadres + modules', ok: true },
+      { text: 'Export HD haute résolution', ok: true },
+      { text: 'Avis clients (Google Review QR)', ok: true },
+    ]},
+    { label: '📊 Analytics', features: [
+      { text: 'Analytics complets 90 jours', ok: true },
+      { text: 'Pays, appareils, OS', ok: true },
+    ]},
+    { label: '🎟️ Billetterie & événements', features: [
+      { text: '5 événements actifs', ok: true },
+      { text: 'Inscription + billet QR unique', ok: true },
+      { text: 'Validation scan à l\'entrée', ok: true },
+    ]},
+    { label: '💳 Paiement Mobile Money', features: [
+      { text: 'Wave + Orange Money + MTN MoMo', ok: true },
+      { text: 'Montant fixe ou libre', ok: true },
+      { text: 'Historique des paiements reçus', ok: true },
+    ]},
+    { label: '📋 Formulaires & prospects', features: [
+      { text: '5 formulaires actifs', ok: true },
+      { text: 'Champs personnalisés', ok: true },
+      { text: 'Export des réponses', ok: true },
+    ]},
+    { label: '🏢 Équipes', features: [{ text: 'Organisations & collaborateurs', ok: false }]},
+    { label: '🎁 Parrainage', features: [
+      { text: 'Programme de parrainage', ok: true },
+      { text: 'Lien personnalisé + crédits', ok: true },
+    ]},
+  ],
+  // Business
+  [
+    { label: '📱 QR Codes', features: [
+      { text: 'QR dynamiques illimités', ok: true },
+      { text: 'Tous les types Pro inclus', ok: true },
+      { text: 'Génération en lot (1 000 QR)', ok: true },
+      { text: 'Tests A/B de contenu', ok: true },
+      { text: 'API REST', ok: true },
+      { text: 'Scan illimité', ok: true },
+    ]},
+    { label: '🎨 Design', features: [
+      { text: 'Tous les designs Pro', ok: true },
+      { text: 'Export en masse', ok: true },
+      { text: 'Personnalisation avancée', ok: true },
+    ]},
+    { label: '📊 Analytics', features: [
+      { text: 'Analytics avancés illimités', ok: true },
+      { text: 'Rapports & exports CSV', ok: true },
+    ]},
+    { label: '🎟️ Billetterie & événements', features: [
+      { text: 'Événements illimités', ok: true },
+      { text: 'Capacité illimitée par événement', ok: true },
+      { text: 'Validation multi-agents', ok: true },
+    ]},
+    { label: '💳 Paiement Mobile Money', features: [
+      { text: 'Paiements QR illimités', ok: true },
+      { text: 'Wave + Orange + MTN + carte', ok: true },
+      { text: 'Tableau de bord des encaissements', ok: true },
+    ]},
+    { label: '📋 Formulaires & prospects', features: [
+      { text: 'Formulaires illimités', ok: true },
+      { text: 'Export CSV des soumissions', ok: true },
+      { text: 'Notification WhatsApp des réponses', ok: true },
+    ]},
+    { label: '🏢 Équipes', features: [
+      { text: '5 collaborateurs inclus', ok: true },
+      { text: 'Rôles : admin / éditeur / lecteur', ok: true },
+      { text: 'Invitations par email', ok: true },
+    ]},
+    { label: '🎁 Parrainage', features: [
+      { text: 'Programme de parrainage', ok: true },
+      { text: 'Support prioritaire WhatsApp', ok: true },
+    ]},
+  ],
 ]
 
 function PricingCard({ p, onPay, loading }: { p: Plan; onPay: (id: string) => void; loading: string | null }) {
   const [expanded, setExpanded] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const t = useTranslations('pricing')
 
   useEffect(() => {
     const el = ref.current
@@ -347,7 +187,7 @@ function PricingCard({ p, onPay, loading }: { p: Plan; onPay: (id: string) => vo
       ref={ref}
       className={`relative rounded-2xl flex flex-col transition-all duration-300 hover:-translate-y-1 ${
         p.highlight
-          ? 'border-2 border-[#FF6A00] shadow-xl shadow-orange-500/10 bg-white scale-105 z-10'
+          ? 'border-2 border-[#FF6A00] shadow-xl shadow-orange-500/10 bg-white lg:scale-105 z-10'
           : 'border border-gray-200 shadow-sm bg-white'
       }`}
     >
@@ -416,7 +256,7 @@ function PricingCard({ p, onPay, loading }: { p: Plan; onPay: (id: string) => vo
         onClick={() => setExpanded(!expanded)}
         className="mx-5 mb-3 text-xs text-gray-400 hover:text-[#FF6A00] transition-colors font-semibold flex items-center gap-1 justify-center py-1.5 border border-gray-100 rounded-lg hover:border-[#FF6A00]/30"
       >
-        {expanded ? '▲ Masquer les détails' : '▼ Voir toutes les fonctionnalités'}
+        {expanded ? t('hideDetails') : t('showDetails')}
       </button>
 
       {/* CTA */}
@@ -439,7 +279,7 @@ function PricingCard({ p, onPay, loading }: { p: Plan; onPay: (id: string) => vo
             }`}
             style={p.highlight ? { background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' } : {}}
           >
-            {loading === p.id ? 'Redirection…' : p.cta}
+            {loading === p.id ? t('redirecting') : p.cta}
           </button>
         )}
       </div>
@@ -447,9 +287,87 @@ function PricingCard({ p, onPay, loading }: { p: Plan; onPay: (id: string) => vo
   )
 }
 
+type Billing = 'monthly' | 'semiannual' | 'annual'
+
+// Monthly base prices (FCFA)
+const BASE_PRICES = { essential: 1500, pro: 3500, business: 8000 }
+
+function computePrice(base: number, billing: Billing) {
+  if (billing === 'monthly') return { monthly: base, total: base, unit: 'FCFA / mois', saving: null }
+  if (billing === 'semiannual') {
+    // 6 months, pay 5 (1 mois offert)
+    const total = base * 5
+    return { monthly: Math.round(total / 6), total, unit: 'FCFA / mois', saving: `1 mois offert — ${total.toLocaleString('fr')} FCFA / 6 mois` }
+  }
+  // annual: 12 months, pay 10 (2 mois offerts)
+  const total = base * 10
+  return { monthly: Math.round(total / 12), total, unit: 'FCFA / mois', saving: `2 mois offerts — ${total.toLocaleString('fr')} FCFA / an` }
+}
+
 export default function Pricing() {
   const [loading, setLoading] = useState<string | null>(null)
+  const [billing, setBilling] = useState<Billing>('monthly')
   const router = useRouter()
+  const t = useTranslations('pricing')
+
+  const essential = computePrice(BASE_PRICES.essential, billing)
+  const pro = computePrice(BASE_PRICES.pro, billing)
+  const business = computePrice(BASE_PRICES.business, billing)
+
+  const plans: Plan[] = [
+    {
+      id: 'free',
+      name: t('plan_free_name'),
+      price: '0',
+      unit: '',
+      badge: null,
+      highlight: false,
+      color: '#64748b',
+      desc: t('plan_free_desc'),
+      cta: t('plan_free_cta'),
+      href: '#generateur',
+      groups: planGroups[0],
+    },
+    {
+      id: billing === 'monthly' ? 'essential' : `essential_${billing === 'semiannual' ? 'semi' : 'annual'}`,
+      name: t('plan_essential_name'),
+      price: essential.monthly.toLocaleString('fr'),
+      unit: essential.unit,
+      equiv: essential.saving ?? '≈ 2,29 € · 2,42 $',
+      badge: billing !== 'monthly' ? `${billing === 'semiannual' ? '−1 mois' : '−2 mois'}` : null,
+      highlight: false,
+      color: '#3b82f6',
+      desc: t('plan_essential_desc'),
+      cta: t('plan_essential_cta'),
+      groups: planGroups[1],
+    },
+    {
+      id: billing === 'monthly' ? 'pro' : `pro_${billing === 'semiannual' ? 'semi' : 'annual'}`,
+      name: t('plan_pro_name'),
+      price: pro.monthly.toLocaleString('fr'),
+      unit: pro.unit,
+      equiv: pro.saving ?? '≈ 5,34 € · 5,65 $',
+      badge: billing !== 'monthly' ? `${billing === 'semiannual' ? '−1 mois offert' : '−2 mois offerts'}` : t('badge_popular'),
+      highlight: true,
+      color: '#FF6A00',
+      desc: t('plan_pro_desc'),
+      cta: t('plan_pro_cta'),
+      groups: planGroups[2],
+    },
+    {
+      id: billing === 'monthly' ? 'business' : `business_${billing === 'semiannual' ? 'semi' : 'annual'}`,
+      name: t('plan_business_name'),
+      price: business.monthly.toLocaleString('fr'),
+      unit: business.unit,
+      equiv: business.saving ?? '≈ 12,20 € · 12,90 $',
+      badge: billing !== 'monthly' ? `${billing === 'semiannual' ? '−1 mois' : '−2 mois'}` : null,
+      highlight: false,
+      color: '#041B4D',
+      desc: t('plan_business_desc'),
+      cta: t('plan_business_cta'),
+      groups: planGroups[3],
+    },
+  ]
 
   async function handlePay(planId: string) {
     setLoading(planId)
@@ -475,14 +393,50 @@ export default function Pricing() {
   return (
     <section id="pricing" className="py-20 px-4 bg-gray-50">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-14">
+        <div className="text-center mb-10">
           <h2 className="text-3xl md:text-4xl font-extrabold text-[#041B4D] mb-3">
-            Tarifs simples et transparents
+            {t('title')}
           </h2>
           <p className="text-gray-500 text-lg">
-            Sans engagement · Mobile Money · Résiliable à tout moment
+            {t('subtitle')}
           </p>
         </div>
+
+        {/* Billing period toggle */}
+        <div className="flex justify-center mb-10">
+          <div className="inline-flex bg-white border border-gray-200 rounded-xl p-1 shadow-sm gap-1">
+            {([
+              { key: 'monthly', label: 'Mensuel' },
+              { key: 'semiannual', label: 'Semestriel', badge: '−1 mois' },
+              { key: 'annual', label: 'Annuel', badge: '−2 mois' },
+            ] as { key: Billing; label: string; badge?: string }[]).map(opt => (
+              <button
+                key={opt.key}
+                onClick={() => setBilling(opt.key)}
+                className={`relative px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
+                  billing === opt.key
+                    ? 'bg-[#FF6A00] text-white shadow'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                {opt.label}
+                {opt.badge && (
+                  <span className={`ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                    billing === opt.key ? 'bg-white/20 text-white' : 'bg-green-100 text-green-700'
+                  }`}>
+                    {opt.badge}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {billing !== 'monthly' && (
+          <p className="text-center text-sm text-green-600 font-semibold mb-6">
+            {billing === 'semiannual' ? '🎁 1 mois offert — économisez 16% sur 6 mois' : '🎁 2 mois offerts — économisez 17% sur 12 mois'}
+          </p>
+        )}
 
         {/* Comparison table header — desktop only */}
         <div className="hidden lg:grid grid-cols-4 gap-1 mb-3 px-1">
@@ -503,13 +457,13 @@ export default function Pricing() {
         {/* Feature comparison — quick table */}
         <div className="hidden lg:block bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
           <div className="px-6 py-4 border-b border-gray-100">
-            <h3 className="font-bold text-[#041B4D]">Comparatif complet des fonctionnalités</h3>
+            <h3 className="font-bold text-[#041B4D]">{t('comparison')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100">
-                  <th className="text-left px-6 py-3 text-gray-400 font-semibold text-xs uppercase tracking-wider w-1/3">Fonctionnalité</th>
+                  <th className="text-left px-6 py-3 text-gray-400 font-semibold text-xs uppercase tracking-wider w-1/3">{t('feature')}</th>
                   {plans.map(p => (
                     <th key={p.id} className={`px-4 py-3 text-center font-bold text-xs ${p.highlight ? 'text-[#FF6A00]' : 'text-[#041B4D]'}`}>
                       {p.name}
@@ -560,18 +514,18 @@ export default function Pricing() {
               <div className="flex items-center gap-3 mb-3">
                 <span className="text-3xl">🏢</span>
                 <div>
-                  <h3 className="font-extrabold text-2xl">Entreprise</h3>
-                  <p className="text-blue-300 text-sm">Pour les grandes structures</p>
+                  <h3 className="font-extrabold text-2xl">{t('enterprise_title')}</h3>
+                  <p className="text-blue-300 text-sm">{t('enterprise_sub')}</p>
                 </div>
               </div>
               <p className="text-blue-200 text-sm mb-4">
-                Solution sur mesure pour grandes structures, administrations et agences — volumes importants, intégration API, white label.
+                {t('enterprise_desc')}
               </p>
               <a href="https://wa.me/2250778551234?text=Bonjour%2C%20je%20souhaite%20un%20devis%20Entreprise%20pour%20QR%20CODE%20EXPRESS"
                 target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white text-sm shadow-lg hover:scale-105 transition-transform"
                 style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}>
-                💬 Nous contacter sur WhatsApp →
+                {t('enterprise_cta')}
               </a>
             </div>
             <div className="grid grid-cols-2 gap-2 flex-shrink-0 w-full md:w-auto">
@@ -591,76 +545,93 @@ export default function Pricing() {
           </div>
         </div>
 
-        {/* À la carte */}
-        <div className="mt-8 bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-          <div className="px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
-            <div>
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xl">⚡</span>
-                <h3 className="font-extrabold text-[#041B4D] text-lg">Formule Libre — Sans compte</h3>
-                <span className="text-[10px] font-bold bg-[#FF6A00]/10 text-[#FF6A00] border border-[#FF6A00]/20 px-2 py-0.5 rounded-full">À LA CARTE</span>
+        {/* Packs de crédits à la carte */}
+        <div className="mt-10 bg-gradient-to-br from-[#041B4D] to-[#0d2d6e] rounded-2xl overflow-hidden shadow-xl">
+          <div className="px-6 py-6 border-b border-white/10">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-2xl">🪙</span>
+                  <h3 className="font-extrabold text-white text-xl">Crédits à la carte</h3>
+                  <span className="text-[10px] font-bold bg-[#FF6A00] text-white px-2 py-0.5 rounded-full">SANS ABONNEMENT</span>
+                </div>
+                <p className="text-blue-200 text-sm">Achetez des crédits une seule fois. Utilisez-les pour débloquer des fonctionnalités premium à l'unité.</p>
               </div>
-              <p className="text-sm text-gray-500">Payez uniquement ce dont vous avez besoin, une seule fois. Aucun abonnement, aucun compte requis.</p>
+              <a href="/portefeuille"
+                className="flex-shrink-0 px-5 py-2.5 rounded-xl font-bold text-sm text-white border-2 border-white/20 hover:bg-white/10 transition-colors whitespace-nowrap">
+                Mon portefeuille →
+              </a>
             </div>
-            <a href="#generateur"
-              className="flex-shrink-0 px-5 py-2.5 rounded-xl font-bold text-sm text-white hover:opacity-90 transition-opacity"
-              style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}>
-              Créer un QR →
-            </a>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 divide-y sm:divide-y-0 sm:divide-x divide-gray-100">
+
+          {/* Credit packs */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-6">
             {[
-              { icon: '🖼️', label: 'PNG standard', price: '0 FCFA', sub: 'toujours gratuit' },
-              { icon: '🎨', label: 'PNG HD + logo', price: '500 FCFA', sub: 'par téléchargement' },
-              { icon: '✏️', label: 'SVG vectoriel', price: '500 FCFA', sub: 'par téléchargement' },
-              { icon: '📄', label: 'PDF imprimable', price: '500 FCFA', sub: 'par téléchargement' },
-              { icon: '🖼️', label: 'Cadre premium', price: '500 FCFA', sub: 'par QR généré' },
-              { icon: '🔄', label: 'QR dynamique', price: '1 000 FCFA', sub: 'valable 30 jours' },
-            ].map((item) => (
-              <div key={item.label} className="flex flex-col items-center text-center px-4 py-5 hover:bg-gray-50 transition-colors">
-                <span className="text-2xl mb-2">{item.icon}</span>
-                <p className="text-xs font-bold text-[#041B4D] mb-1 leading-tight">{item.label}</p>
-                <p className="text-base font-extrabold text-[#FF6A00]">{item.price}</p>
-                <p className="text-[10px] text-gray-400 mt-0.5">{item.sub}</p>
+              { id: 'starter',  credits: 50,   amount: 1000,  label: 'Starter',  desc: '20 FCFA / crédit',  color: '#64748b' },
+              { id: 'boost',    credits: 200,  amount: 3500,  label: 'Boost',    desc: '17,5 FCFA / crédit', color: '#3b82f6' },
+              { id: 'pro',      credits: 500,  amount: 7500,  label: 'Pro',      desc: '15 FCFA / crédit',   color: '#FF6A00', popular: true },
+              { id: 'ultimate', credits: 1000, amount: 12000, label: 'Ultimate', desc: '12 FCFA / crédit',   color: '#10b981' },
+            ].map(pack => (
+              <div key={pack.id} className={`relative bg-white/10 rounded-xl border ${(pack as any).popular ? 'border-[#FF6A00]' : 'border-white/10'} p-4 flex flex-col gap-2`}>
+                {(pack as any).popular && (
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#FF6A00] text-white text-[10px] font-bold px-3 py-0.5 rounded-full whitespace-nowrap">
+                    Meilleur rapport
+                  </span>
+                )}
+                <p className="text-white font-bold text-sm">{pack.label}</p>
+                <p className="text-white text-3xl font-extrabold">{pack.credits >= 1000 ? `${pack.credits / 1000}K` : pack.credits}<span className="text-sm font-normal text-white/60 ml-1">crédits</span></p>
+                <p className="text-white/50 text-xs">{pack.desc}</p>
+                <p className="text-[#FF6A00] font-extrabold text-lg">{pack.amount.toLocaleString('fr')} FCFA</p>
+                <a href="/portefeuille" className="mt-1 block text-center py-2 rounded-lg text-xs font-bold text-white bg-white/10 hover:bg-white/20 transition-colors border border-white/10">
+                  Acheter
+                </a>
               </div>
             ))}
+          </div>
+
+          {/* What you can buy with credits */}
+          <div className="px-6 pb-6">
+            <p className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3">Ce que vous pouvez faire avec vos crédits</p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {[
+                { icon: '✨', label: 'QR artistique IA',            cost: '20 crédits' },
+                { icon: '⚡', label: 'QR dynamique supplémentaire', cost: '50 crédits' },
+                { icon: '📥', label: 'Import bulk (10 QR)',          cost: '1 crédit' },
+              ].map(item => (
+                <div key={item.label} className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3">
+                  <span className="text-xl flex-shrink-0">{item.icon}</span>
+                  <div>
+                    <p className="text-white text-xs font-semibold leading-tight">{item.label}</p>
+                    <p className="text-[#FF6A00] text-xs font-bold">{item.cost}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Payment methods */}
         <div className="mt-10 text-center">
-          <p className="text-sm text-gray-400 mb-3 font-medium">Méthodes de paiement acceptées</p>
+          <p className="text-sm text-gray-400 mb-3 font-medium">{t('payment_methods')}</p>
           <div className="flex flex-wrap justify-center gap-3">
-            {['🟠 Orange Money', '🔵 Wave', '🟡 MTN Mobile Money', '🟢 Moov Money', '💳 Carte bancaire'].map((m) => (
+            {[
+              '💳 Carte Stripe',
+              '🌊 Wave',
+              '🟠 Orange Money',
+              '🟡 MTN MoMo',
+              '🔵 Moov Money',
+              '🟣 Free Money',
+              '🟢 M-Pesa',
+              '🔴 Airtel Money',
+            ].map((m) => (
               <span key={m} className="text-xs bg-white border border-gray-200 px-3 py-1.5 rounded-full text-gray-600 font-medium shadow-sm">
                 {m}
               </span>
             ))}
           </div>
+          <p className="text-xs text-gray-400 mt-2">CI · SN · CM · ML · BF · GH · KE · TZ · BJ · TG · GN · et plus</p>
         </div>
 
-        {/* FAQ */}
-        <div className="mt-10 max-w-2xl mx-auto bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <h3 className="font-bold text-[#041B4D] mb-4 text-center">Questions fréquentes</h3>
-          <div className="space-y-3 text-sm">
-            {[
-              ['Quelle est la différence entre un QR statique et un QR dynamique ?', 'Un QR statique encode les données directement : il ne peut plus être modifié après création. Un QR dynamique pointe vers une URL de redirection modifiable à tout moment — sans réimprimer le QR. Idéal pour un menu restaurant, une promo ou une fiche produit.'],
-              ['Puis-je utiliser la plateforme sans créer un compte ?', 'Oui ! Avec la Formule Libre, vous payez chaque service à l\'unité (SVG, PDF, logo, QR dynamique) sans inscription.'],
-              ['La billetterie est-elle disponible sur le plan gratuit ?', 'Non. La billetterie QR (inscription + billet unique par participant) est disponible à partir du plan Pro à 3 500 FCFA/mois.'],
-              ['Comment fonctionne le paiement Mobile Money QR ?', 'Vous créez un QR de paiement, vos clients scannent et paient via Wave, Orange Money ou MTN MoMo. Disponible à partir du plan Pro.'],
-              ['Puis-je annuler mon abonnement à tout moment ?', 'Oui, aucun engagement. Vous gérez votre abonnement depuis votre profil, aucun frais caché.'],
-              ['Que se passe-t-il si je descends de plan ?', 'Vos QR dynamiques passent en lecture seule. Vos données sont conservées 30 jours.'],
-            ].map(([q, a]) => (
-              <details key={q} className="group border border-gray-100 rounded-xl overflow-hidden">
-                <summary className="flex items-center justify-between px-4 py-3 cursor-pointer font-semibold text-[#041B4D] hover:bg-gray-50">
-                  {q}
-                  <span className="text-gray-400 group-open:rotate-180 transition-transform flex-shrink-0 ml-2">▾</span>
-                </summary>
-                <p className="px-4 pb-3 text-gray-500">{a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
       </div>
     </section>
   )

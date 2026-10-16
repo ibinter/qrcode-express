@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createHash } from 'crypto'
+import { requirePlan, DYNAMIC_QR_LIMITS } from '@/lib/plan-guard'
 
 function hashPassword(pw: string): string {
   return createHash('sha256').update(pw).digest('hex')
@@ -37,6 +38,48 @@ export async function POST(req: NextRequest) {
   // Anti-quishing: validate URL content for URL-type QRs
   if (type === 'url' && content && !isUrlSafe(content)) {
     return NextResponse.json({ error: 'Cette URL semble non sécurisée. Seules les URLs http:// et https:// sont autorisées.' }, { status: 400 })
+  }
+
+  // Dynamic QR: check plan limits (1 crédit si quota dépassé)
+  if (mode === 'dynamic') {
+    // Essential minimum required (free = 0 dynamic QR, credits can unlock 1 at a time)
+    const { ok, user: profile, usedCredits, error: planError } = await requirePlan('essential', 50)
+    if (!ok) return planError
+
+    const limit = DYNAMIC_QR_LIMITS[profile.plan]
+    if (limit !== undefined && !usedCredits) {
+      // Count existing dynamic QRs
+      const { count } = await supabase
+        .from('qr_codes')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('mode', 'dynamic')
+        .neq('status', 'archived')
+
+      if ((count ?? 0) >= limit) {
+        // Try credit fallback for going over plan limit
+        const { createAdminClient } = await import('@/lib/supabase/admin')
+        const admin = createAdminClient()
+        const { data: userCredits } = await admin
+          .from('profiles')
+          .select('credits')
+          .eq('id', user.id)
+          .single()
+        const credits = userCredits?.credits ?? 0
+        if (credits < 50) {
+          return NextResponse.json(
+            {
+              error: `Votre plan ${profile.plan} est limité à ${limit} QR dynamique${limit > 1 ? 's' : ''}. Utilisez 50 crédits ou passez au plan supérieur.`,
+              upgradeUrl: '/tarifs',
+              rechargeUrl: '/portefeuille',
+            },
+            { status: 403 }
+          )
+        }
+        // Debit 1 credit
+        await admin.rpc('add_credits', { user_uuid: user.id, amount: -50 })
+      }
+    }
   }
 
   // Générer un slug unique pour les QR dynamiques

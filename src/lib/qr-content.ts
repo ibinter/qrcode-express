@@ -1,4 +1,4 @@
-import { QRType } from './types'
+﻿import { QRType } from './types'
 
 export function buildQRContent(type: QRType, data: Record<string, string>): string {
   switch (type) {
@@ -19,15 +19,15 @@ export function buildQRContent(type: QRType, data: Record<string, string>): stri
     case 'whatsapp':
       return `https://wa.me/${(data.phone || '').replace(/\D/g, '')}${data.message ? `?text=${encodeURIComponent(data.message)}` : ''}`
     case 'app': {
-      const appUrl = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'
+      const appUrl = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
       return data.url || `${appUrl}/app/mon-app`
     }
     case 'menu':
-      return data.menu_json ? `${typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'}/menu/__ID__` : ''
+      return data.menu_json ? `${typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'}/menu/__ID__` : ''
     case 'coupon':
-      return data.coupon_json ? `${typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'}/coupon/__ID__` : ''
+      return data.coupon_json ? `${typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'}/coupon/__ID__` : ''
     case 'biolink':
-      return data.bio_json ? `${typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'}/bio/__ID__` : ''
+      return data.bio_json ? `${typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'}/bio/__ID__` : ''
     case 'pdf':
       return data.pdf_url || ''
     case 'social':
@@ -35,28 +35,44 @@ export function buildQRContent(type: QRType, data: Record<string, string>): stri
     case 'location':
       return `geo:${data.lat},${data.lng}`
     case 'event': {
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
       return data.event_json ? `${origin}/event/__ID__` : buildVEvent(data)
     }
     case 'vcard_plus': {
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
       return data.vcard_json ? `${origin}/vcard/__ID__` : ''
     }
     case 'catalog': {
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
       return data.catalog_json ? `${origin}/catalog/__ID__` : ''
     }
     case 'review': {
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
       return data.review_json ? `${origin}/review/__ID__` : ''
     }
     case 'lead': {
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
       return data.lead_json ? `${origin}/form/__ID__` : ''
     }
     case 'payment': {
-      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express-ibig.vercel.app'
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
       return data.payment_json ? `${origin}/pay/__ID__` : ''
+    }
+    case 'business': {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
+      return data.business_json ? `${origin}/business/__ID__` : ''
+    }
+    case 'gallery': {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
+      return data.gallery_json ? `${origin}/gallery/__ID__` : ''
+    }
+    case 'video': {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
+      return data.video_json ? `${origin}/video/__ID__` : ''
+    }
+    case 'audio': {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
+      return data.audio_json ? `${origin}/audio/__ID__` : ''
     }
     default:
       return data.url || data.text || ''

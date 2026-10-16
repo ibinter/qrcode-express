@@ -12,7 +12,7 @@ export async function GET(
   const { data: qr } = await supabase
     .from('qr_codes')
     .select('id, content, status')
-    .eq('slug', slug)
+    .or(`slug.eq.${slug},id.eq.${slug}`)
     .eq('type', 'app')
     .single()
 

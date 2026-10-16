@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import type { Plan } from '@/lib/plan-guard'
+
+const PLAN_RANK: Record<Plan, number> = { free: 0, essential: 1, pro: 2, business: 3, agency: 4, enterprise: 5 }
+function planAtLeast(userPlan: Plan, min: Plan) { return PLAN_RANK[userPlan] >= PLAN_RANK[min] }
 
 export async function GET(
   request: NextRequest,
@@ -10,10 +14,12 @@ export async function GET(
 
   const { data: qr, error } = await admin
     .from('qr_codes')
-    .select('id, content, status, expires_at, max_scans, scan_count, password_hash, type, design')
+    .select('id, content, status, expires_at, max_scans, scan_count, password_hash, type, design, user_id, users(plan)')
     .eq('slug', slug)
     .eq('mode', 'dynamic')
     .single()
+
+  const ownerPlan = ((qr as any)?.users?.plan ?? 'free') as Plan
 
   if (error || !qr) {
     return NextResponse.redirect(new URL('/qr-introuvable', request.url))
@@ -70,9 +76,14 @@ export async function GET(
     .eq('is_active', true)
     .order('priority', { ascending: false })
 
+  // app type stores JSON content — route to the dedicated landing page
+  if (qr.type === 'app') {
+    return NextResponse.redirect(new URL(`/app/${qr.id}`, request.url))
+  }
+
   let destination = qr.content
 
-  if (rules && rules.length > 0) {
+  if (rules && rules.length > 0 && planAtLeast(ownerPlan, 'business')) {
     for (const rule of rules) {
       const cond = rule.condition as Record<string, unknown>
       let matched = false
@@ -92,6 +103,18 @@ export async function GET(
         const min = (cond.min as number) || 0
         const max = cond.max as number | undefined
         matched = qr.scan_count >= min && (max === undefined || qr.scan_count < max)
+      } else if (rule.rule_type === 'ab_test') {
+        const variants = cond.variants as { url: string; weight: number }[] | undefined
+        if (variants && variants.length > 0) {
+          const total = variants.reduce((s, v) => s + v.weight, 0)
+          let rand = Math.random() * total
+          for (const v of variants) {
+            rand -= v.weight
+            if (rand <= 0) { destination = v.url; break }
+          }
+          if (rand > 0) destination = variants[variants.length - 1].url
+          matched = true
+        }
       }
 
       if (matched) {
@@ -101,9 +124,9 @@ export async function GET(
     }
   }
 
-  // Append UTM parameters if configured
+  // Append UTM parameters if configured (Business+)
   const utmConfig = design.utm as Record<string, string> | undefined | null
-  if (utmConfig && destination.startsWith('http')) {
+  if (utmConfig && destination.startsWith('http') && planAtLeast(ownerPlan, 'business')) {
     try {
       const url = new URL(destination)
       if (utmConfig.source)   url.searchParams.set('utm_source',   utmConfig.source)
@@ -118,21 +141,54 @@ export async function GET(
   // Async scan tracking (non-blocking)
   const isBot = /bot|crawler|spider|googlebot|bingbot|facebookexternalhit/i.test(ua)
 
+  // Parse OS from user-agent
+  let os: string | null = null
+  if (/iphone|ipad|ipod/i.test(ua)) os = 'iOS'
+  else if (/android/i.test(ua)) os = 'Android'
+  else if (/windows/i.test(ua)) os = 'Windows'
+  else if (/mac os x/i.test(ua)) os = 'macOS'
+  else if (/linux/i.test(ua)) os = 'Linux'
+
+  // Parse browser from user-agent
+  let browser: string | null = null
+  if (/edg\//i.test(ua)) browser = 'Edge'
+  else if (/chrome\/|crios\//i.test(ua)) browser = 'Chrome'
+  else if (/firefox\/|fxios\//i.test(ua)) browser = 'Firefox'
+  else if (/safari\//i.test(ua) && !/chrome/i.test(ua)) browser = 'Safari'
+  else if (/opr\/|opera\//i.test(ua)) browser = 'Opera'
+
+  const city = request.headers.get('x-vercel-ip-city') || null
+
   admin.from('scan_events').insert({
     qr_id: qr.id,
     device_type: deviceType,
     country: country || null,
+    city: city ? decodeURIComponent(city) : null,
+    os,
+    browser,
     is_bot: isBot,
     destination,
   }).then(() => {
     if (!isBot) {
       admin.rpc('increment_scan_count', { qr_uuid: qr.id })
+      // Scan notification (Pro+)
+      const notifyEmail = (design.notify_on_scan as string | undefined)
+      if (notifyEmail && planAtLeast(ownerPlan, 'pro')) {
+        fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/notify-scan`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-internal-secret': process.env.INTERNAL_API_SECRET ?? '',
+          },
+          body: JSON.stringify({ qrId: qr.id, email: notifyEmail, country, device: deviceType, os, browser }),
+        }).catch(() => {})
+      }
     }
   })
 
-  // If pixels configured, serve an HTML page that fires them before redirecting
+  // If pixels configured (Business+), serve an HTML page that fires them before redirecting
   const pixelsConfig = design.pixels as Record<string, string> | undefined | null
-  const hasPixels = pixelsConfig && Object.values(pixelsConfig).some(Boolean)
+  const hasPixels = pixelsConfig && Object.values(pixelsConfig).some(Boolean) && planAtLeast(ownerPlan, 'business')
 
   if (hasPixels) {
     const metaPixelId   = pixelsConfig!.meta_pixel_id   || ''

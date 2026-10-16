@@ -37,7 +37,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
 
   const reference = `QRE-PAY-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qrcode-express-ibig.vercel.app'
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qrcode-express.com'
   const description = (payment.description as string) || (payment.merchant as string) || 'Paiement QR'
 
   // Create pending transaction (tied to QR owner)

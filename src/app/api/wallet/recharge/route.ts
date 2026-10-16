@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+﻿import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
@@ -8,6 +8,8 @@ const CREDIT_PACKS: Record<string, { credits: number; amount: number; label: str
   pro:      { credits: 500,  amount: 7500,  label: 'Pack Pro — 500 crédits' },
   ultimate: { credits: 1000, amount: 12000, label: 'Pack Ultimate — 1 000 crédits' },
 }
+
+const GENIUSPAY_URL = 'https://geniuspay.ci/api/v1/merchant/payments'
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
@@ -23,48 +25,61 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Pack invalide' }, { status: 400 })
   }
 
-  const reference = `QRE-CR-${Date.now()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qrcode-express-ibig.vercel.app'
+  const appUrl = (process.env.NEXT_PUBLIC_APP_URL || 'https://qrcode-express.com').replace(/^ï»¿/, '')
 
+  // Appel GeniusPay — la référence est générée par GeniusPay, pas nous
+  let geniusRes: Response
+  try {
+    geniusRes = await fetch(GENIUSPAY_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': process.env.GENIUSPAY_API_KEY!,
+        'X-API-Secret': process.env.GENIUSPAY_API_SECRET!,
+      },
+      body: JSON.stringify({
+        amount: packConfig.amount,
+        currency: 'XOF',
+        description: packConfig.label,
+        customer: { email: user.email },
+        success_url: `${appUrl}/portefeuille?recharge=success`,
+        error_url: `${appUrl}/portefeuille?recharge=cancelled`,
+        metadata: { type: 'credits', pack, credits: packConfig.credits, user_id: user.id },
+      }),
+    })
+  } catch (e: any) {
+    console.error('[wallet/recharge] GeniusPay fetch error:', e?.message)
+    return NextResponse.json({ error: `Erreur réseau GeniusPay: ${e?.message}` }, { status: 502 })
+  }
+
+  if (!geniusRes.ok) {
+    const errText = await geniusRes.text().catch(() => '')
+    console.error('[wallet/recharge] GeniusPay HTTP error:', geniusRes.status, errText)
+    return NextResponse.json({ error: `Erreur GeniusPay ${geniusRes.status}: ${errText}` }, { status: 502 })
+  }
+
+  const genius = await geniusRes.json()
+  console.log('[wallet/recharge] GeniusPay response:', JSON.stringify(genius))
+
+  const geniusRef: string = genius.data?.reference ?? ''
+  const checkoutUrl: string = genius.data?.checkout_url ?? genius.data?.payment_url ?? ''
+
+  if (!checkoutUrl) {
+    return NextResponse.json({ error: 'Pas de lien de paiement retourné' }, { status: 502 })
+  }
+
+  // Enregistrer la transaction avec la référence GeniusPay
   const admin = createAdminClient()
-  const { error: txError } = await admin.from('transactions').insert({
+  await admin.from('transactions').insert({
     user_id: user.id,
     type: 'debit',
     amount: packConfig.amount,
     currency: 'XOF',
     description: packConfig.label,
-    reference,
+    reference: geniusRef || `QRE-CR-${Date.now()}`,
     status: 'pending',
     metadata: { type: 'credits', pack, credits: packConfig.credits },
   })
 
-  if (txError) {
-    return NextResponse.json({ error: 'Erreur interne' }, { status: 500 })
-  }
-
-  const geniusRes = await fetch('https://api.geniuspay.io/v1/payments', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Api-Key': process.env.GENIUSPAY_API_KEY!,
-      'Authorization': `Bearer ${process.env.GENIUSPAY_API_SECRET}`,
-    },
-    body: JSON.stringify({
-      amount: packConfig.amount,
-      currency: 'XOF',
-      description: packConfig.label,
-      reference,
-      customer_email: user.email,
-      callback_url: `${appUrl}/api/payment/webhook`,
-      return_url: `${appUrl}/portefeuille?recharge=success`,
-      cancel_url: `${appUrl}/portefeuille?recharge=cancelled`,
-    }),
-  })
-
-  if (!geniusRes.ok) {
-    return NextResponse.json({ error: 'Erreur GeniusPay' }, { status: 502 })
-  }
-
-  const genius = await geniusRes.json()
-  return NextResponse.json({ payment_url: genius.payment_url ?? genius.url })
+  return NextResponse.json({ payment_url: checkoutUrl })
 }

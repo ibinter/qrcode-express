@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse, type NextRequest } from 'next/server'
+import { createAdminClient } from '@/lib/supabase/admin'
+import { sendWelcomeEmail } from '@/lib/email'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
@@ -25,8 +27,19 @@ export async function GET(request: NextRequest) {
       }
     )
 
-    const { error } = await supabase.auth.exchangeCodeForSession(code)
+    const { data: sessionData, error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
+      // Send welcome email for new signups (user created within last 10 minutes)
+      if (claimRef && sessionData?.user) {
+        const createdAt = new Date(sessionData.user.created_at)
+        const isNew = Date.now() - createdAt.getTime() < 10 * 60 * 1000
+        if (isNew) {
+          const admin = createAdminClient()
+          const { data: profile } = await admin.from('profiles').select('full_name').eq('id', sessionData.user.id).single()
+          sendWelcomeEmail(sessionData.user.email ?? '', profile?.full_name ?? '').catch(() => {})
+        }
+      }
+
       // If came from signup with potential referral, redirect to dashboard with flag
       // The actual claim happens client-side via localStorage → /api/referral/claim
       const redirectUrl = claimRef

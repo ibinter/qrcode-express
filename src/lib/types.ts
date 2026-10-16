@@ -20,17 +20,26 @@ export type QRType =
   | 'review'
   | 'lead'
   | 'payment'
+  | 'business'
+  | 'gallery'
+  | 'video'
+  | 'audio'
 
 export type QRMode = 'static' | 'dynamic'
 
 export interface QRDesign {
   fgColor: string
   bgColor: string
+  bgTransparent?: boolean
+  fgGradient?: string
+  gradientType?: 'linear' | 'radial'
   moduleStyle: 'squares' | 'rounded' | 'dots'
-  eyeStyle: 'square' | 'rounded'
-  frameStyle?: 'none' | 'simple' | 'rounded' | 'banner_bottom' | 'banner_top' | 'bubble' | 'scan_me' | 'scan_me_dark' | 'restaurant' | 'shopping' | 'coffee' | 'wifi' | 'phone' | 'gift'
+  eyeStyle: 'square' | 'rounded' | 'circle' | 'leaf' | 'classy'
+  frameStyle?: 'none' | 'simple' | 'rounded' | 'banner_bottom' | 'banner_top' | 'bubble' | 'scan_me' | 'scan_me_dark' | 'restaurant' | 'shopping' | 'coffee' | 'wifi' | 'phone' | 'gift' | 'wave' | 'zigzag' | 'dotted' | 'arrow' | 'speech' | 'bold' | 'envelope' | 'scooter' | 'chef' | 'beer' | 'drink' | 'clipboard' | 'youtube' | 'tag' | 'ticket' | 'ribbon' | 'mobile_frame' | 'instagram' | 'whatsapp' | 'delivery'
   frameLabel?: string
   frameColor?: string
+  aiPrompt?: string
+  aiStyle?: string
   logo?: string
   logoSize?: 'small' | 'medium' | 'large'
   logoUrl?: string

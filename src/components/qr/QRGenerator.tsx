@@ -8,7 +8,7 @@ import QRReadinessScore from './QRReadinessScore'
 import { QRType, QRDesign } from '@/lib/types'
 import { buildQRContent } from '@/lib/qr-content'
 import { createClient } from '@/lib/supabase/client'
-import { Save, LogIn, CheckCircle, Zap, Lock, Calendar, Hash } from 'lucide-react'
+import { Save, LogIn, CheckCircle, Zap, Lock, Calendar, Hash, Sparkles, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 
 const DEFAULT_DESIGN: QRDesign = {
@@ -20,12 +20,19 @@ const DEFAULT_DESIGN: QRDesign = {
 }
 
 // Types toujours dynamiques (landing page dédiée)
-const ALWAYS_DYNAMIC = ['menu', 'coupon', 'biolink', 'vcard_plus', 'catalog', 'review', 'event', 'lead', 'payment'] as const
+const ALWAYS_DYNAMIC = ['menu', 'coupon', 'biolink', 'vcard_plus', 'catalog', 'review', 'event', 'lead', 'payment', 'business', 'gallery', 'video', 'audio'] as const
 // Types qui peuvent devenir dynamiques via toggle (suivi + URL modifiable)
 const SUPPORTS_DYNAMIC = ['url', 'whatsapp', 'social', 'pdf', 'email', 'phone', 'sms', 'location', 'event', 'vcard', 'vcard_plus', 'app'] as const
 
 export default function QRGenerator() {
   const [type, setType] = useState<QRType>('url')
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const params = new URLSearchParams(window.location.search)
+    const t = params.get('type') as QRType | null
+    if (t) setType(t)
+  }, [])
   const [formData, setFormData] = useState<Record<string, string>>({})
   const [design, setDesign] = useState<QRDesign>(DEFAULT_DESIGN)
   const [tab, setTab] = useState<'content' | 'design'>('content')
@@ -34,6 +41,9 @@ export default function QRGenerator() {
   const [saved, setSaved] = useState(false)
   const [saveError, setSaveError] = useState('')
   const [savedUrl, setSavedUrl] = useState<string | null>(null)
+  const [aiImageUrl, setAiImageUrl] = useState<string | null>(null)
+  const [aiLoading, setAiLoading] = useState(false)
+  const [aiError, setAiError] = useState('')
 
   // Dynamic mode settings
   const [dynamicMode, setDynamicMode] = useState(false)
@@ -53,8 +63,34 @@ export default function QRGenerator() {
 
   useEffect(() => {
     setSavedUrl(null)
+    setAiImageUrl(null)
     if (!SUPPORTS_DYNAMIC.includes(type as any)) setDynamicMode(false)
   }, [type, formData])
+
+  async function generateAI() {
+    if (!content) return
+    setAiLoading(true); setAiError(''); setAiImageUrl(null)
+    try {
+      const res = await fetch('/api/qr-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content,
+          prompt: design.aiPrompt,
+          style: design.aiStyle,
+          fgColor: design.fgColor,
+          bgColor: design.bgColor,
+        }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Erreur IA')
+      setAiImageUrl(data.imageUrl)
+    } catch (e: any) {
+      setAiError(e.message || 'Erreur lors de la génération IA')
+    } finally {
+      setAiLoading(false)
+    }
+  }
 
   const isAlwaysDynamic = ALWAYS_DYNAMIC.includes(type as any)
   const supportsDynamicToggle = SUPPORTS_DYNAMIC.includes(type as any)
@@ -71,7 +107,11 @@ export default function QRGenerator() {
     if (type === 'review') return formData.review_json || ''
     if (type === 'event') return formData.event_json || ''
     if (type === 'lead') return formData.lead_json || ''
-    if (type === 'payment') return formData.payment_json || ''
+    if (type === 'payment')  return formData.payment_json  || ''
+    if (type === 'business') return formData.business_json || ''
+    if (type === 'gallery')  return formData.gallery_json  || ''
+    if (type === 'video')    return formData.video_json    || ''
+    if (type === 'audio')    return formData.audio_json    || ''
     return buildQRContent(type, formData)
   }
 
@@ -84,8 +124,12 @@ export default function QRGenerator() {
       if (type === 'catalog') return JSON.parse(formData.catalog_json || '{}').store || 'Catalogue'
       if (type === 'review')  return JSON.parse(formData.review_json  || '{}').business || 'Avis clients'
       if (type === 'event')   return JSON.parse(formData.event_json   || '{}').name || 'Événement'
-      if (type === 'lead')    return JSON.parse(formData.lead_json    || '{}').title || 'Formulaire'
-      if (type === 'payment') return JSON.parse(formData.payment_json || '{}').merchant || 'Paiement'
+      if (type === 'lead')     return JSON.parse(formData.lead_json     || '{}').title || 'Formulaire'
+      if (type === 'payment')  return JSON.parse(formData.payment_json  || '{}').merchant || 'Paiement'
+      if (type === 'business') return JSON.parse(formData.business_json || '{}').name || 'Page Business'
+      if (type === 'gallery')  return JSON.parse(formData.gallery_json  || '{}').title || 'Galerie photos'
+      if (type === 'video')    return JSON.parse(formData.video_json    || '{}').title || 'Vidéo'
+      if (type === 'audio')    return JSON.parse(formData.audio_json    || '{}').title || 'Audio'
     } catch {}
     return formData.url || formData.text || formData.nom || `QR ${type}`
   }
@@ -124,7 +168,7 @@ export default function QRGenerator() {
       }
       const origin = window.location.origin
       if (isAlwaysDynamic) {
-        const pathMap: Record<string, string> = { menu: 'menu', coupon: 'coupon', biolink: 'bio', vcard_plus: 'vcard', catalog: 'catalog', review: 'review', event: 'event', lead: 'form', payment: 'pay' }
+        const pathMap: Record<string, string> = { menu: 'menu', coupon: 'coupon', biolink: 'bio', vcard_plus: 'vcard', catalog: 'catalog', review: 'review', event: 'event', lead: 'form', payment: 'pay', business: 'business', gallery: 'gallery', video: 'video', audio: 'audio' }
         setSavedUrl(`${origin}/${pathMap[type]}/${data.qr.id}`)
       } else {
         // URL-based dynamic: use /r/slug redirect for tracking
@@ -257,7 +301,27 @@ export default function QRGenerator() {
 
         {/* Right: preview */}
         <div className="p-6 flex flex-col items-center gap-4">
-          <QRPreview content={content} design={design} />
+          <QRPreview content={content} design={design} aiImageUrl={aiImageUrl ?? undefined} />
+
+          {/* AI generate button */}
+          {tab === 'design' && content && (
+            <div className="w-full max-w-[280px] space-y-2">
+              <button
+                onClick={generateAI}
+                disabled={aiLoading}
+                className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+                style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}
+              >
+                {aiLoading ? <><Loader2 size={16} className="animate-spin" /> Génération IA (~30s)…</> : <><Sparkles size={16} /> Générer QR artistique IA</>}
+              </button>
+              {aiError && <p className="text-xs text-red-500 text-center">{aiError}</p>}
+              {aiImageUrl && (
+                <button onClick={() => setAiImageUrl(null)} className="w-full text-xs text-gray-400 hover:text-gray-600 text-center">
+                  ✕ Retour au QR normal
+                </button>
+              )}
+            </div>
+          )}
           <QRReadinessScore design={design} content={content} />
 
           {/* Dynamic mode badge */}

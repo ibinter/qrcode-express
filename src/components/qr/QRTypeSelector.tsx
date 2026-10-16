@@ -1,26 +1,33 @@
 'use client'
+import { useTranslations } from 'next-intl'
 import { QRType } from '@/lib/types'
 
-const QR_TYPES: { type: QRType; label: string; icon: string }[] = [
-  { type: 'url', label: 'URL / Site web', icon: '🔗' },
-  { type: 'whatsapp', label: 'WhatsApp', icon: '💬' },
-  { type: 'vcard', label: 'Contact', icon: '👤' },
-  { type: 'vcard_plus', label: 'Carte Pro', icon: '🪪' },
-  { type: 'wifi', label: 'Wi-Fi', icon: '📶' },
-  { type: 'text', label: 'Texte', icon: '📝' },
-  { type: 'email', label: 'E-mail', icon: '✉️' },
-  { type: 'phone', label: 'Téléphone', icon: '📞' },
-  { type: 'sms', label: 'SMS', icon: '💬' },
-  { type: 'pdf', label: 'PDF', icon: '📄' },
-  { type: 'event', label: 'Événement', icon: '📅' },
-  { type: 'app', label: 'App Store', icon: '📲' },
-  { type: 'menu', label: 'Menu', icon: '🍽️' },
-  { type: 'coupon', label: 'Coupon', icon: '🎫' },
-  { type: 'biolink', label: 'Bio Links', icon: '🔗' },
-  { type: 'social', label: 'Réseaux sociaux', icon: '📱' },
-  { type: 'location', label: 'Localisation', icon: '📍' },
-  { type: 'catalog', label: 'Catalogue', icon: '🛍️' },
-  { type: 'review', label: 'Avis clients', icon: '⭐' },
+const QR_TYPE_ICONS: { type: QRType; icon: string }[] = [
+  { type: 'url', icon: '🔗' },
+  { type: 'whatsapp', icon: '💬' },
+  { type: 'vcard', icon: '👤' },
+  { type: 'vcard_plus', icon: '🪪' },
+  { type: 'wifi', icon: '📶' },
+  { type: 'text', icon: '📝' },
+  { type: 'email', icon: '✉️' },
+  { type: 'phone', icon: '📞' },
+  { type: 'sms', icon: '💬' },
+  { type: 'pdf', icon: '📄' },
+  { type: 'event', icon: '📅' },
+  { type: 'app', icon: '📲' },
+  { type: 'menu', icon: '🍽️' },
+  { type: 'coupon', icon: '🎫' },
+  { type: 'biolink', icon: '🔗' },
+  { type: 'social', icon: '📱' },
+  { type: 'location', icon: '📍' },
+  { type: 'catalog', icon: '🛍️' },
+  { type: 'review', icon: '⭐' },
+  { type: 'lead', icon: '📋' },
+  { type: 'payment', icon: '💳' },
+  { type: 'business', icon: '🏪' },
+  { type: 'gallery', icon: '🖼️' },
+  { type: 'video', icon: '▶️' },
+  { type: 'audio', icon: '🎵' },
 ]
 
 interface Props {
@@ -29,9 +36,10 @@ interface Props {
 }
 
 export default function QRTypeSelector({ selected, onChange }: Props) {
+  const t = useTranslations('qrTypes')
   return (
     <div className="flex flex-wrap gap-2">
-      {QR_TYPES.map(({ type, label, icon }) => (
+      {QR_TYPE_ICONS.map(({ type, icon }) => (
         <button
           key={type}
           onClick={() => onChange(type)}
@@ -41,7 +49,7 @@ export default function QRTypeSelector({ selected, onChange }: Props) {
               : 'bg-white text-gray-600 border-gray-200 hover:border-[#041B4D]'
           }`}
         >
-          <span>{icon}</span> {label}
+          <span>{icon}</span> {t(type as any)}
         </button>
       ))}
     </div>

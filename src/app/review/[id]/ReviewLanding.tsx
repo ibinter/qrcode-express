@@ -1,5 +1,7 @@
 'use client'
 import { useState } from 'react'
+import { t, dir } from '@/lib/i18n'
+import type { Lang } from '@/lib/i18n'
 
 interface ReviewData {
   business?: string
@@ -11,7 +13,7 @@ interface ReviewData {
   whatsapp?: string
 }
 
-export default function ReviewLanding({ review, qrId }: { review: ReviewData; qrId: string }) {
+export default function ReviewLanding({ review, qrId, lang = 'fr' }: { review: ReviewData; qrId: string; lang?: Lang }) {
   const [hovered, setHovered] = useState(0)
   const [selected, setSelected] = useState(0)
   const [feedback, setFeedback] = useState('')
@@ -51,21 +53,26 @@ export default function ReviewLanding({ review, qrId }: { review: ReviewData; qr
   const displayRating = hovered || selected
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center px-4 py-10">
+    <div className="min-h-screen flex flex-col items-center justify-center px-4 py-10" lang={lang} dir={dir(lang)}
+      style={{ background: `linear-gradient(160deg, #0f0f1a 0%, ${accent}22 60%, #0f0f1a 100%)` }}>
       {/* Card */}
-      <div className="w-full max-w-sm bg-white rounded-3xl shadow-xl overflow-hidden">
+      <div className="w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-8 text-center" style={{ background: accent }}>
-          {review.logo ? (
-            <img src={review.logo} alt={business}
-              className="w-20 h-20 rounded-full mx-auto mb-4 object-cover border-4 border-white/30 shadow" />
-          ) : (
-            <div className="w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center text-3xl font-bold text-white bg-white/20 border-4 border-white/30">
-              {business[0]?.toUpperCase() ?? '⭐'}
-            </div>
-          )}
-          <h1 className="text-white font-bold text-xl leading-tight">{business}</h1>
-          <p className="text-white/80 text-sm mt-1">{message}</p>
+        <div className="px-6 py-8 text-center relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${accent}, ${accent}cc)` }}>
+          <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10" />
+          <div className="absolute -bottom-6 -left-6 w-24 h-24 rounded-full bg-white/10" />
+          <div className="relative z-10">
+            {review.logo ? (
+              <img src={review.logo} alt={business}
+                className="w-20 h-20 rounded-2xl mx-auto mb-4 object-cover border-4 border-white/30 shadow-lg" />
+            ) : (
+              <div className="w-20 h-20 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl font-bold text-white bg-white/20 border-4 border-white/30">
+                {business[0]?.toUpperCase() ?? '⭐'}
+              </div>
+            )}
+            <h1 className="text-white font-extrabold text-xl leading-tight">{business}</h1>
+            <p className="text-white/80 text-sm mt-1">{message}</p>
+          </div>
         </div>
 
         <div className="px-6 py-8">
@@ -73,7 +80,7 @@ export default function ReviewLanding({ review, qrId }: { review: ReviewData; qr
             <>
               {/* Stars selector */}
               <p className="text-center text-sm font-semibold text-gray-600 mb-5">
-                Comment évaluez-vous votre expérience ?
+                {t(lang, 'review_title')}
               </p>
               <div className="flex justify-center gap-2 mb-2">
                 {[1, 2, 3, 4, 5].map((n) => (
@@ -92,25 +99,25 @@ export default function ReviewLanding({ review, qrId }: { review: ReviewData; qr
               </div>
               <p className="text-center text-xs text-gray-400 mt-2">
                 {displayRating >= threshold
-                  ? `🎉 Excellent ! Vous serez redirigé vers notre page d'avis`
+                  ? `🎉 ${t(lang, 'review_excellent')}`
                   : displayRating > 0
-                  ? 'Votre avis nous aidera à nous améliorer'
-                  : 'Touchez une étoile pour noter'}
+                  ? t(lang, 'review_improve')
+                  : t(lang, 'review_stars')}
               </p>
             </>
           ) : selected >= threshold ? (
             /* Positive — redirect already triggered */
             <div className="text-center py-4">
               <p className="text-4xl mb-3">🎉</p>
-              <p className="font-bold text-[#041B4D] text-lg">Merci !</p>
-              <p className="text-sm text-gray-500 mt-1">Redirection vers la page d'avis…</p>
+              <p className="font-bold text-[#041B4D] text-lg">{t(lang, 'review_thanks')}</p>
+              <p className="text-sm text-gray-500 mt-1">{t(lang, 'review_redirect')}</p>
             </div>
           ) : submitted ? (
             /* Negative — submitted */
             <div className="text-center py-4">
               <p className="text-4xl mb-3">🙏</p>
-              <p className="font-bold text-[#041B4D] text-lg">Merci pour votre retour !</p>
-              <p className="text-sm text-gray-500 mt-1">Votre avis nous aide à nous améliorer.</p>
+              <p className="font-bold text-[#041B4D] text-lg">{t(lang, 'review_thanks')}</p>
+              <p className="text-sm text-gray-500 mt-1">{t(lang, 'review_improve')}</p>
             </div>
           ) : (
             /* Negative — show feedback form */
@@ -121,12 +128,12 @@ export default function ReviewLanding({ review, qrId }: { review: ReviewData; qr
                 ))}
               </div>
               <p className="text-sm text-center text-gray-600 font-medium">
-                Aidez-nous à nous améliorer
+                {t(lang, 'review_improve')}
               </p>
               <textarea
                 value={feedback}
                 onChange={(e) => setFeedback(e.target.value)}
-                placeholder="Décrivez votre expérience…"
+                placeholder={t(lang, 'review_placeholder')}
                 rows={4}
                 required
                 className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-2"
@@ -137,22 +144,22 @@ export default function ReviewLanding({ review, qrId }: { review: ReviewData; qr
                 className="w-full py-3 rounded-xl font-semibold text-white text-sm transition-opacity hover:opacity-90"
                 style={{ background: accent }}
               >
-                {review.whatsapp ? '💬 Envoyer via WhatsApp' : 'Envoyer mon avis'}
+                {review.whatsapp ? t(lang, 'review_whatsapp') : t(lang, 'review_submit')}
               </button>
               <button
                 type="button"
                 onClick={() => setSelected(0)}
                 className="w-full text-xs text-gray-400 hover:text-gray-600"
               >
-                ← Rechoisir ma note
+                {t(lang, 'review_change')}
               </button>
             </form>
           )}
         </div>
       </div>
 
-      <p className="text-center text-xs text-gray-400 mt-6">
-        Propulsé par <span className="font-semibold text-[#041B4D]">QR CODE EXPRESS</span>
+      <p className="text-center text-xs text-white/40 mt-6">
+        {t(lang, 'powered_by')} <span className="font-semibold" style={{ color: accent }}>QR CODE EXPRESS</span>
       </p>
     </div>
   )

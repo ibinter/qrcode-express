@@ -11,7 +11,7 @@ interface Props {
 }
 
 export default function EditQRModal({ qr, onClose, onSaved }: Props) {
-  const isDynamic = ['menu', 'coupon', 'biolink', 'vcard_plus'].includes(qr.type)
+  const isDynamic = ['menu', 'coupon', 'biolink', 'vcard_plus', 'catalog', 'review', 'event', 'lead', 'payment'].includes(qr.type)
   const [name, setName] = useState(qr.name)
   const [content, setContent] = useState(qr.content)
   const [saving, setSaving] = useState(false)

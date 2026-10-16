@@ -1,65 +1,69 @@
 'use client'
 import Link from 'next/link'
 import Logo from '@/components/ui/Logo'
+import { useTranslations } from 'next-intl'
+import { FaWhatsapp, FaFacebookF, FaInstagram, FaTiktok, FaLinkedinIn } from 'react-icons/fa6'
 
 const YEAR = 2026
 
 const SOCIAL = [
-  { icon: '💬', label: 'WhatsApp', href: 'https://wa.me/2250778551234', color: '#25d366' },
-  { icon: '📘', label: 'Facebook', href: 'https://facebook.com/qrcodeexpress', color: '#1877f2' },
-  { icon: '📸', label: 'Instagram', href: 'https://instagram.com/qrcodeexpress', color: '#e1306c' },
-  { icon: '▶️', label: 'TikTok', href: 'https://tiktok.com/@qrcodeexpress', color: '#010101' },
-  { icon: '💼', label: 'LinkedIn', href: 'https://linkedin.com/company/ibigsoft', color: '#0a66c2' },
-]
-
-const LINKS = [
-  {
-    title: 'Produit',
-    links: [
-      { label: 'Créer un QR gratuit', href: '/#generateur' },
-      { label: 'Tarifs & formules', href: '/tarifs' },
-      { label: 'Fonctionnalités', href: '/fonctionnalites' },
-      { label: 'API REST', href: '/api-docs' },
-    ],
-  },
-  {
-    title: 'Solutions',
-    links: [
-      { label: 'Menu Restaurant', href: '/#generateur' },
-      { label: 'Billetterie QR', href: '/#generateur' },
-      { label: 'Paiement Mobile Money', href: '/#generateur' },
-      { label: 'Formulaires prospects', href: '/#generateur' },
-      { label: 'Bio Links', href: '/#generateur' },
-    ],
-  },
-  {
-    title: 'Ressources',
-    links: [
-      { label: 'Guide d\'impression', href: '/guide' },
-      { label: 'Blog & tutoriels', href: '/blog' },
-      { label: 'Support WhatsApp', href: 'https://wa.me/2250778551234' },
-      { label: 'Parrainage', href: '/parrainage' },
-    ],
-  },
-  {
-    title: 'Légal',
-    links: [
-      { label: 'CGU', href: '/cgu' },
-      { label: 'Politique de confidentialité', href: '/confidentialite' },
-      { label: 'Politique cookies', href: '/cookies' },
-      { label: 'Mentions légales', href: '/mentions-legales' },
-    ],
-  },
-]
-
-const TRUST = [
-  { icon: '🔒', label: 'Données chiffrées SSL' },
-  { icon: '🌍', label: 'Hébergé en Europe' },
-  { icon: '⚡', label: '99,9% de disponibilité' },
-  { icon: '🇨🇮', label: 'Made in Côte d\'Ivoire' },
+  { label: 'WhatsApp', href: 'https://wa.me/2250778882592', color: '#25d366', Icon: FaWhatsapp },
+  { label: 'Facebook', href: 'https://facebook.com/qrcodeexpress', color: '#1877f2', Icon: FaFacebookF },
+  { label: 'Instagram', href: 'https://instagram.com/qrcodeexpress', color: '#e1306c', Icon: FaInstagram },
+  { label: 'TikTok', href: 'https://tiktok.com/@qrcodeexpress', color: '#ffffff', Icon: FaTiktok },
+  { label: 'LinkedIn', href: 'https://linkedin.com/company/ibigsoft', color: '#0a66c2', Icon: FaLinkedinIn },
 ]
 
 export default function Footer() {
+  const t = useTranslations('footer')
+
+  const LINKS = [
+    {
+      title: t('col_product'),
+      links: [
+        { label: t('link_create_qr'), href: '/#generateur' },
+        { label: t('link_pricing'), href: '/tarifs' },
+        { label: t('link_features'), href: '/fonctionnalites' },
+        { label: t('link_api'), href: '/api-docs' },
+      ],
+    },
+    {
+      title: t('col_solutions'),
+      links: [
+        { label: t('link_menu'), href: '/#generateur' },
+        { label: t('link_ticketing'), href: '/#generateur' },
+        { label: t('link_payment'), href: '/#generateur' },
+        { label: t('link_forms'), href: '/#generateur' },
+        { label: t('link_biolinks'), href: '/#generateur' },
+      ],
+    },
+    {
+      title: t('col_resources'),
+      links: [
+        { label: t('link_guide'), href: '/guide' },
+        { label: t('link_blog'), href: '/blog' },
+        { label: t('link_support'), href: 'https://wa.me/2250778882592' },
+        { label: t('link_referral'), href: '/parrainage' },
+      ],
+    },
+    {
+      title: t('col_legal'),
+      links: [
+        { label: t('link_cgu'), href: '/cgu' },
+        { label: t('link_privacy'), href: '/confidentialite' },
+        { label: t('link_cookies'), href: '/cookies' },
+        { label: t('link_legal'), href: '/mentions-legales' },
+      ],
+    },
+  ]
+
+  const TRUST = [
+    { icon: '🔒', label: t('trust_ssl') },
+    { icon: '🌍', label: t('trust_hosted') },
+    { icon: '⚡', label: t('trust_uptime') },
+    { icon: '🇨🇮', label: t('trust_origin') },
+  ]
+
   return (
     <footer className="bg-[#041B4D] text-white">
 
@@ -68,22 +72,22 @@ export default function Footer() {
         style={{ background: 'linear-gradient(90deg, #041B4D 0%, #0d2d6e 50%, #041B4D 100%)' }}>
         <div className="max-w-6xl mx-auto px-4 py-10 flex flex-col md:flex-row items-center justify-between gap-6">
           <div>
-            <h2 className="text-2xl font-extrabold mb-1">Prêt à créer votre premier QR ?</h2>
-            <p className="text-blue-300 text-sm">Gratuit, sans carte bancaire. Opérationnel en 30 secondes.</p>
+            <h2 className="text-2xl font-extrabold mb-1">{t('cta_title')}</h2>
+            <p className="text-blue-300 text-sm">{t('cta_sub')}</p>
           </div>
-          <div className="flex gap-3 flex-shrink-0">
+          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             <Link
               href="/#generateur"
-              className="px-6 py-3 rounded-xl font-bold text-white text-sm shadow-lg hover:scale-105 transition-all"
+              className="px-6 py-3 rounded-xl font-bold text-white text-sm text-center shadow-lg hover:scale-105 transition-all"
               style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}
             >
-              Créer un QR gratuit →
+              {t('cta_btn')}
             </Link>
             <Link
               href="/inscription"
-              className="px-6 py-3 rounded-xl font-semibold text-white text-sm border border-white/20 hover:bg-white/10 transition-colors"
+              className="px-6 py-3 rounded-xl font-semibold text-white text-sm text-center border border-white/20 hover:bg-white/10 transition-colors"
             >
-              Ouvrir un compte
+              {t('cta_account')}
             </Link>
           </div>
         </div>
@@ -91,15 +95,15 @@ export default function Footer() {
 
       {/* Main content */}
       <div className="max-w-6xl mx-auto px-4 py-14">
-        <div className="grid grid-cols-1 md:grid-cols-6 gap-10">
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-8 md:gap-10">
 
           {/* Brand column */}
-          <div className="md:col-span-2">
+          <div className="col-span-2 md:col-span-2">
             <div className="mb-4">
               <Logo size="sm" dark />
             </div>
             <p className="text-sm text-blue-200 leading-relaxed mb-5 max-w-xs">
-              La plateforme QR professionnelle d'Afrique. Menus, billetterie, paiements Mobile Money, formulaires et plus encore.
+              {t('tagline')}
             </p>
 
             {/* Social links */}
@@ -112,17 +116,18 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   title={s.label}
                   className="w-9 h-9 rounded-lg flex items-center justify-center text-base hover:scale-110 transition-transform"
-                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)' }}
+                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.1)', color: s.color }}
                 >
-                  {s.icon}
+                  <s.Icon size={16} />
                 </a>
               ))}
             </div>
 
             {/* Contact */}
             <div className="mt-5 space-y-2 text-xs text-blue-300">
-              <p>📧 contact@qrcodeexpress.ci</p>
-              <p>📱 WhatsApp : +225 07 78 55 12 34</p>
+              <p>📧 <a href="mailto:contact@qrcode-express.com" className="hover:text-white transition-colors">contact@qrcode-express.com</a></p>
+              <p>📞 +225 27 22 27 60 14</p>
+              <p>📱 <a href="https://wa.me/2250778882592" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">WhatsApp : +225 07 78 88 25 92</a></p>
               <p>🏢 Abidjan, Côte d&apos;Ivoire</p>
             </div>
           </div>
@@ -163,7 +168,13 @@ export default function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-blue-900/60 py-5 px-4">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-blue-500">
-          <p>© {YEAR} IBIG SOFT — INTERMARK BUSINESS INTERNATIONAL GROUP (IBIG SARL), Abidjan, Côte d&apos;Ivoire</p>
+          <div className="flex flex-col sm:flex-row items-center gap-1 sm:gap-3">
+            <p>{t('copyright').replace('{year}', String(YEAR))}</p>
+            <span className="hidden sm:inline text-blue-800">·</span>
+            <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF6A00] transition-colors">ibigsoft.com</a>
+            <span className="hidden sm:inline text-blue-800">·</span>
+            <a href="https://intermark-business.com" target="_blank" rel="noopener noreferrer" className="hover:text-[#FF6A00] transition-colors">intermark-business.com</a>
+          </div>
           <div className="flex gap-4">
             <Link href="/cgu" className="hover:text-[#FF6A00] transition-colors">CGU</Link>
             <Link href="/confidentialite" className="hover:text-[#FF6A00] transition-colors">Confidentialité</Link>

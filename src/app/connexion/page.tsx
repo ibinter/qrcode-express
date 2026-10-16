@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
+
 export default function ConnexionPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -21,6 +22,7 @@ export default function ConnexionPage() {
     if (error) {
       setError('Email ou mot de passe incorrect.')
     } else {
+      router.refresh()
       router.push('/dashboard')
     }
     setLoading(false)

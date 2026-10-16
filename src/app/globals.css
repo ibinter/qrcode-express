@@ -7,10 +7,116 @@
   --font-body: var(--font-nunito), system-ui, sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+  text-size-adjust: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior-y: none;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* Selection color */
+::selection { background: rgba(255, 106, 0, 0.2); color: #041B4D; }
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Content-visibility: auto on below-fold sections for faster paint */
+main > section:not(:first-child) {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 400px;
+}
+
+/* Tap target sizes on mobile */
+@media (max-width: 768px) {
+  a, button {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  button[class*="p-1"], button[class*="p-1.5"] {
+    min-height: 36px;
+    min-width: 36px;
+  }
+}
+
+/* GPU-accelerated transitions */
+.transition-all, .transition-colors, .transition-opacity, .transition-transform {
+  will-change: auto;
+}
+
+/* Prevent layout shift on images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Section separator utility */
+.section-wave {
+  position: relative;
+}
+.section-wave::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: white;
+  clip-path: ellipse(55% 100% at 50% 100%);
+}
+
+/* Mobile-safe touch scrolling */
+.overflow-auto, .overflow-y-auto, .overflow-x-auto {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Smooth fade-in animation for loaded content */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+/* Hero slider keyframes (shared to avoid inline style injection) */
+@keyframes slideInRight { from{opacity:0;transform:translateX(60px)} to{opacity:1;transform:translateX(0)} }
+@keyframes slideInLeft  { from{opacity:0;transform:translateX(-60px)} to{opacity:1;transform:translateX(0)} }
+@keyframes slideOutLeft { from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(-60px)} }
+@keyframes slideOutRight{ from{opacity:1;transform:translateX(0)} to{opacity:0;transform:translateX(60px)} }
+@keyframes fadeInUp     { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+@keyframes float1 { 0%,100%{transform:translateY(0) rotate(-2deg)} 50%{transform:translateY(-12px) rotate(2deg)} }
+@keyframes float2 { 0%,100%{transform:translateY(0) rotate(3deg)} 50%{transform:translateY(-8px) rotate(-1deg)} }
+@keyframes float3 { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+@keyframes bgPulse { 0%,100%{opacity:0.15} 50%{opacity:0.25} }
+.slide-in-r  { animation: slideInRight .4s ease forwards }
+.slide-in-l  { animation: slideInLeft .4s ease forwards }
+.slide-out-l { animation: slideOutLeft .4s ease forwards }
+.fadeup  { animation: fadeInUp .5s ease forwards }
+.float1  { animation: float1 4s ease-in-out infinite }
+.float2  { animation: float2 5s ease-in-out infinite }
+.float3  { animation: float3 3.5s ease-in-out infinite }
+.bg-pulse { animation: bgPulse 3s ease-in-out infinite }

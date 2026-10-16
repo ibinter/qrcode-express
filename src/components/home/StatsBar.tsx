@@ -1,11 +1,12 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
+import { useTranslations } from 'next-intl'
 
-const stats = [
-  { value: 20, suffix: '+', label: 'types de QR codes', icon: '📱' },
-  { value: 30, suffix: 's', label: 'pour créer un QR', icon: '⚡' },
-  { value: 100, suffix: '%', label: 'sans filigrane', icon: '✨' },
-  { value: 0, suffix: ' FCFA', label: 'pour commencer', icon: '🎁' },
+const STATS_META = [
+  { value: 20, suffix: '+', key: 'types', icon: '📱', color: '#FF6A00' },
+  { value: 30, suffix: 's', key: 'time', icon: '⚡', color: '#10b981' },
+  { value: 100, suffix: '%', key: 'watermark', icon: '✨', color: '#8b5cf6' },
+  { value: 0, suffix: ' FCFA', key: 'free', icon: '🎁', color: '#FF6A00' },
 ]
 
 function Counter({ target, suffix }: { target: number; suffix: string }) {
@@ -19,8 +20,8 @@ function Counter({ target, suffix }: { target: number; suffix: string }) {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting && !started.current) {
         started.current = true
-        const duration = 1200
-        const steps = 40
+        const duration = 1400
+        const steps = 50
         const step = target / steps
         let current = 0
         const timer = setInterval(() => {
@@ -38,16 +39,25 @@ function Counter({ target, suffix }: { target: number; suffix: string }) {
 }
 
 export default function StatsBar() {
+  const t = useTranslations('stats')
   return (
-    <section className="bg-white border-b border-gray-100 py-8 px-4">
-      <div className="max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-        {stats.map((s) => (
-          <div key={s.label} className="flex flex-col items-center gap-1">
-            <span className="text-2xl mb-1">{s.icon}</span>
-            <p className="text-3xl md:text-4xl font-extrabold text-[#041B4D]">
+    <section className="relative py-10 px-4 overflow-hidden"
+      style={{ background: 'linear-gradient(135deg, #041B4D 0%, #0d2d6e 60%, #041B4D 100%)' }}>
+      {/* Subtle dot grid */}
+      <div className="absolute inset-0 opacity-[0.04]"
+        style={{ backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '28px 28px' }} />
+
+      <div className="relative max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-0">
+        {STATS_META.map((s, i) => (
+          <div key={s.key} className={`flex flex-col items-center gap-1 py-4 ${i < STATS_META.length - 1 ? 'md:border-r md:border-white/10' : ''}`}>
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl mb-1"
+              style={{ background: 'rgba(255,255,255,0.08)' }}>
+              {s.icon}
+            </div>
+            <p className="text-3xl md:text-4xl font-extrabold text-white">
               <Counter target={s.value} suffix={s.suffix} />
             </p>
-            <p className="text-xs text-gray-500 font-medium">{s.label}</p>
+            <p className="text-xs text-blue-300 font-medium text-center">{t(s.key as any)}</p>
           </div>
         ))}
       </div>
