@@ -2,6 +2,7 @@
 import { useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { usePlan, PlanHeaderBanner, LockBadge, tierAtLeast, type PlanTier } from '@/components/ui/PlanGate'
+import { useTranslations } from 'next-intl'
 
 // Categories
 const CATEGORIES = [
@@ -172,6 +173,7 @@ function LabelSVGPreview({ tpl, data, barcodeUrl, logoDataUrl }: {
 
 export default function LabelsPage() {
   const { tier } = usePlan()
+  const tl = useTranslations('labels')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [templateId, setTemplateId] = useState('price_58x40')
   const [barcodeType, setBarcodeType] = useState('code128')
@@ -318,7 +320,7 @@ export default function LabelsPage() {
                         : 'border-gray-200 text-gray-500 hover:border-[#FF6A00] hover:text-[#FF6A00]'
                     }`}>
                     <span>{cat.icon}</span>
-                    <span>{cat.label}</span>
+                    <span>{tl(`cat_${cat.id}` as 'cat_all')}</span>
                   </button>
                 ))}
               </div>
@@ -347,7 +349,7 @@ export default function LabelsPage() {
                             <span className="text-[10px]">{t.icon}</span>
                           </div>
                           <p className={`text-[11px] font-bold leading-tight ${templateId === t.id && !locked ? 'text-[#FF6A00]' : 'text-gray-700'}`}>
-                            {t.name}
+                            {tl(`tpl_${t.id}` as 'tpl_price_58x40')}
                           </p>
                         </div>
                         <p className="text-[9px] text-gray-400">{t.desc}</p>

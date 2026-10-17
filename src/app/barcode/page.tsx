@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { usePlan, UpgradeBanner, PlanHeaderBanner, LockBadge, tierAtLeast, type PlanTier } from '@/components/ui/PlanGate'
+import { useTranslations } from 'next-intl'
 
 const BARCODE_TYPES = [
   // --- GRATUIT ---
@@ -36,12 +37,12 @@ const BARCODE_TYPES = [
 ]
 
 const PRESETS = [
-  { label: 'Noir classique',  color: '#000000', bg: '#ffffff' },
-  { label: 'Bleu marine',     color: '#041B4D', bg: '#ffffff' },
-  { label: 'Orange',          color: '#FF6A00', bg: '#ffffff' },
-  { label: 'Vert',            color: '#10b981', bg: '#ffffff' },
-  { label: 'Fond sombre',     color: '#ffffff', bg: '#1e293b' },
-  { label: 'Or / luxe',       color: '#b45309', bg: '#fffbeb' },
+  { key: 'preset_black',  color: '#000000', bg: '#ffffff' },
+  { key: 'preset_navy',   color: '#041B4D', bg: '#ffffff' },
+  { key: 'preset_orange', color: '#FF6A00', bg: '#ffffff' },
+  { key: 'preset_green',  color: '#10b981', bg: '#ffffff' },
+  { key: 'preset_dark',   color: '#ffffff', bg: '#1e293b' },
+  { key: 'preset_gold',   color: '#b45309', bg: '#fffbeb' },
 ]
 
 function buildPngUrl(type: string, text: string, color: string, bg: string, height: number, scale: number) {
@@ -57,6 +58,7 @@ type SavedBarcode = { id: string; name: string; content: string; created_at: str
 
 export default function BarcodePage() {
   const { tier } = usePlan()
+  const tb = useTranslations('barcode')
   const [type, setType]     = useState('ean13')
   const [text, setText]     = useState('5901234123457')
   const [color, setColor]   = useState('#000000')
@@ -198,10 +200,10 @@ export default function BarcodePage() {
 
         {/* Tabs */}
         <div className="flex gap-1 bg-white border border-gray-100 rounded-2xl p-1 shadow-sm mb-6 w-fit">
-          {(['generator', 'history'] as const).map(t => (
-            <button key={t} onClick={() => setTab(t)}
-              className={`px-5 py-2 rounded-xl text-xs font-bold transition-all ${tab === t ? 'bg-[#FF6A00] text-white shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}>
-              {t === 'generator' ? '⚡ Générateur' : '📂 Mes codes-barres'}
+          {(['generator', 'history'] as const).map(tabKey => (
+            <button key={tabKey} onClick={() => setTab(tabKey)}
+              className={`px-5 py-2 rounded-xl text-xs font-bold transition-all ${tab === tabKey ? 'bg-[#FF6A00] text-white shadow-sm' : 'text-gray-500 hover:text-gray-800'}`}>
+              {tabKey === 'generator' ? `⚡ ${tb('tab_gen')}` : `📂 ${tb('tab_history')}`}
             </button>
           ))}
         </div>
@@ -226,7 +228,7 @@ export default function BarcodePage() {
                           <p className={`text-xs font-bold ${locked ? 'text-gray-400' : type === t.id ? 'text-[#FF6A00]' : 'text-gray-700'}`}>{t.label}</p>
                           {locked && <span className="text-[9px] font-bold text-orange-500">🔒</span>}
                         </div>
-                        <p className="text-[10px] text-gray-400 truncate">{t.desc}</p>
+                        <p className="text-[10px] text-gray-400 truncate">{tb(`type_${t.id}` as 'type_ean13')}</p>
                       </button>
                     )
                   })}
@@ -264,8 +266,8 @@ export default function BarcodePage() {
                   <p className="text-xs text-gray-500 mb-2">Thèmes prédéfinis</p>
                   <div className="flex flex-wrap gap-2">
                     {PRESETS.map(p => (
-                      <button key={p.label} onClick={() => { setColor(p.color); setBg(p.bg) }}
-                        title={p.label}
+                      <button key={p.key} onClick={() => { setColor(p.color); setBg(p.bg) }}
+                        title={tb(p.key as 'preset_black')}
                         className="w-8 h-8 rounded-lg border-2 border-gray-200 hover:border-[#FF6A00] transition-all overflow-hidden"
                         style={{ background: p.bg }}>
                         <div className="h-full w-3/5 mx-auto" style={{ background: p.color }} />
@@ -279,7 +281,7 @@ export default function BarcodePage() {
                     <input type="color" value={color} onChange={e => setColor(e.target.value)}
                       className="w-10 h-10 rounded-xl cursor-pointer border border-gray-200" />
                     <div>
-                      <p className="text-xs font-semibold text-gray-700">Couleur barres</p>
+                      <p className="text-xs font-semibold text-gray-700">{tb('label_color')}</p>
                       <p className="text-[10px] text-gray-400 font-mono">{color}</p>
                     </div>
                   </div>
@@ -287,7 +289,7 @@ export default function BarcodePage() {
                     <input type="color" value={bg} onChange={e => setBg(e.target.value)}
                       className="w-10 h-10 rounded-xl cursor-pointer border border-gray-200" />
                     <div>
-                      <p className="text-xs font-semibold text-gray-700">Fond</p>
+                      <p className="text-xs font-semibold text-gray-700">{tb('label_bg')}</p>
                       <p className="text-[10px] text-gray-400 font-mono">{bg}</p>
                     </div>
                   </div>
@@ -295,12 +297,12 @@ export default function BarcodePage() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-xs text-gray-500 block mb-1">Hauteur ({height}mm)</label>
+                    <label className="text-xs text-gray-500 block mb-1">{tb('label_height')} ({height}mm)</label>
                     <input type="range" min={8} max={40} value={height} onChange={e => setHeight(Number(e.target.value))}
                       className="w-full accent-[#FF6A00]" />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 block mb-1">Résolution ×{scale} {scale >= 5 ? '(HD 300dpi)' : scale >= 4 ? '(HD)' : ''}</label>
+                    <label className="text-xs text-gray-500 block mb-1">{tb('label_scale')} ×{scale} {scale >= 5 ? '(HD 300dpi)' : scale >= 4 ? '(HD)' : ''}</label>
                     <input type="range" min={1} max={8} value={scale} onChange={e => setScale(Number(e.target.value))}
                       className="w-full accent-[#FF6A00]" />
                   </div>

@@ -9,6 +9,7 @@ import ReferralClaimOnce from '@/components/ReferralClaimOnce'
 import WelcomeBanner from '@/components/WelcomeBanner'
 import DashboardBanner from '@/components/dashboard/DashboardBanner'
 import AnalyticsWidget from '@/components/dashboard/AnalyticsWidget'
+import { getTranslations } from 'next-intl/server'
 
 
 export const metadata: Metadata = {
@@ -78,13 +79,15 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const qrMap: Record<string, { name: string; type: string }> = {}
   for (const q of qrs ?? []) qrMap[q.id] = { name: q.name || `QR ${q.type}`, type: q.type }
 
+  const t = await getTranslations('dashboard')
+
   // 7-day mini chart data
   const chartData7d = Array.from({ length: 7 }, (_, i) => {
     const d = new Date(now.getTime() - (6 - i) * 24 * 60 * 60 * 1000)
-    const dateStr = d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
-    const count = (scans7d ?? []).filter(e => new Date(e.scanned_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' }) === dateStr).length
+    const dateStr = d.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' })
+    const count = (scans7d ?? []).filter(e => new Date(e.scanned_at).toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' }) === dateStr).length
     const isToday = i === 6
-    return { label: isToday ? 'Auj.' : d.toLocaleDateString('fr-FR', { weekday: 'short' }), count, isToday }
+    return { label: isToday ? t('chart_today') : d.toLocaleDateString('en-US', { weekday: 'short' }), count, isToday }
   })
   const maxChart = Math.max(...chartData7d.map(d => d.count), 1)
 
@@ -103,12 +106,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const QUICK_TYPES = [
     { type: 'url', icon: '🔗', label: 'URL' },
     { type: 'biolink', icon: '👤', label: 'Bio Link' },
-    { type: 'vcard_plus', icon: '🪪', label: 'Carte Pro' },
-    { type: 'menu', icon: '🍽️', label: 'Menu' },
-    { type: 'coupon', icon: '🎫', label: 'Coupon' },
-    { type: 'event', icon: '📅', label: 'Événement' },
-    { type: 'review', icon: '⭐', label: 'Avis' },
-    { type: 'wifi', icon: '📶', label: 'Wi-Fi' },
+    { type: 'vcard_plus', icon: '🪪', label: t('quick_vcard_pro') },
+    { type: 'menu', icon: '🍽️', label: t('quick_menu') },
+    { type: 'coupon', icon: '🎫', label: t('quick_coupon') },
+    { type: 'event', icon: '📅', label: t('quick_event') },
+    { type: 'review', icon: '⭐', label: t('quick_review') },
+    { type: 'wifi', icon: '📶', label: t('quick_wifi') },
   ]
 
   return (
@@ -122,29 +125,29 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
           <div>
             <h1 className="text-xl font-extrabold text-[#041B4D]">
-              Bonjour {profile?.full_name?.split(' ')[0] ?? user.email?.split('@')[0]} 👋
+              {t('greeting', { name: profile?.full_name?.split(' ')[0] ?? user.email?.split('@')[0] })}
             </h1>
             <p className="text-xs text-gray-500 mt-0.5">
-              {(qrs?.length ?? 0) === 0 ? 'Créez votre premier QR code ci-dessous' : 'Voici votre tableau de bord'}
+              {(qrs?.length ?? 0) === 0 ? t('subtitle_empty') : t('subtitle_default')}
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0 flex-wrap">
             <Link href="/barcode"
               className="text-center px-3 py-2 rounded-xl text-xs font-semibold border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors">
-              📊 <span className="hidden sm:inline">Codes-barres</span>
+              📊 <span className="hidden sm:inline">{t('btn_barcodes')}</span>
             </Link>
             <Link href="/labels"
               className="text-center px-3 py-2 rounded-xl text-xs font-semibold border border-purple-200 text-purple-700 hover:bg-purple-50 transition-colors">
-              🏷️ <span className="hidden sm:inline">Étiquettes</span>
+              🏷️ <span className="hidden sm:inline">{t('btn_labels')}</span>
             </Link>
             <Link href="/dashboard/bulk"
               className="text-center px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors">
-              📥 <span className="hidden sm:inline">Import </span>CSV
+              📥 <span className="hidden sm:inline">{t('btn_import').replace(' CSV', '')} </span>CSV
             </Link>
             <Link href="/"
               className="text-center px-4 py-2 rounded-xl text-xs font-semibold text-white shadow-sm hover:opacity-90 transition-opacity"
               style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}>
-              + Nouveau QR
+              {t('btn_new_qr')}
             </Link>
           </div>
         </div>
@@ -168,20 +171,20 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
             <div className="flex items-start justify-between mb-2">
               <span className="text-xl">📱</span>
-              {pausedCount > 0 && <span className="text-[9px] text-yellow-600 bg-yellow-50 px-1.5 py-0.5 rounded-full font-semibold">{pausedCount} en pause</span>}
+              {pausedCount > 0 && <span className="text-[9px] text-yellow-600 bg-yellow-50 px-1.5 py-0.5 rounded-full font-semibold">{t('kpi_paused', { n: pausedCount })}</span>}
             </div>
             <p className="text-2xl font-extrabold text-[#FF6A00]">{activeCount}</p>
-            <p className="text-[10px] text-gray-500 mt-0.5">QR actifs</p>
+            <p className="text-[10px] text-gray-500 mt-0.5">{t('kpi_active')}</p>
           </div>
 
           {/* Scans total */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
             <div className="flex items-start justify-between mb-2">
               <span className="text-xl">📊</span>
-              <span className="text-[9px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full font-semibold">+{scansTodayCount} auj.</span>
+              <span className="text-[9px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full font-semibold">{t('kpi_today', { n: scansTodayCount })}</span>
             </div>
-            <p className="text-2xl font-extrabold text-blue-600">{totalScans.toLocaleString('fr-FR')}</p>
-            <p className="text-[10px] text-gray-500 mt-0.5">Scans total</p>
+            <p className="text-2xl font-extrabold text-blue-600">{totalScans.toLocaleString()}</p>
+            <p className="text-[10px] text-gray-500 mt-0.5">{t('kpi_total_scans')}</p>
           </div>
 
           {/* Scans 30j avec tendance */}
@@ -196,18 +199,18 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 </span>
               )}
             </div>
-            <p className="text-2xl font-extrabold text-emerald-600">{s30.toLocaleString('fr-FR')}</p>
-            <p className="text-[10px] text-gray-500 mt-0.5">Scans 30 jours</p>
+            <p className="text-2xl font-extrabold text-emerald-600">{s30.toLocaleString()}</p>
+            <p className="text-[10px] text-gray-500 mt-0.5">{t('kpi_30d')}</p>
           </div>
 
           {/* Dynamiques */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4">
             <div className="flex items-start justify-between mb-2">
               <span className="text-xl">⚡</span>
-              <span className="text-[9px] text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded-full font-semibold">{qrs?.length ?? 0} total</span>
+              <span className="text-[9px] text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded-full font-semibold">{t('kpi_total', { n: qrs?.length ?? 0 })}</span>
             </div>
             <p className="text-2xl font-extrabold text-purple-600">{dynamicCount}</p>
-            <p className="text-[10px] text-gray-500 mt-0.5">QR dynamiques</p>
+            <p className="text-[10px] text-gray-500 mt-0.5">{t('kpi_dynamic')}</p>
           </div>
         </div>
 
@@ -216,11 +219,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
           {/* Usage bar */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-4">Utilisation du plan</h2>
+            <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-4">{t('usage_title')}</h2>
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between text-xs mb-1.5">
-                  <span className="text-gray-600 font-medium">QR codes</span>
+                  <span className="text-gray-600 font-medium">{t('usage_qr')}</span>
                   <span className="font-bold text-[#041B4D]">{qrs?.length ?? 0} / {limits.qr >= 9999 ? '∞' : limits.qr}</span>
                 </div>
                 <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
@@ -228,12 +231,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                     style={{ width: `${qrUsagePct}%`, background: qrUsagePct >= 90 ? '#ef4444' : qrUsagePct >= 70 ? '#f59e0b' : '#FF6A00' }} />
                 </div>
                 {qrUsagePct >= 80 && (
-                  <p className="text-[10px] text-orange-500 mt-1 font-semibold">Limite proche — <Link href="/tarifs" className="underline">Passer Pro</Link></p>
+                  <p className="text-[10px] text-orange-500 mt-1 font-semibold">{t('usage_limit')}<Link href="/tarifs" className="underline">{t('usage_upgrade')}</Link></p>
                 )}
               </div>
               <div>
                 <div className="flex justify-between text-xs mb-1.5">
-                  <span className="text-gray-600 font-medium">Scans (7j)</span>
+                  <span className="text-gray-600 font-medium">{t('usage_scans')}</span>
                   <span className="font-bold text-[#041B4D]">{scans7dCount}</span>
                 </div>
                 <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
@@ -243,12 +246,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               </div>
               <div className="pt-2 border-t border-gray-50">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-gray-500">Crédits disponibles</span>
-                  <span className="text-sm font-extrabold text-[#FF6A00]">{credits.toLocaleString('fr-FR')}</span>
+                  <span className="text-[10px] text-gray-500">{t('usage_credits')}</span>
+                  <span className="text-sm font-extrabold text-[#FF6A00]">{credits.toLocaleString()}</span>
                 </div>
                 <Link href="/portefeuille"
                   className="mt-2 block text-center text-[10px] font-bold text-[#FF6A00] border border-orange-200 rounded-lg py-1.5 hover:bg-orange-50 transition-colors">
-                  + Recharger les crédits
+                  {t('usage_recharge')}
                 </Link>
               </div>
             </div>
@@ -257,7 +260,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           {/* 7-day chart */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wide">Scans — 7 derniers jours</h2>
+              <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wide">{t('chart_title')}</h2>
               <span className="text-xs font-bold text-[#FF6A00]">{scans7dCount}</span>
             </div>
             <div className="flex items-end gap-1 h-24">
@@ -284,9 +287,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
           {/* Top 3 QR */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-4">Top QR codes</h2>
+            <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-4">{t('top_title')}</h2>
             {top3.length === 0 ? (
-              <p className="text-xs text-gray-400 text-center py-6">Aucun QR créé</p>
+              <p className="text-xs text-gray-400 text-center py-6">{t('top_empty')}</p>
             ) : (
               <div className="space-y-3">
                 {top3.map((qr, i) => (
@@ -309,7 +312,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               </div>
             )}
             <Link href="/dashboard" className="mt-4 block text-center text-[10px] font-bold text-gray-400 hover:text-[#FF6A00] transition-colors">
-              Voir tous les QR →
+              {t('top_see_all')}
             </Link>
           </div>
         </div>
@@ -317,12 +320,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         {/* Recent activity */}
         {(recentActivity?.length ?? 0) > 0 && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-6">
-            <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-4">Activité récente</h2>
+            <h2 className="text-xs font-bold text-gray-500 uppercase tracking-wide mb-4">{t('activity_title')}</h2>
             <div className="space-y-2">
               {(recentActivity ?? []).map((e, i) => {
                 const qrInfo = qrMap[e.qr_id]
-                const time = new Date(e.scanned_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
-                const date = new Date(e.scanned_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+                const time = new Date(e.scanned_at).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+                const date = new Date(e.scanned_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })
                 const isToday = new Date(e.scanned_at).toDateString() === now.toDateString()
                 return (
                   <div key={i} className="flex items-center gap-3 py-2 border-b border-gray-50 last:border-0">
@@ -331,7 +334,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-xs font-semibold text-gray-900 truncate">
-                        {qrInfo ? `${TYPE_ICONS[qrInfo.type]} ${qrInfo.name}` : 'QR code scanné'}
+                        {qrInfo ? `${TYPE_ICONS[qrInfo.type]} ${qrInfo.name}` : t('activity_scanned')}
                       </p>
                       <p className="text-[10px] text-gray-400">
                         {e.country ? `🌍 ${e.country}` : ''} · {e.device_type || 'appareil'}
@@ -351,7 +354,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         {/* QR list */}
         <div className="mt-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-bold text-[#041B4D]">Mes QR codes</h2>
+            <h2 className="text-base font-bold text-[#041B4D]">{t('qr_list_title')}</h2>
             {(qrs?.length ?? 0) > 0 && (
               <span className="text-xs text-gray-400 font-semibold">{qrs?.length} code{(qrs?.length ?? 0) > 1 ? 's' : ''}</span>
             )}
@@ -362,9 +365,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                 style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}>
                 📱
               </div>
-              <p className="font-bold text-lg text-[#041B4D] mb-1">Aucun QR code encore</p>
+              <p className="font-bold text-lg text-[#041B4D] mb-1">{t('empty_title')}</p>
               <p className="text-sm text-gray-500 mb-6 max-w-xs mx-auto">
-                QR codes, codes-barres (26 formats), étiquettes (31 gabarits)… Tout est possible en quelques secondes.
+                {t('empty_desc')}
               </p>
               <div className="flex flex-wrap justify-center gap-2 mb-6">
                 {QUICK_TYPES.slice(0, 4).map(t => (
@@ -377,7 +380,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               <Link href="/"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white hover:opacity-90 transition-opacity shadow-sm"
                 style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}>
-                + Créer mon premier QR code
+                {t('empty_cta')}
               </Link>
             </div>
           ) : (

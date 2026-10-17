@@ -1,8 +1,9 @@
 import type { Metadata } from 'next'
-﻿import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import ReferralDashboard from './ReferralDashboard'
+import { getTranslations } from 'next-intl/server'
 
 
 export const metadata: Metadata = {
@@ -63,14 +64,14 @@ export default async function ParrainagePage() {
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qrcode-express.com'
   const referralLink = `${appUrl}/inscription?ref=${profile?.referral_code || ''}`
+  const t = await getTranslations('referral')
 
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-4 py-8">
-        <h1 className="text-xl font-bold text-[#041B4D] mb-1">🎁 Parrainage</h1>
+        <h1 className="text-xl font-bold text-[#041B4D] mb-1">{t('title')}</h1>
         <p className="text-sm text-gray-500 mb-6">
-          Invitez vos amis et gagnez <strong>{REFERRER_CREDITS} crédits</strong> pour chaque inscription confirmée.
-          Votre filleul reçoit <strong>{REFERRED_CREDITS} crédits</strong> de bienvenue.
+          {t('desc', { referrer: REFERRER_CREDITS, referred: REFERRED_CREDITS })}
         </p>
 
         <ReferralDashboard
