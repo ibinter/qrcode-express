@@ -6,6 +6,7 @@ import RoutingRulesManager from '@/components/dashboard/RoutingRulesManager'
 import QRSettingsPanel from '@/components/dashboard/QRSettingsPanel'
 import LinkHealthBadge from '@/components/dashboard/LinkHealthBadge'
 import ScanNotificationToggle from '@/components/dashboard/ScanNotificationToggle'
+import { getTranslations } from 'next-intl/server'
 
 export const instant = false
 
@@ -47,7 +48,7 @@ function BarChart({ data }: { data: { label: string; count: number }[] }) {
   )
 }
 
-function HourlyHeatmap({ data }: { data: number[] }) {
+function HourlyHeatmap({ data, heatLabels }: { data: number[]; heatLabels: [string, string, string] }) {
   const max = Math.max(...data, 1)
   const hours = Array.from({ length: 24 }, (_, i) => i)
   return (
@@ -77,13 +78,13 @@ function HourlyHeatmap({ data }: { data: number[] }) {
           <div className="w-3 h-3 rounded-sm bg-gray-100" /> 0
         </div>
         <div className="flex gap-1 items-center">
-          <div className="w-3 h-3 rounded-sm" style={{ background: '#fed7aa' }} /> faible
+          <div className="w-3 h-3 rounded-sm" style={{ background: '#fed7aa' }} /> {heatLabels[0]}
         </div>
         <div className="flex gap-1 items-center">
-          <div className="w-3 h-3 rounded-sm" style={{ background: '#f97316' }} /> moyen
+          <div className="w-3 h-3 rounded-sm" style={{ background: '#f97316' }} /> {heatLabels[1]}
         </div>
         <div className="flex gap-1 items-center">
-          <div className="w-3 h-3 rounded-sm" style={{ background: '#ea580c' }} /> élevé
+          <div className="w-3 h-3 rounded-sm" style={{ background: '#ea580c' }} /> {heatLabels[2]}
         </div>
       </div>
     </div>
@@ -115,6 +116,7 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/connexion')
+  const t = await getTranslations('qrDetail')
 
   const admin = createAdminClient()
 
@@ -138,11 +140,11 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
   const dayMap: Record<string, number> = {}
   const days30 = Array.from({ length: 30 }, (_, i) => {
     const d = new Date(Date.now() - (29 - i) * 86400000)
-    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
+    return d.toLocaleDateString(undefined, { day: '2-digit', month: '2-digit' })
   })
   days30.forEach(d => (dayMap[d] = 0))
   realScans.forEach(e => {
-    const label = new Date(e.scanned_at).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit' })
+    const label = new Date(e.scanned_at).toLocaleDateString(undefined, { day: '2-digit', month: '2-digit' })
     if (label in dayMap) dayMap[label]++
   })
   const chartData30 = days30.map(d => ({ label: d, count: dayMap[d] }))
@@ -186,7 +188,7 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
   const peakDay = (() => {
     const dm: Record<string, number> = {}
     realScans.forEach(e => {
-      const day = new Date(e.scanned_at).toLocaleDateString('fr-FR', { weekday: 'long' })
+      const day = new Date(e.scanned_at).toLocaleDateString(undefined, { weekday: 'long' })
       dm[day] = (dm[day] || 0) + 1
     })
     return Object.entries(dm).sort((a, b) => b[1] - a[1])[0]?.[0] || '—'
@@ -236,23 +238,23 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-6">
-          <Link href="/dashboard" className="text-gray-400 hover:text-gray-600 transition-colors text-sm">← Retour</Link>
+          <Link href="/dashboard" className="text-gray-400 hover:text-gray-600 transition-colors text-sm">{t('back')}</Link>
           <div className="flex-1 min-w-0">
             <h1 className="text-xl font-bold text-[#041B4D] truncate">{qr.name}</h1>
-            <p className="text-sm text-gray-500">{TYPE_LABELS[qr.type] || qr.type} · {qr.mode === 'dynamic' ? 'Dynamique' : 'Statique'}</p>
+            <p className="text-sm text-gray-500">{TYPE_LABELS[qr.type] || qr.type} · {qr.mode === 'dynamic' ? t('dynamic') : t('static')}</p>
           </div>
           <span className={`text-xs px-3 py-1 rounded-full font-semibold shrink-0 ${qr.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-            {qr.status === 'active' ? 'Actif' : qr.status}
+            {qr.status === 'active' ? t('active') : qr.status}
           </span>
         </div>
 
         {/* KPI cards */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
           {[
-            { label: 'Scans total', value: qr.scan_count ?? 0, icon: '📊', color: '#041B4D' },
-            { label: '30 derniers jours', value: totalScans, icon: '📅', color: '#FF6A00' },
-            { label: 'Heure de pointe', value: `${String(peakHour).padStart(2,'0')}h`, icon: '⏰', color: '#059669' },
-            { label: 'Bots filtrés', value: botsCount, icon: '🤖', color: '#6b7280' },
+            { label: t('scans_total'), value: qr.scan_count ?? 0, icon: '📊', color: '#041B4D' },
+            { label: t('last_30'), value: totalScans, icon: '📅', color: '#FF6A00' },
+            { label: t('peak_hour'), value: `${String(peakHour).padStart(2,'0')}h`, icon: '⏰', color: '#059669' },
+            { label: t('bots_filtered'), value: botsCount, icon: '🤖', color: '#6b7280' },
           ].map(s => (
             <div key={s.label} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center">
               <p className="text-2xl mb-1">{s.icon}</p>
@@ -265,8 +267,8 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
         {/* 30-day chart */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
           <div className="flex items-center justify-between mb-2">
-            <h2 className="text-sm font-bold text-[#041B4D]">Scans — 30 derniers jours</h2>
-            <span className="text-xs text-gray-400">{totalScans} scans réels</span>
+            <h2 className="text-sm font-bold text-[#041B4D]">{t('chart_title')}</h2>
+            <span className="text-xs text-gray-400">{totalScans} {t('real_scans')}</span>
           </div>
           <BarChart data={chartData30} />
         </div>
@@ -274,13 +276,13 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
         {/* Hourly heatmap */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-[#041B4D]">Activité par heure</h2>
-            <span className="text-xs text-gray-400">Jour le plus actif : {peakDay}</span>
+            <h2 className="text-sm font-bold text-[#041B4D]">{t('hourly_title')}</h2>
+            <span className="text-xs text-gray-400">{t('busiest_day')} {peakDay}</span>
           </div>
           {totalScans === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-4">Pas encore de données</p>
+            <p className="text-sm text-gray-400 text-center py-4">{t('no_data')}</p>
           ) : (
-            <HourlyHeatmap data={hourMap} />
+            <HourlyHeatmap data={hourMap} heatLabels={[t('heat_low'), t('heat_med'), t('heat_high')]} />
           )}
         </div>
 
@@ -288,17 +290,17 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
         <div className="grid md:grid-cols-3 gap-4 mb-4">
           {/* Devices */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <h2 className="text-sm font-bold text-[#041B4D] mb-4">Appareils</h2>
+            <h2 className="text-sm font-bold text-[#041B4D] mb-4">{t('devices')}</h2>
             <div className="space-y-3">
-              <DonutStat label="📱 Mobile" count={devices.mobile || 0} total={totalScans} color="#FF6A00" />
-              <DonutStat label="💻 Desktop" count={devices.desktop || 0} total={totalScans} color="#041B4D" />
-              <DonutStat label="📟 Tablette" count={devices.tablet || 0} total={totalScans} color="#059669" />
+              <DonutStat label={t('mobile')} count={devices.mobile || 0} total={totalScans} color="#FF6A00" />
+              <DonutStat label={t('desktop')} count={devices.desktop || 0} total={totalScans} color="#041B4D" />
+              <DonutStat label={t('tablet')} count={devices.tablet || 0} total={totalScans} color="#059669" />
             </div>
           </div>
 
           {/* OS */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <h2 className="text-sm font-bold text-[#041B4D] mb-4">Systèmes</h2>
+            <h2 className="text-sm font-bold text-[#041B4D] mb-4">{t('systems')}</h2>
             {topOS.length === 0 ? (
               <p className="text-sm text-gray-400 py-4 text-center">—</p>
             ) : topOS.map(([name, count]) => {
@@ -319,7 +321,7 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
 
           {/* Browser */}
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-            <h2 className="text-sm font-bold text-[#041B4D] mb-4">Navigateurs</h2>
+            <h2 className="text-sm font-bold text-[#041B4D] mb-4">{t('browsers')}</h2>
             {topBrowsers.length === 0 ? (
               <p className="text-sm text-gray-400 py-4 text-center">—</p>
             ) : topBrowsers.map(([name, count]) => {
@@ -341,9 +343,9 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
 
         {/* Countries */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
-          <h2 className="text-sm font-bold text-[#041B4D] mb-4">Répartition géographique</h2>
+          <h2 className="text-sm font-bold text-[#041B4D] mb-4">{t('geo')}</h2>
           {topCountries.length === 0 ? (
-            <p className="text-sm text-gray-400 py-4 text-center">Données insuffisantes</p>
+            <p className="text-sm text-gray-400 py-4 text-center">{t('insufficient')}</p>
           ) : (
             <div className="grid md:grid-cols-2 gap-x-8 gap-y-2">
               {topCountries.map(([code, count], i) => {
@@ -372,23 +374,23 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
 
         {/* Notifications */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
-          <h2 className="text-sm font-bold text-[#041B4D] mb-1">🔔 Notifications de scan</h2>
-          <p className="text-xs text-gray-500 mb-4">Recevez un email à chaque scan détecté (hors bots).</p>
+          <h2 className="text-sm font-bold text-[#041B4D] mb-1">{t('notif_title')}</h2>
+          <p className="text-xs text-gray-500 mb-4">{t('notif_desc')}</p>
           <ScanNotificationToggle qrId={id} initialEmail={notifyEmail} userEmail={user.email || ''} />
         </div>
 
         {/* Destination history */}
         {destinations && destinations.length > 0 && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
-            <h2 className="text-sm font-bold text-[#041B4D] mb-3">Historique des destinations</h2>
+            <h2 className="text-sm font-bold text-[#041B4D] mb-3">{t('history_title')}</h2>
             <div className="space-y-2">
               {destinations.map((d, i) => (
                 <div key={i} className="flex items-center gap-3 text-xs">
                   <span className={`px-2 py-0.5 rounded-full font-semibold shrink-0 ${d.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-400'}`}>
-                    {d.is_active ? '● Actuel' : 'Ancien'}
+                    {d.is_active ? t('current') : t('old')}
                   </span>
                   <span className="flex-1 truncate font-mono text-gray-700">{d.destination}</span>
-                  <span className="text-gray-400 shrink-0">{new Date(d.set_at).toLocaleDateString('fr-FR')}</span>
+                  <span className="text-gray-400 shrink-0">{new Date(d.set_at).toLocaleDateString()}</span>
                 </div>
               ))}
             </div>
@@ -398,7 +400,7 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
         {/* A/B Test results */}
         {abStats.length > 0 && (
           <div className="bg-white rounded-2xl border border-purple-100 shadow-sm p-5 mb-4">
-            <h2 className="text-sm font-bold text-[#041B4D] mb-4">🔀 Résultats A/B Test — 30 jours</h2>
+            <h2 className="text-sm font-bold text-[#041B4D] mb-4">{t('ab_title')}</h2>
             {abStats.map((ab, idx) => {
               const total = ab.variants.reduce((s, v) => s + v.scans, 0)
               const colors = ['#FF6A00', '#041B4D', '#059669', '#7c3aed']
@@ -411,9 +413,9 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
                       <div key={i} className="mb-4">
                         <div className="flex justify-between items-center text-xs mb-1">
                           <span className="font-bold" style={{ color: colors[i % colors.length] }}>
-                            Variant {String.fromCharCode(65 + i)} ({configured}% configuré)
+                            {t('ab_variant', { x: String.fromCharCode(65 + i), n: configured })}
                           </span>
-                          <span className="text-gray-500">{v.scans} scans réels ({pct}%)</span>
+                          <span className="text-gray-500">{v.scans} {t('real_scans')} ({pct}%)</span>
                         </div>
                         <div className="h-3 bg-gray-100 rounded-full overflow-hidden mb-1">
                           <div className="h-full rounded-full transition-all"
@@ -430,7 +432,7 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
                       <div className="flex items-center gap-2 bg-green-50 border border-green-100 rounded-xl px-3 py-2 text-xs">
                         <span className="text-lg">🏆</span>
                         <span className="text-green-700">
-                          <strong>Variant {String.fromCharCode(65 + winIdx)}</strong> est en tête avec {winner.scans} scans
+                          <strong>Variant {String.fromCharCode(65 + winIdx)}</strong> {t('ab_leading', { n: winner.scans })}
                         </span>
                       </div>
                     )
@@ -451,7 +453,7 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
         {/* Link health */}
         {qr.mode === 'dynamic' && qr.content?.startsWith('http') && (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-4">
-            <h2 className="text-sm font-bold text-[#041B4D] mb-3">🔍 Surveillance du lien</h2>
+            <h2 className="text-sm font-bold text-[#041B4D] mb-3">{t('link_watch')}</h2>
             <LinkHealthBadge
               qrId={id}
               url={qr.content}
@@ -463,14 +465,14 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
         {/* Event management panel */}
         {qr.type === 'event' && ticketStats && (
           <div className="bg-white rounded-2xl border border-blue-100 shadow-sm p-5 mb-4">
-            <h2 className="text-sm font-bold text-[#041B4D] mb-4">🎟️ Gestion des billets</h2>
+            <h2 className="text-sm font-bold text-[#041B4D] mb-4">{t('ticketing')}</h2>
 
             {/* KPIs */}
             <div className="grid grid-cols-3 gap-3 mb-4">
               {[
-                { label: 'Inscrits', value: ticketStats.total, color: '#041B4D', icon: '👥' },
-                { label: 'Validés', value: ticketStats.used, color: '#16a34a', icon: '✅' },
-                { label: 'Annulés', value: ticketStats.cancelled, color: '#dc2626', icon: '❌' },
+                { label: t('registered'), value: ticketStats.total, color: '#041B4D', icon: '👥' },
+                { label: t('validated'), value: ticketStats.used, color: '#16a34a', icon: '✅' },
+                { label: t('cancelled'), value: ticketStats.cancelled, color: '#dc2626', icon: '❌' },
               ].map(s => (
                 <div key={s.label} className="text-center bg-gray-50 rounded-xl p-3">
                   <p className="text-lg">{s.icon}</p>
@@ -484,18 +486,18 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
             <div className="flex gap-3 mb-4">
               <Link href={`/scan/${id}`}
                 className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm bg-[#041B4D] hover:bg-[#0a2a6a] transition-colors">
-                📷 Scanner à l&apos;entrée
+                {t('scan_entry')}
               </Link>
               <a href={`/api/event/${id}/export`}
                 className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm border border-gray-200 hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors">
-                📥 Exporter CSV
+                {t('export_csv')}
               </a>
             </div>
 
             {/* Recent registrations */}
             {ticketStats.recent.length > 0 && (
               <div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Dernières inscriptions</p>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">{t('last_signups')}</p>
                 <div className="space-y-1.5">
                   {ticketStats.recent.map((t: { code: string; holder_name: string; holder_email: string; status: string; created_at: string }) => (
                     <div key={t.code} className="flex items-center gap-3 py-1.5 border-b border-gray-50 last:border-0">
@@ -506,7 +508,7 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
                       </div>
                       <div className="text-right shrink-0">
                         <p className="text-xs font-mono text-gray-500">{t.code}</p>
-                        <p className="text-[10px] text-gray-400">{new Date(t.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}</p>
+                        <p className="text-[10px] text-gray-400">{new Date(t.created_at).toLocaleDateString(undefined, { day: '2-digit', month: 'short' })}</p>
                       </div>
                     </div>
                   ))}
@@ -515,7 +517,7 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
             )}
 
             {ticketStats.total === 0 && (
-              <p className="text-sm text-gray-400 text-center py-4">Aucune inscription pour l&apos;instant.</p>
+              <p className="text-sm text-gray-400 text-center py-4">{t('no_signups')}</p>
             )}
           </div>
         )}

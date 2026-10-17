@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 interface Props {
   packId: string
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function RechargeButton({ packId, amount, credits }: Props) {
+  const t = useTranslations('wallet')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -23,12 +25,12 @@ export default function RechargeButton({ packId, amount, credits }: Props) {
       })
       const data = await res.json()
       if (!res.ok || !data.payment_url) {
-        setError(data.error || 'Erreur de paiement')
+        setError(data.error || t('pay_error'))
         return
       }
       window.location.href = data.payment_url
     } catch {
-      setError('Erreur réseau')
+      setError(t('network_error'))
     } finally {
       setLoading(false)
     }
@@ -43,7 +45,7 @@ export default function RechargeButton({ packId, amount, credits }: Props) {
         style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}
       >
         {loading ? <Loader2 size={14} className="animate-spin" /> : null}
-        {loading ? 'Redirection…' : 'Payer'}
+        {loading ? t('redirecting') : t('pay_btn')}
       </button>
       {error && <p className="text-xs text-red-500 mt-1 text-center">{error}</p>}
     </div>

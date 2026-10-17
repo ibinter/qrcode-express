@@ -87,7 +87,7 @@ export default async function ProfilPage() {
             <p className="text-xl mb-1">💰</p>
             <p className="text-2xl font-bold text-[#FF6A00]">{credits.toLocaleString()}</p>
             <p className="text-xs text-gray-500 mt-0.5">{t('stat_credits')}</p>
-            <p className="text-xs text-[#FF6A00] font-semibold mt-1 opacity-0 group-hover:opacity-100 transition-opacity">Recharger →</p>
+            <p className="text-xs text-[#FF6A00] font-semibold mt-1 opacity-0 group-hover:opacity-100 transition-opacity">{t('recharge_btn')}</p>
           </Link>
         </div>
 

@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 
 interface Props {
   fullName: string
@@ -9,6 +10,7 @@ interface Props {
 
 export default function ProfileActions({ fullName, email }: Props) {
   const router = useRouter()
+  const t = useTranslations('profile')
   const [name, setName] = useState(fullName)
   const [editingName, setEditingName] = useState(false)
   const [savingName, setSavingName] = useState(false)
@@ -29,14 +31,14 @@ export default function ProfileActions({ fullName, email }: Props) {
         body: JSON.stringify({ full_name: name.trim() }),
       })
       if (res.ok) {
-        setNameMsg('Nom mis à jour !')
+        setNameMsg(t('name_updated'))
         setEditingName(false)
         router.refresh()
       } else {
-        setNameMsg('Erreur lors de la mise à jour')
+        setNameMsg(t('update_error'))
       }
     } catch {
-      setNameMsg('Erreur réseau')
+      setNameMsg(t('network_error'))
     } finally {
       setSavingName(false)
     }
@@ -52,11 +54,11 @@ export default function ProfileActions({ fullName, email }: Props) {
         router.push('/')
       } else {
         const data = await res.json().catch(() => ({}))
-        setDeleteError(data.error ?? 'Erreur lors de la suppression')
+        setDeleteError(data.error ?? t('delete_error'))
         setDeleting(false)
       }
     } catch {
-      setDeleteError('Erreur réseau')
+      setDeleteError(t('network_error'))
       setDeleting(false)
     }
   }
@@ -65,10 +67,10 @@ export default function ProfileActions({ fullName, email }: Props) {
     <div className="space-y-4">
       {/* Edit name */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h2 className="text-sm font-bold text-[#041B4D] mb-3">Informations personnelles</h2>
+        <h2 className="text-sm font-bold text-[#041B4D] mb-3">{t('personal_info')}</h2>
         <div className="space-y-3">
           <div>
-            <label className="text-xs text-gray-500 font-medium block mb-1">Nom complet</label>
+            <label className="text-xs text-gray-500 font-medium block mb-1">{t('full_name')}</label>
             {editingName ? (
               <div className="flex gap-2">
                 <input
@@ -84,7 +86,7 @@ export default function ProfileActions({ fullName, email }: Props) {
                   disabled={savingName || !name.trim()}
                   className="px-4 py-2 bg-[#FF6A00] text-white text-xs font-bold rounded-xl disabled:opacity-50 hover:opacity-90 transition-opacity"
                 >
-                  {savingName ? '...' : 'Sauver'}
+                  {savingName ? '...' : t('save')}
                 </button>
                 <button
                   onClick={() => { setEditingName(false); setName(fullName) }}
@@ -95,23 +97,23 @@ export default function ProfileActions({ fullName, email }: Props) {
               </div>
             ) : (
               <div className="flex items-center justify-between">
-                <span className="text-sm text-[#041B4D] font-semibold">{name || 'Non renseigné'}</span>
+                <span className="text-sm text-[#041B4D] font-semibold">{name || t('not_set')}</span>
                 <button
                   onClick={() => setEditingName(true)}
                   className="text-xs text-[#FF6A00] font-semibold hover:underline"
                 >
-                  Modifier
+                  {t('edit')}
                 </button>
               </div>
             )}
             {nameMsg && (
-              <p className={`text-xs mt-1 ${nameMsg.startsWith('Erreur') ? 'text-red-500' : 'text-green-600'}`}>
+              <p className={`text-xs mt-1 ${nameMsg === t('name_updated') ? 'text-green-600' : 'text-red-500'}`}>
                 {nameMsg}
               </p>
             )}
           </div>
           <div>
-            <label className="text-xs text-gray-500 font-medium block mb-1">Email</label>
+            <label className="text-xs text-gray-500 font-medium block mb-1">{t('email')}</label>
             <span className="text-sm text-[#041B4D] font-semibold">{email}</span>
           </div>
         </div>
@@ -119,19 +121,19 @@ export default function ProfileActions({ fullName, email }: Props) {
 
       {/* Danger zone */}
       <div className="bg-white rounded-2xl border border-red-100 shadow-sm p-5">
-        <h2 className="text-sm font-bold text-red-700 mb-1">Zone dangereuse</h2>
-        <p className="text-xs text-gray-500 mb-3">La suppression de votre compte est irréversible. Toutes vos données seront effacées.</p>
+        <h2 className="text-sm font-bold text-red-700 mb-1">{t('danger_zone')}</h2>
+        <p className="text-xs text-gray-500 mb-3">{t('delete_warning')}</p>
         {!showDelete ? (
           <button
             onClick={() => setShowDelete(true)}
             className="text-xs font-semibold text-red-600 border border-red-200 rounded-xl px-4 py-2 hover:bg-red-50 transition-colors"
           >
-            Supprimer mon compte
+            {t('delete_btn')}
           </button>
         ) : (
           <div className="space-y-3">
             <p className="text-xs text-gray-600">
-              Pour confirmer, saisissez votre email : <strong>{email}</strong>
+              {t('delete_confirm_prompt')} <strong>{email}</strong>
             </p>
             <input
               type="email"
@@ -147,13 +149,13 @@ export default function ProfileActions({ fullName, email }: Props) {
                 disabled={deleteConfirm !== email || deleting}
                 className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-xl disabled:opacity-40 hover:opacity-90 transition-opacity"
               >
-                {deleting ? 'Suppression...' : 'Confirmer la suppression'}
+                {deleting ? t('deleting') : t('delete_confirm')}
               </button>
               <button
                 onClick={() => { setShowDelete(false); setDeleteConfirm('') }}
                 className="px-4 py-2 bg-gray-100 text-gray-600 text-xs font-bold rounded-xl hover:bg-gray-200 transition-colors"
               >
-                Annuler
+                {t('cancel')}
               </button>
             </div>
           </div>

@@ -108,7 +108,7 @@ export default async function PortefeuillePage({ searchParams }: { searchParams:
         <div className="bg-white rounded-2xl border border-gray-100 p-4 mb-8 shadow-sm">
           <p className="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">{t('payment_methods')}</p>
           <div className="flex flex-wrap gap-2">
-            {['Wave CI 🌊', 'Orange Money 🟠', 'MTN MoMo 🟡', 'Moov Money 💙'].map((m) => (
+            {[t('wave'), t('orange'), t('mtn'), t('moov')].map((m) => (
               <span key={m} className="text-xs px-3 py-1.5 bg-gray-50 border border-gray-200 rounded-full font-medium text-gray-600">{m}</span>
             ))}
           </div>
