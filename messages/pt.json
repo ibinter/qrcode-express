@@ -358,5 +358,38 @@
   "generator": {
     "title": "Crie o seu QR agora",
     "subtitle": "Grátis, sem registo, sem marca d'água"
+  },
+  "auth": {
+    "login_title": "Entrar",
+    "login_google": "Continuar com Google",
+    "login_or": "ou por email",
+    "login_email": "Email",
+    "login_password": "Palavra-passe",
+    "login_btn": "Entrar",
+    "login_loading": "A entrar…",
+    "login_error": "Email ou palavra-passe incorretos.",
+    "login_no_account": "Não tem conta ainda?",
+    "login_signup_link": "Registar",
+    "signup_title": "Criar uma conta",
+    "signup_referral": "Foi referido! Código:",
+    "signup_or": "ou por email",
+    "signup_email": "Email",
+    "signup_password": "Palavra-passe",
+    "signup_password_hint": "Mínimo 8 caracteres",
+    "signup_confirm": "Confirmar palavra-passe",
+    "signup_btn": "Criar a minha conta grátis",
+    "signup_loading": "A criar…",
+    "signup_error_match": "As palavras-passe não coincidem.",
+    "signup_error_short": "A palavra-passe deve ter pelo menos 8 caracteres.",
+    "signup_error_exists": "Já existe uma conta com este email.",
+    "signup_error_generic": "Ocorreu um erro. Tente novamente.",
+    "signup_cgu": "Ao registar-se, aceita os nossos",
+    "signup_already_account": "Já tem uma conta?",
+    "signup_login_link": "Entrar",
+    "signup_confirm_title": "Verifique o seu email",
+    "signup_confirm_sent": "Um link de confirmação foi enviado para",
+    "signup_confirm_click": "Clique nele para ativar a sua conta.",
+    "signup_referral_bonus": "Código de referência detectado — {code}. Os seus créditos de boas-vindas serão adicionados na ativação.",
+    "signup_back_login": "Voltar ao início de sessão →"
   }
 }

@@ -358,5 +358,38 @@
   "generator": {
     "title": "Create your QR now",
     "subtitle": "Free, no sign-up, no watermark"
+  },
+  "auth": {
+    "login_title": "Sign in",
+    "login_google": "Continue with Google",
+    "login_or": "or by email",
+    "login_email": "Email",
+    "login_password": "Password",
+    "login_btn": "Sign in",
+    "login_loading": "Signing in…",
+    "login_error": "Incorrect email or password.",
+    "login_no_account": "No account yet?",
+    "login_signup_link": "Sign up",
+    "signup_title": "Create an account",
+    "signup_referral": "You're referred! Code:",
+    "signup_or": "or by email",
+    "signup_email": "Email",
+    "signup_password": "Password",
+    "signup_password_hint": "Minimum 8 characters",
+    "signup_confirm": "Confirm password",
+    "signup_btn": "Create my free account",
+    "signup_loading": "Creating…",
+    "signup_error_match": "Passwords do not match.",
+    "signup_error_short": "Password must be at least 8 characters.",
+    "signup_error_exists": "An account already exists with this email.",
+    "signup_error_generic": "An error occurred. Please try again.",
+    "signup_cgu": "By signing up, you accept our",
+    "signup_already_account": "Already have an account?",
+    "signup_login_link": "Sign in",
+    "signup_confirm_title": "Check your email",
+    "signup_confirm_sent": "A confirmation link was sent to",
+    "signup_confirm_click": "Click it to activate your account.",
+    "signup_referral_bonus": "Referral code detected — {code}. Your welcome credits will be added upon activation.",
+    "signup_back_login": "Back to sign in →"
   }
 }

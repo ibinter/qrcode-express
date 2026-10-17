@@ -358,5 +358,38 @@
   "generator": {
     "title": "أنشئ رمز QR الآن",
     "subtitle": "مجاني، بدون تسجيل، بدون علامة مائية"
+  },
+  "auth": {
+    "login_title": "تسجيل الدخول",
+    "login_google": "الاستمرار مع Google",
+    "login_or": "أو عبر البريد الإلكتروني",
+    "login_email": "البريد الإلكتروني",
+    "login_password": "كلمة المرور",
+    "login_btn": "تسجيل الدخول",
+    "login_loading": "جارٍ تسجيل الدخول…",
+    "login_error": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+    "login_no_account": "ليس لديك حساب بعد؟",
+    "login_signup_link": "التسجيل",
+    "signup_title": "إنشاء حساب",
+    "signup_referral": "لديك إحالة! الكود:",
+    "signup_or": "أو عبر البريد الإلكتروني",
+    "signup_email": "البريد الإلكتروني",
+    "signup_password": "كلمة المرور",
+    "signup_password_hint": "8 أحرف على الأقل",
+    "signup_confirm": "تأكيد كلمة المرور",
+    "signup_btn": "إنشاء حسابي المجاني",
+    "signup_loading": "جارٍ الإنشاء…",
+    "signup_error_match": "كلمتا المرور غير متطابقتان.",
+    "signup_error_short": "يجب أن تكون كلمة المرور 8 أحرف على الأقل.",
+    "signup_error_exists": "يوجد حساب بهذا البريد الإلكتروني.",
+    "signup_error_generic": "حدث خطأ. حاول مجددًا.",
+    "signup_cgu": "بالتسجيل، تقبل",
+    "signup_already_account": "لديك حساب بالفعل؟",
+    "signup_login_link": "تسجيل الدخول",
+    "signup_confirm_title": "تحقق من بريدك الإلكتروني",
+    "signup_confirm_sent": "تم إرسال رابط التأكيد إلى",
+    "signup_confirm_click": "انقر عليه لتفعيل حسابك.",
+    "signup_referral_bonus": "رمز الإحالة تم اكتشافه — {code}. ستُضاف أرصدة الترحيب عند التفعيل.",
+    "signup_back_login": "→ العودة إلى تسجيل الدخول"
   }
 }

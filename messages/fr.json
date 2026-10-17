@@ -358,5 +358,38 @@
   "generator": {
     "title": "Créez votre QR maintenant",
     "subtitle": "Gratuit, sans inscription, sans filigrane"
+  },
+  "auth": {
+    "login_title": "Connexion",
+    "login_google": "Continuer avec Google",
+    "login_or": "ou par email",
+    "login_email": "Email",
+    "login_password": "Mot de passe",
+    "login_btn": "Se connecter",
+    "login_loading": "Connexion…",
+    "login_error": "Email ou mot de passe incorrect.",
+    "login_no_account": "Pas encore de compte ?",
+    "login_signup_link": "S'inscrire",
+    "signup_title": "Créer un compte",
+    "signup_referral": "Vous êtes parrainé ! Code :",
+    "signup_or": "ou par email",
+    "signup_email": "Email",
+    "signup_password": "Mot de passe",
+    "signup_password_hint": "Minimum 8 caractères",
+    "signup_confirm": "Confirmer le mot de passe",
+    "signup_btn": "Créer mon compte gratuit",
+    "signup_loading": "Création…",
+    "signup_error_match": "Les mots de passe ne correspondent pas.",
+    "signup_error_short": "Le mot de passe doit faire au moins 8 caractères.",
+    "signup_error_exists": "Un compte existe déjà avec cet email.",
+    "signup_error_generic": "Une erreur est survenue. Réessayez.",
+    "signup_cgu": "En vous inscrivant, vous acceptez nos",
+    "signup_already_account": "Déjà un compte ?",
+    "signup_login_link": "Se connecter",
+    "signup_confirm_title": "Vérifiez votre email",
+    "signup_confirm_sent": "Un lien de confirmation a été envoyé à",
+    "signup_confirm_click": "Cliquez dessus pour activer votre compte.",
+    "signup_referral_bonus": "Code parrain détecté — {code}. Vos crédits de bienvenue seront crédités à l'activation.",
+    "signup_back_login": "Retour à la connexion →"
   }
 }

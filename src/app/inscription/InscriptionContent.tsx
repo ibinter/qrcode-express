@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
 export default function InscriptionContent() {
   const [email, setEmail] = useState('')
@@ -14,6 +15,7 @@ export default function InscriptionContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const supabase = createClient()
+  const t = useTranslations('auth')
 
   // Persist referral code across the email-verification flow
   useEffect(() => {
@@ -28,11 +30,11 @@ export default function InscriptionContent() {
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault()
     if (password !== confirm) {
-      setError('Les mots de passe ne correspondent pas.')
+      setError(t('signup_error_match'))
       return
     }
     if (password.length < 8) {
-      setError('Le mot de passe doit faire au moins 8 caractères.')
+      setError(t('signup_error_short'))
       return
     }
     setLoading(true)
@@ -48,8 +50,8 @@ export default function InscriptionContent() {
 
     if (error) {
       setError(error.message === 'User already registered'
-        ? 'Un compte existe déjà avec cet email.'
-        : 'Une erreur est survenue. Réessayez.')
+        ? t('signup_error_exists')
+        : t('signup_error_generic'))
     } else {
       setSuccess(true)
     }
@@ -68,19 +70,19 @@ export default function InscriptionContent() {
       <main className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
         <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl border border-gray-100 p-8 text-center">
           <div className="text-5xl mb-4">📧</div>
-          <h2 className="text-xl font-bold text-[#041B4D] mb-2">Vérifiez votre email</h2>
+          <h2 className="text-xl font-bold text-[#041B4D] mb-2">{t('signup_confirm_title')}</h2>
           <p className="text-sm text-gray-500">
-            Un lien de confirmation a été envoyé à <strong>{email}</strong>.
-            Cliquez dessus pour activer votre compte.
+            {t('signup_confirm_sent')} <strong>{email}</strong>.{' '}
+            {t('signup_confirm_click')}
           </p>
           {refCode && (
             <p className="text-xs text-green-600 mt-3 font-semibold">
-              🎁 Code parrain détecté — {refCode}. Vos crédits de bienvenue seront crédités à l&apos;activation.
+              🎁 {t('signup_referral_bonus', { code: refCode })}
             </p>
           )}
           <Link href="/connexion"
             className="mt-6 inline-block text-[#FF6A00] font-semibold text-sm hover:underline">
-            Retour à la connexion →
+            {t('signup_back_login')}
           </Link>
         </div>
       </main>
@@ -95,40 +97,40 @@ export default function InscriptionContent() {
             QR <span className="text-[#FF6A00]">CODE</span> EXPRESS
           </span>
         </Link>
-        <h1 className="text-xl font-bold text-center text-[#041B4D] mb-1">Créer un compte</h1>
+        <h1 className="text-xl font-bold text-center text-[#041B4D] mb-1">{t('signup_title')}</h1>
         {refCode && (
           <p className="text-xs text-center text-green-600 font-semibold mb-4">
-            🎁 Vous êtes parrainé ! Code : <strong>{refCode}</strong>
+            🎁 {t('signup_referral')} <strong>{refCode}</strong>
           </p>
         )}
 
         <button onClick={handleGoogle}
           className="w-full flex items-center justify-center gap-2 border border-gray-200 rounded-xl py-2.5 text-sm font-medium hover:bg-gray-50 mb-5 transition-colors">
           <img src="https://www.google.com/favicon.ico" alt="" className="w-4 h-4" />
-          Continuer avec Google
+          {t('login_google')}
         </button>
 
         <div className="flex items-center gap-3 mb-5">
           <div className="flex-1 border-t border-gray-100" />
-          <span className="text-xs text-gray-400">ou par email</span>
+          <span className="text-xs text-gray-400">{t('signup_or')}</span>
           <div className="flex-1 border-t border-gray-100" />
         </div>
 
         <form onSubmit={handleSignup} className="space-y-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('signup_email')}</label>
             <input type="email" value={email} onChange={(e) => setEmail(e.target.value)}
               required className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#FF6A00]/40 focus:outline-none" />
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Mot de passe</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('signup_password')}</label>
             <input type="password" value={password} onChange={(e) => setPassword(e.target.value)}
               required minLength={8}
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#FF6A00]/40 focus:outline-none" />
-            <p className="text-xs text-gray-400 mt-1">Minimum 8 caractères</p>
+            <p className="text-xs text-gray-400 mt-1">{t('signup_password_hint')}</p>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1">Confirmer le mot de passe</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">{t('signup_confirm')}</label>
             <input type="password" value={confirm} onChange={(e) => setConfirm(e.target.value)}
               required
               className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#FF6A00]/40 focus:outline-none" />
@@ -137,18 +139,18 @@ export default function InscriptionContent() {
           <button type="submit" disabled={loading}
             className="w-full py-2.5 rounded-xl font-semibold text-white text-sm transition-opacity hover:opacity-90 disabled:opacity-50"
             style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}>
-            {loading ? 'Création…' : 'Créer mon compte gratuit'}
+            {loading ? t('signup_loading') : t('signup_btn')}
           </button>
         </form>
 
         <p className="text-center text-xs text-gray-400 mt-4">
-          En vous inscrivant, vous acceptez nos{' '}
+          {t('signup_cgu')}{' '}
           <Link href="/cgu" className="underline">CGU</Link>
         </p>
 
         <p className="text-center text-sm text-gray-500 mt-4">
-          Déjà un compte ?{' '}
-          <Link href="/connexion" className="text-[#FF6A00] font-semibold hover:underline">Se connecter</Link>
+          {t('signup_already_account')}{' '}
+          <Link href="/connexion" className="text-[#FF6A00] font-semibold hover:underline">{t('signup_login_link')}</Link>
         </p>
       </div>
     </main>
