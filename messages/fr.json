@@ -129,6 +129,7 @@
   "features": {
     "title": "QR Codes · Codes-barres · Étiquettes",
     "subtitle": "La plateforme la plus complète d'Afrique pour identifier, tracer et étiqueter vos produits, événements et contacts.",
+    "badge": "✦ Plateforme complète",
     "new": "Nouveau ✦",
     "items": {
       "barcode_title": "Codes-barres professionnels",
@@ -172,6 +173,7 @@
   "howItWorks": {
     "title": "En 4 étapes seulement",
     "subtitle": "De zéro à un QR professionnel en moins de 2 minutes",
+    "badge": "⚡ Rapide & simple",
     "cta": "Créer mon QR maintenant →",
     "steps": {
       "s1_title": "Choisissez le type",
@@ -214,6 +216,25 @@
     "plan_business_desc": "Pour les équipes & agences",
     "plan_business_cta": "Choisir Business",
     "badge_popular": "⭐ Populaire",
+    "plan_starter_name": "Starter",
+    "plan_starter_desc": "Pour les indépendants et petits commerces",
+    "plan_starter_cta": "Choisir Starter",
+    "billing_monthly": "Mensuel",
+    "billing_semiannual": "Semestriel",
+    "billing_annual": "Annuel",
+    "billing_save1": "−1 mois",
+    "billing_save2": "−2 mois",
+    "saving_semi": "🎁 1 mois offert — économisez 16% sur 6 mois",
+    "saving_annual": "🎁 2 mois offerts — économisez 17% sur 12 mois",
+    "credits_title": "Crédits à la carte",
+    "credits_badge": "SANS ABONNEMENT",
+    "credits_desc": "Achetez des crédits une seule fois. Utilisez-les pour débloquer des fonctionnalités premium à l'unité.",
+    "credits_wallet": "Mon portefeuille →",
+    "credits_best": "Meilleur rapport",
+    "credits_buy": "Acheter",
+    "credits_unit": "crédits",
+    "credits_what_title": "Ce que vous pouvez faire avec vos crédits",
+    "price_unit": "FCFA / mois",
     "faq_q1": "Quelle est la différence entre un QR statique et un QR dynamique ?",
     "faq_a1": "Un QR statique encode les données directement : il ne peut plus être modifié après création. Un QR dynamique pointe vers une URL de redirection modifiable à tout moment — sans réimprimer le QR. Idéal pour un menu restaurant, une promo ou une fiche produit.",
     "faq_q2": "Puis-je utiliser la plateforme sans créer un compte ?",
@@ -307,6 +328,29 @@
   },
   "langSelector": {
     "label": "Langue"
+  },
+  "ctaFinal": {
+    "badge": "🚀 Commencez maintenant — C'est gratuit",
+    "title": "Votre premier QR code\nen 30 secondes",
+    "subtitle": "Rejoignez les professionnels d'Afrique qui ont déjà digitalisé leur activité. Aucune carte bancaire requise.",
+    "btn_primary": "Créer mon compte gratuit →",
+    "btn_secondary": "Tester sans inscription",
+    "trust_0": "✓ Gratuit pour toujours sur le plan Free",
+    "trust_1": "✓ Aucune carte bancaire",
+    "trust_2": "✓ QR code créé en 30 secondes",
+    "trust_3": "✓ Support WhatsApp inclus",
+    "social_count": "500+ professionnels",
+    "social_text": "à travers l'Afrique font confiance à QR CODE EXPRESS"
+  },
+  "testimonials": {
+    "badge": "⭐ Ils nous font confiance",
+    "title": "Ce que disent nos clients",
+    "subtitle": "Des professionnels de toute l'Afrique utilisent QR CODE EXPRESS chaque jour.",
+    "rating_label": "Note moyenne",
+    "qr_label": "QR codes créés",
+    "qr_sub": "à travers l'Afrique",
+    "satisfied_label": "clients satisfaits",
+    "satisfied_sub": "recommandent la plateforme"
   },
   "showcase": {
     "title": "20+ types de QR codes",

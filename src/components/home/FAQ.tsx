@@ -1,69 +1,32 @@
 'use client'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 
-const FAQS = [
-  {
-    q: 'Est-ce que QR CODE EXPRESS est gratuit ?',
-    a: 'Oui ! Le plan gratuit vous permet de créer jusqu\'à 5 QR codes sans carte bancaire. Les QR dynamiques (modifiables), les analytics, les codes-barres avancés et les étiquettes PDF sont disponibles dès le plan Starter à partir de 4 900 FCFA/mois.',
-  },
-  {
-    q: 'Quelle est la différence entre un QR statique et un QR dynamique ?',
-    a: 'Un QR statique pointe vers une adresse fixe — si vous voulez changer la destination, vous devez recréer et réimprimer le QR. Un QR dynamique vous permet de modifier la destination depuis votre tableau de bord sans jamais réimprimer. C\'est indispensable pour les menus, affiches et flyers.',
-  },
-  {
-    q: 'Quels modes de paiement sont acceptés sur la plateforme ?',
-    a: 'Pour payer votre abonnement : Wave CI, Orange Money, MTN MoMo et Moov Money. Pour les QR de paiement que vous créez pour vos clients : Wave, Orange Money, MTN MoMo — les trois opérateurs les plus utilisés en Côte d\'Ivoire.',
-  },
-  {
-    q: 'Mes QR codes fonctionnent-ils si j\'arrête mon abonnement ?',
-    a: 'Les QR statiques restent actifs indéfiniment même sans abonnement. Les QR dynamiques passent en mode "en pause" si votre abonnement expire, mais reprennent immédiatement dès que vous le renouvelez. Vos données sont conservées.',
-  },
-  {
-    q: 'Est-ce que je peux personnaliser le design de mes QR codes ?',
-    a: 'Absolument. Vous pouvez choisir les couleurs, ajouter votre logo au centre, choisir parmi 34 styles de cadre, modifier la forme des modules et des yeux. Vous pouvez même générer un QR artistique avec l\'IA (disponible à partir du plan Pro).',
-  },
-  {
-    q: 'Comment fonctionne la billetterie QR ?',
-    a: 'Créez votre événement, définissez le nombre de places et les informations requises. Vos participants s\'inscrivent via le lien ou le QR de l\'événement et reçoivent un billet QR unique. À l\'entrée, le contrôleur scanne le billet et le système valide ou rejette instantanément.',
-  },
-  {
-    q: 'Mes données sont-elles sécurisées ?',
-    a: 'Oui. Nous utilisons Supabase (infrastructure PostgreSQL chiffrée) et Vercel (hébergement certifié SOC 2). Toutes les connexions sont en HTTPS. Vos données ne sont jamais revendues à des tiers.',
-  },
-  {
-    q: 'Puis-je gérer mes QR codes en équipe ?',
-    a: 'Oui, dès le plan Business. Créez une organisation, invitez vos collaborateurs et assignez des rôles : propriétaire, admin, éditeur, contrôleur ou lecteur. Chaque membre accède uniquement aux ressources de son rôle.',
-  },
-  {
-    q: 'Y a-t-il une limite de scans par QR code ?',
-    a: 'Non, il n\'y a pas de limite de scans sur les plans payants. Sur le plan gratuit, les QR statiques ne sont pas limités non plus. Vous pouvez optionnellement définir un nombre maximum de scans sur vos QR dynamiques pour des besoins spécifiques (ex: offre limitée).',
-  },
-  {
-    q: 'Comment contacter le support ?',
-    a: 'Via le bouton WhatsApp en bas à droite de toutes les pages — réponse garantie en moins de 2h en journée (8h-20h GMT). Vous pouvez aussi envoyer un email à support@qrcode-express.com.',
-  },
-]
+const FAQ_COUNT = 15
 
 export default function FAQ() {
+  const t = useTranslations('pricing')
   const [open, setOpen] = useState<number | null>(0)
+
+  const faqs = Array.from({ length: FAQ_COUNT }, (_, i) => ({
+    q: t(`faq_q${i + 1}` as any),
+    a: t(`faq_a${i + 1}` as any),
+  }))
 
   return (
     <section className="py-20 px-4 bg-gray-50">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-14">
           <span className="inline-block bg-blue-50 text-[#041B4D] text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 border border-blue-100">
-            💬 Questions fréquentes
+            💬 {t('faq_title')}
           </span>
           <h2 className="text-3xl md:text-4xl font-extrabold text-[#041B4D] mb-3">
-            Tout ce que vous voulez savoir
+            {t('faq_title')}
           </h2>
-          <p className="text-gray-500 text-lg">
-            Une question qui ne figure pas ici ? Contactez-nous sur WhatsApp.
-          </p>
         </div>
 
         <div className="space-y-3">
-          {FAQS.map((faq, i) => (
+          {faqs.map((faq, i) => (
             <div key={i}
               className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden ${
                 open === i ? 'border-[#FF6A00]/40 shadow-md' : 'border-gray-100 shadow-sm'
@@ -98,10 +61,9 @@ export default function FAQ() {
 
         <div className="mt-10 text-center">
           <p className="text-sm text-gray-500">
-            Vous avez d'autres questions ?{' '}
             <a href="https://wa.me/2250779380704" target="_blank" rel="noopener noreferrer"
               className="text-[#FF6A00] font-semibold hover:underline">
-              Écrivez-nous sur WhatsApp →
+              WhatsApp →
             </a>
           </p>
         </div>

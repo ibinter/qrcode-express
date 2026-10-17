@@ -73,7 +73,7 @@ export default function Features() {
       <div className="relative max-w-6xl mx-auto">
         <div className="text-center mb-14">
           <span className="inline-block bg-blue-50 text-[#041B4D] text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 border border-blue-100">
-            ✦ Plateforme complète
+            {t('badge')}
           </span>
           <h2 className="text-3xl md:text-4xl font-extrabold text-[#041B4D] mb-3">
             {t('title')}

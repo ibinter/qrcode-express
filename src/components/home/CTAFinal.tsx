@@ -1,6 +1,9 @@
 import Link from 'next/link'
+import { getTranslations } from 'next-intl/server'
 
-export default function CTAFinal() {
+export default async function CTAFinal() {
+  const t = await getTranslations('ctaFinal')
+
   return (
     <section className="relative py-24 px-4 overflow-hidden">
       {/* Background */}
@@ -22,18 +25,15 @@ export default function CTAFinal() {
       <div className="relative max-w-3xl mx-auto text-center">
         {/* Badge */}
         <span className="inline-block bg-white/10 text-[#FF6A00] text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-6 border border-white/10">
-          🚀 Commencez maintenant — C'est gratuit
+          {t('badge')}
         </span>
 
-        <h2 className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-5">
-          Votre premier QR code
-          <br />
-          <span style={{ color: '#FF6A00' }}>en 30 secondes</span>
+        <h2 className="text-4xl md:text-5xl font-extrabold text-white leading-tight mb-5 whitespace-pre-line">
+          {t('title')}
         </h2>
 
         <p className="text-lg md:text-xl text-white/70 max-w-xl mx-auto mb-10 leading-relaxed">
-          Rejoignez les professionnels d'Afrique qui ont déjà digitalisé leur activité.
-          Aucune carte bancaire requise.
+          {t('subtitle')}
         </p>
 
         {/* CTAs */}
@@ -43,25 +43,20 @@ export default function CTAFinal() {
             className="px-10 py-4 rounded-2xl font-bold text-white text-lg shadow-2xl hover:scale-105 hover:shadow-orange-500/40 transition-all duration-200"
             style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)', boxShadow: '0 8px 32px rgba(255,106,0,0.5)' }}
           >
-            Créer mon compte gratuit →
+            {t('btn_primary')}
           </Link>
           <Link
             href="#generateur"
             className="px-10 py-4 rounded-2xl font-semibold text-white text-lg border border-white/20 hover:bg-white/10 transition-colors backdrop-blur-sm"
           >
-            Tester sans inscription
+            {t('btn_secondary')}
           </Link>
         </div>
 
         {/* Trust bullets */}
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-white/50">
-          {[
-            '✓ Gratuit pour toujours sur le plan Free',
-            '✓ Aucune carte bancaire',
-            '✓ QR code créé en 30 secondes',
-            '✓ Support WhatsApp inclus',
-          ].map((item) => (
-            <span key={item} className="flex items-center gap-1">{item}</span>
+          {(['trust_0', 'trust_1', 'trust_2', 'trust_3'] as const).map((key) => (
+            <span key={key} className="flex items-center gap-1">{t(key)}</span>
           ))}
         </div>
 
@@ -77,7 +72,7 @@ export default function CTAFinal() {
             ))}
           </div>
           <p className="text-sm text-white/60">
-            <strong className="text-white">500+ professionnels</strong> à travers l'Afrique font confiance à QR CODE EXPRESS
+            <strong className="text-white">{t('social_count')}</strong> {t('social_text')}
           </p>
         </div>
       </div>

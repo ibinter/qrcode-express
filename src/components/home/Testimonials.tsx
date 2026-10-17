@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef } from 'react'
+import { useTranslations } from 'next-intl'
 
 const TESTIMONIALS = [
   {
@@ -69,6 +70,7 @@ function Stars({ n }: { n: number }) {
 }
 
 export default function Testimonials() {
+  const t = useTranslations('testimonials')
   const ref = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -97,13 +99,13 @@ export default function Testimonials() {
       <div className="max-w-6xl mx-auto" ref={ref}>
         <div className="text-center mb-14">
           <span className="inline-block bg-yellow-50 text-yellow-700 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 border border-yellow-100">
-            ⭐ Ils nous font confiance
+            {t('badge')}
           </span>
           <h2 className="text-3xl md:text-4xl font-extrabold text-[#041B4D] mb-3">
-            Ce que disent nos clients
+            {t('title')}
           </h2>
           <p className="text-gray-500 text-lg max-w-xl mx-auto">
-            Des professionnels de toute l'Afrique utilisent QR CODE EXPRESS chaque jour.
+            {t('subtitle')}
           </p>
         </div>
 
@@ -142,19 +144,19 @@ export default function Testimonials() {
           <div>
             <p className="text-5xl font-black text-[#041B4D]">4.9</p>
             <Stars n={5} />
-            <p className="text-xs text-gray-400 mt-1">Note moyenne</p>
+            <p className="text-xs text-gray-400 mt-1">{t('rating_label')}</p>
           </div>
           <div className="hidden sm:block w-px h-16 bg-gray-100" />
           <div>
             <p className="text-5xl font-black text-[#041B4D]">500+</p>
-            <p className="text-sm font-semibold text-gray-500">QR codes créés</p>
-            <p className="text-xs text-gray-400 mt-1">à travers l'Afrique</p>
+            <p className="text-sm font-semibold text-gray-500">{t('qr_label')}</p>
+            <p className="text-xs text-gray-400 mt-1">{t('qr_sub')}</p>
           </div>
           <div className="hidden sm:block w-px h-16 bg-gray-100" />
           <div>
             <p className="text-5xl font-black text-[#041B4D]">98%</p>
-            <p className="text-sm font-semibold text-gray-500">clients satisfaits</p>
-            <p className="text-xs text-gray-400 mt-1">recommandent la plateforme</p>
+            <p className="text-sm font-semibold text-gray-500">{t('satisfied_label')}</p>
+            <p className="text-xs text-gray-400 mt-1">{t('satisfied_sub')}</p>
           </div>
         </div>
       </div>

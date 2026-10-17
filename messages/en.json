@@ -129,6 +129,7 @@
   "features": {
     "title": "QR Codes · Barcodes · Labels",
     "subtitle": "Africa's most complete platform to identify, track and label your products, events and contacts.",
+    "badge": "✦ Complete platform",
     "new": "New ✦",
     "items": {
       "barcode_title": "Professional barcodes",
@@ -172,6 +173,7 @@
   "howItWorks": {
     "title": "Only 4 steps",
     "subtitle": "From zero to a professional QR in under 2 minutes",
+    "badge": "⚡ Fast & simple",
     "cta": "Create my QR now →",
     "steps": {
       "s1_title": "Choose the type",
@@ -214,6 +216,25 @@
     "plan_business_desc": "For teams & agencies",
     "plan_business_cta": "Choose Business",
     "badge_popular": "⭐ Popular",
+    "plan_starter_name": "Starter",
+    "plan_starter_desc": "For freelancers and small businesses",
+    "plan_starter_cta": "Choose Starter",
+    "billing_monthly": "Monthly",
+    "billing_semiannual": "6 months",
+    "billing_annual": "Annual",
+    "billing_save1": "−1 month",
+    "billing_save2": "−2 months",
+    "saving_semi": "🎁 1 month free — save 16% over 6 months",
+    "saving_annual": "🎁 2 months free — save 17% over 12 months",
+    "credits_title": "Pay-as-you-go credits",
+    "credits_badge": "NO SUBSCRIPTION",
+    "credits_desc": "Buy credits once. Use them to unlock premium features one at a time.",
+    "credits_wallet": "My wallet →",
+    "credits_best": "Best value",
+    "credits_buy": "Buy",
+    "credits_unit": "credits",
+    "credits_what_title": "What you can do with your credits",
+    "price_unit": "FCFA / month",
     "faq_q1": "What is the difference between a static QR and a dynamic QR?",
     "faq_a1": "A static QR encodes data directly: it cannot be changed after creation. A dynamic QR points to an editable redirect URL at any time — without reprinting the QR. Ideal for a restaurant menu, a promo or a product page.",
     "faq_q2": "Can I use the platform without creating an account?",
@@ -307,6 +328,29 @@
   },
   "langSelector": {
     "label": "Language"
+  },
+  "ctaFinal": {
+    "badge": "🚀 Start now — It's free",
+    "title": "Your first QR code\nin 30 seconds",
+    "subtitle": "Join professionals across Africa who have already digitized their business. No credit card required.",
+    "btn_primary": "Create my free account →",
+    "btn_secondary": "Try without signing up",
+    "trust_0": "✓ Free forever on the Free plan",
+    "trust_1": "✓ No credit card",
+    "trust_2": "✓ QR code in 30 seconds",
+    "trust_3": "✓ WhatsApp support included",
+    "social_count": "500+ professionals",
+    "social_text": "across Africa trust QR CODE EXPRESS"
+  },
+  "testimonials": {
+    "badge": "⭐ They trust us",
+    "title": "What our clients say",
+    "subtitle": "Professionals from across Africa use QR CODE EXPRESS every day.",
+    "rating_label": "Average rating",
+    "qr_label": "QR codes created",
+    "qr_sub": "across Africa",
+    "satisfied_label": "satisfied clients",
+    "satisfied_sub": "recommend the platform"
   },
   "showcase": {
     "title": "20+ QR code types",

@@ -68,7 +68,7 @@ export default function HowItWorks() {
       <div className="relative max-w-5xl mx-auto" ref={ref}>
         <div className="text-center mb-14">
           <span className="inline-block bg-white/10 text-[#FF6A00] text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 border border-white/10">
-            ⚡ Rapide & simple
+            {t('badge')}
           </span>
           <h2 className="text-3xl md:text-4xl font-extrabold mb-3 text-white">{t('title')}</h2>
           <p className="text-blue-200 text-lg">{t('subtitle')}</p>

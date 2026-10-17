@@ -302,14 +302,14 @@ type Billing = 'monthly' | 'semiannual' | 'annual'
 
 const BASE_PRICES = { starter: 4900, essential: 9900, pro: 19900, business: 29900 }
 
-function computePrice(base: number, billing: Billing) {
-  if (billing === 'monthly') return { monthly: base, total: base, unit: 'FCFA / mois', saving: null }
+function computePrice(base: number, billing: Billing, unit: string) {
+  if (billing === 'monthly') return { monthly: base, total: base, unit, saving: null }
   if (billing === 'semiannual') {
     const total = base * 5
-    return { monthly: Math.round(total / 6), total, unit: 'FCFA / mois', saving: `1 mois offert — ${total.toLocaleString('fr')} FCFA / 6 mois` }
+    return { monthly: Math.round(total / 6), total, unit, saving: null }
   }
   const total = base * 10
-  return { monthly: Math.round(total / 12), total, unit: 'FCFA / mois', saving: `2 mois offerts — ${total.toLocaleString('fr')} FCFA / an` }
+  return { monthly: Math.round(total / 12), total, unit, saving: null }
 }
 
 export default function Pricing() {
@@ -318,77 +318,78 @@ export default function Pricing() {
   const router = useRouter()
   const t = useTranslations('pricing')
 
-  const starter = computePrice(BASE_PRICES.starter, billing)
-  const essential = computePrice(BASE_PRICES.essential, billing)
-  const pro = computePrice(BASE_PRICES.pro, billing)
-  const business = computePrice(BASE_PRICES.business, billing)
+  const priceUnit = t('price_unit')
+  const starter = computePrice(BASE_PRICES.starter, billing, priceUnit)
+  const essential = computePrice(BASE_PRICES.essential, billing, priceUnit)
+  const pro = computePrice(BASE_PRICES.pro, billing, priceUnit)
+  const business = computePrice(BASE_PRICES.business, billing, priceUnit)
 
   const suffix = billing === 'monthly' ? '' : billing === 'semiannual' ? '_semi' : '_annual'
 
   const plans: Plan[] = [
     {
       id: 'free',
-      name: 'Gratuit',
+      name: t('plan_free_name'),
       price: '0',
       unit: '',
       badge: null,
       highlight: false,
       color: '#64748b',
-      desc: 'Pour découvrir la plateforme sans engagement',
-      cta: 'Commencer gratuitement',
+      desc: t('plan_free_desc'),
+      cta: t('plan_free_cta'),
       href: '#generateur',
       groups: planGroups[0],
     },
     {
       id: `starter${suffix}`,
-      name: 'Starter',
-      price: starter.monthly.toLocaleString('fr'),
+      name: t('plan_starter_name'),
+      price: starter.monthly.toLocaleString(),
       unit: starter.unit,
       equiv: starter.saving ?? '≈ 7,48 € · 7,91 $',
-      badge: billing !== 'monthly' ? (billing === 'semiannual' ? '−1 mois offert' : '−2 mois offerts') : null,
+      badge: billing !== 'monthly' ? (billing === 'semiannual' ? t('billing_save1') : t('billing_save2')) : null,
       highlight: false,
       color: '#3b82f6',
-      desc: 'Pour les indépendants et petits commerces',
-      cta: 'Choisir Starter',
+      desc: t('plan_starter_desc'),
+      cta: t('plan_starter_cta'),
       groups: planGroups[1],
     },
     {
       id: `essential${suffix}`,
-      name: 'Essentiel',
-      price: essential.monthly.toLocaleString('fr'),
+      name: t('plan_essential_name'),
+      price: essential.monthly.toLocaleString(),
       unit: essential.unit,
       equiv: essential.saving ?? '≈ 15,11 € · 15,98 $',
-      badge: billing !== 'monthly' ? (billing === 'semiannual' ? '−1 mois' : '−2 mois') : null,
+      badge: billing !== 'monthly' ? (billing === 'semiannual' ? t('billing_save1') : t('billing_save2')) : null,
       highlight: false,
       color: '#0ea5e9',
-      desc: 'Pour les PME et professionnels actifs',
-      cta: 'Choisir Essentiel',
+      desc: t('plan_essential_desc'),
+      cta: t('plan_essential_cta'),
       groups: planGroups[2],
     },
     {
       id: `pro${suffix}`,
-      name: 'Pro',
-      price: pro.monthly.toLocaleString('fr'),
+      name: t('plan_pro_name'),
+      price: pro.monthly.toLocaleString(),
       unit: pro.unit,
       equiv: pro.saving ?? '≈ 30,37 € · 32,12 $',
-      badge: billing !== 'monthly' ? (billing === 'semiannual' ? '−1 mois' : '−2 mois') : t('badge_popular'),
+      badge: billing !== 'monthly' ? (billing === 'semiannual' ? t('billing_save1') : t('billing_save2')) : t('badge_popular'),
       highlight: true,
       color: '#FF6A00',
-      desc: 'Billetterie, paiements, formulaires inclus',
-      cta: 'Choisir Pro',
+      desc: t('plan_pro_desc'),
+      cta: t('plan_pro_cta'),
       groups: planGroups[3],
     },
     {
       id: `business${suffix}`,
-      name: 'Business',
-      price: business.monthly.toLocaleString('fr'),
+      name: t('plan_business_name'),
+      price: business.monthly.toLocaleString(),
       unit: business.unit,
       equiv: business.saving ?? '≈ 45,63 € · 48,25 $',
-      badge: billing !== 'monthly' ? (billing === 'semiannual' ? '−1 mois' : '−2 mois') : null,
+      badge: billing !== 'monthly' ? (billing === 'semiannual' ? t('billing_save1') : t('billing_save2')) : null,
       highlight: false,
       color: '#041B4D',
-      desc: 'Équipes, API, volumes illimités',
-      cta: 'Choisir Business',
+      desc: t('plan_business_desc'),
+      cta: t('plan_business_cta'),
       groups: planGroups[4],
     },
   ]
@@ -409,7 +410,7 @@ export default function Pricing() {
     if (data.payment_url) {
       window.location.href = data.payment_url
     } else {
-      alert('Erreur lors de l\'initiation du paiement. Réessayez.')
+      alert(t('redirecting'))
       setLoading(null)
     }
   }
@@ -430,9 +431,9 @@ export default function Pricing() {
         <div className="flex justify-center mb-8">
           <div className="inline-flex bg-white border border-gray-200 rounded-xl p-1 shadow-sm gap-1">
             {([
-              { key: 'monthly', label: 'Mensuel' },
-              { key: 'semiannual', label: 'Semestriel', badge: '−1 mois' },
-              { key: 'annual', label: 'Annuel', badge: '−2 mois' },
+              { key: 'monthly', label: t('billing_monthly') },
+              { key: 'semiannual', label: t('billing_semiannual'), badge: t('billing_save1') },
+              { key: 'annual', label: t('billing_annual'), badge: t('billing_save2') },
             ] as { key: Billing; label: string; badge?: string }[]).map(opt => (
               <button
                 key={opt.key}
@@ -458,7 +459,7 @@ export default function Pricing() {
 
         {billing !== 'monthly' && (
           <p className="text-center text-sm text-green-600 font-semibold mb-6">
-            {billing === 'semiannual' ? '🎁 1 mois offert — économisez 16% sur 6 mois' : '🎁 2 mois offerts — économisez 17% sur 12 mois'}
+            {billing === 'semiannual' ? t('saving_semi') : t('saving_annual')}
           </p>
         )}
 
@@ -562,21 +563,21 @@ export default function Pricing() {
           </div>
         </div>
 
-        {/* Crédits à la carte */}
+        {/* Credits section */}
         <div className="mt-4 bg-gradient-to-br from-[#041B4D] to-[#0d2d6e] rounded-2xl overflow-hidden shadow-xl">
           <div className="px-6 py-6 border-b border-white/10">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-2xl">🪙</span>
-                  <h3 className="font-extrabold text-white text-xl">Crédits à la carte</h3>
-                  <span className="text-[10px] font-bold bg-[#FF6A00] text-white px-2 py-0.5 rounded-full">SANS ABONNEMENT</span>
+                  <h3 className="font-extrabold text-white text-xl">{t('credits_title')}</h3>
+                  <span className="text-[10px] font-bold bg-[#FF6A00] text-white px-2 py-0.5 rounded-full">{t('credits_badge')}</span>
                 </div>
-                <p className="text-blue-200 text-sm">Achetez des crédits une seule fois. Utilisez-les pour débloquer des fonctionnalités premium à l&apos;unité.</p>
+                <p className="text-blue-200 text-sm">{t('credits_desc')}</p>
               </div>
               <a href="/portefeuille"
                 className="flex-shrink-0 px-5 py-2.5 rounded-xl font-bold text-sm text-white border-2 border-white/20 hover:bg-white/10 transition-colors whitespace-nowrap">
-                Mon portefeuille →
+                {t('credits_wallet')}
               </a>
             </div>
           </div>
@@ -591,22 +592,22 @@ export default function Pricing() {
               <div key={pack.id} className={`relative bg-white/10 rounded-xl border ${(pack as any).popular ? 'border-[#FF6A00]' : 'border-white/10'} p-4 flex flex-col gap-2`}>
                 {(pack as any).popular && (
                   <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#FF6A00] text-white text-[10px] font-bold px-3 py-0.5 rounded-full whitespace-nowrap">
-                    Meilleur rapport
+                    {t('credits_best')}
                   </span>
                 )}
                 <p className="text-white font-bold text-sm">{pack.label}</p>
-                <p className="text-white text-3xl font-extrabold">{pack.credits >= 1000 ? `${pack.credits / 1000}K` : pack.credits}<span className="text-sm font-normal text-white/60 ml-1">crédits</span></p>
+                <p className="text-white text-3xl font-extrabold">{pack.credits >= 1000 ? `${pack.credits / 1000}K` : pack.credits}<span className="text-sm font-normal text-white/60 ml-1">{t('credits_unit')}</span></p>
                 <p className="text-white/50 text-xs">{pack.desc}</p>
                 <p className="text-[#FF6A00] font-extrabold text-lg">{pack.amount.toLocaleString('fr')} FCFA</p>
                 <a href="/portefeuille" className="mt-1 block text-center py-2 rounded-lg text-xs font-bold text-white bg-white/10 hover:bg-white/20 transition-colors border border-white/10">
-                  Acheter
+                  {t('credits_buy')}
                 </a>
               </div>
             ))}
           </div>
 
           <div className="px-6 pb-6">
-            <p className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3">Ce que vous pouvez faire avec vos crédits</p>
+            <p className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3">{t('credits_what_title')}</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {[
                 { icon: '✨', label: 'QR artistique IA',              cost: '20 crédits' },
