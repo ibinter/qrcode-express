@@ -2,33 +2,11 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect, useCallback } from 'react'
-
-const NAV_ITEMS = [
-  { href: '/dashboard', icon: '📱', label: 'Mes QR codes', exact: true },
-  { href: '/dashboard/bulk', icon: '📥', label: 'Import CSV' },
-  { href: '/barcode', icon: '📊', label: 'Codes-barres' },
-  { href: '/labels', icon: '🏷️', label: 'Étiquettes' },
-]
-
-const TOOLS_ITEMS = [
-  { href: '/org', icon: '🏢', label: 'Organisations' },
-  { href: '/parrainage', icon: '🎁', label: 'Parrainage' },
-  { href: '/portefeuille', icon: '💰', label: 'Portefeuille' },
-]
-
-const ACCOUNT_ITEMS = [
-  { href: '/profil', icon: '👤', label: 'Mon profil' },
-  { href: '/tarifs', icon: '🏷️', label: 'Changer de plan' },
-  { href: '/guide', icon: '📖', label: 'Guide' },
-]
+import { useTranslations } from 'next-intl'
 
 const PLAN_COLORS: Record<string, string> = {
   free: '#94a3b8', essential: '#10b981', pro: '#3b82f6',
   business: '#7c3aed', agency: '#f59e0b', enterprise: '#ec4899',
-}
-const PLAN_LABELS: Record<string, string> = {
-  free: 'Gratuit', essential: 'Essentiel', pro: 'Pro',
-  business: 'Business', agency: 'Agency', enterprise: 'Enterprise',
 }
 
 interface Props {
@@ -77,7 +55,32 @@ function SectionLabel({ label, collapsed }: { label: string; collapsed: boolean 
 }
 
 export default function ClientSidebar({ userEmail, plan = 'free', credits = 0 }: Props) {
+  const t = useTranslations('sidebar')
   const [collapsed, setCollapsed] = useState(false)
+
+  const NAV_ITEMS = [
+    { href: '/dashboard', icon: '📱', label: t('my_qr'), exact: true },
+    { href: '/dashboard/bulk', icon: '📥', label: t('import_csv') },
+    { href: '/barcode', icon: '📊', label: t('barcodes') },
+    { href: '/labels', icon: '🏷️', label: t('labels') },
+  ]
+
+  const TOOLS_ITEMS = [
+    { href: '/org', icon: '🏢', label: t('orgs') },
+    { href: '/parrainage', icon: '🎁', label: t('referral') },
+    { href: '/portefeuille', icon: '💰', label: t('wallet') },
+  ]
+
+  const ACCOUNT_ITEMS = [
+    { href: '/profil', icon: '👤', label: t('my_profile') },
+    { href: '/tarifs', icon: '🏷️', label: t('change_plan') },
+    { href: '/guide', icon: '📖', label: t('guide') },
+  ]
+
+  const PLAN_LABELS: Record<string, string> = {
+    free: t('plan_free'), essential: t('plan_essential'), pro: 'Pro',
+    business: 'Business', agency: 'Agency', enterprise: 'Enterprise',
+  }
 
   useEffect(() => {
     const saved = localStorage.getItem('client-nav-collapsed')
@@ -146,10 +149,10 @@ export default function ClientSidebar({ userEmail, plan = 'free', credits = 0 }:
         <SectionLabel label="QR Codes" collapsed={collapsed} />
         {NAV_ITEMS.map(i => <NavLink key={i.href} {...i} collapsed={collapsed} />)}
 
-        <SectionLabel label="Outils" collapsed={collapsed} />
+        <SectionLabel label={t('sec_tools')} collapsed={collapsed} />
         {TOOLS_ITEMS.map(i => <NavLink key={i.href} {...i} collapsed={collapsed} />)}
 
-        <SectionLabel label="Compte" collapsed={collapsed} />
+        <SectionLabel label={t('sec_account')} collapsed={collapsed} />
         {ACCOUNT_ITEMS.map(i => <NavLink key={i.href} {...i} collapsed={collapsed} />)}
       </nav>
 
@@ -168,15 +171,15 @@ export default function ClientSidebar({ userEmail, plan = 'free', credits = 0 }:
               </div>
             </div>
             <div className="flex items-center justify-between px-1">
-              <span className="text-[10px] text-gray-400">Crédits</span>
-              <span className="text-[10px] font-bold text-[#FF6A00]">{credits.toLocaleString('fr-FR')}</span>
+              <span className="text-[10px] text-gray-400">{t('credits')}</span>
+              <span className="text-[10px] font-bold text-[#FF6A00]">{credits.toLocaleString()}</span>
             </div>
             <div className="mt-2">
               <Link href="/" className="flex items-center justify-center gap-1.5 text-[10px] text-gray-500 hover:text-gray-900 hover:bg-gray-100 py-1.5 rounded-lg transition-all font-semibold">
                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                 </svg>
-                Accueil
+                {t('home')}
               </Link>
             </div>
           </div>
@@ -186,7 +189,7 @@ export default function ClientSidebar({ userEmail, plan = 'free', credits = 0 }:
               style={{ background: `linear-gradient(135deg, ${planColor}, #FF6A00)` }}>
               {initials}
             </div>
-            <Link href="/" title="Accueil"
+            <Link href="/" title={t('home')}
               className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-all">
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>

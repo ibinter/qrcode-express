@@ -1059,5 +1059,23 @@
     "success_sub": "جميع رموز QR جاهزة في ملف ZIP",
     "download_zip": "تحميل ZIP",
     "new_import": "استيراد جديد"
+  },
+  "sidebar": {
+    "my_qr": "رموز QR الخاصة بي",
+    "import_csv": "استيراد CSV",
+    "barcodes": "الباركود",
+    "labels": "الملصقات",
+    "orgs": "المنظمات",
+    "referral": "الإحالة",
+    "wallet": "المحفظة",
+    "my_profile": "ملفي الشخصي",
+    "change_plan": "تغيير الخطة",
+    "guide": "الدليل",
+    "sec_tools": "الأدوات",
+    "sec_account": "الحساب",
+    "credits": "رصيد",
+    "home": "الرئيسية",
+    "plan_free": "مجاني",
+    "plan_essential": "أساسي"
   }
 }

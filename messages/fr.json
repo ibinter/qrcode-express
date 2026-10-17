@@ -1059,5 +1059,23 @@
     "success_sub": "Tous vos QR codes sont prêts dans un fichier ZIP",
     "download_zip": "Télécharger le ZIP",
     "new_import": "Nouveau import"
+  },
+  "sidebar": {
+    "my_qr": "Mes QR codes",
+    "import_csv": "Import CSV",
+    "barcodes": "Codes-barres",
+    "labels": "Étiquettes",
+    "orgs": "Organisations",
+    "referral": "Parrainage",
+    "wallet": "Portefeuille",
+    "my_profile": "Mon profil",
+    "change_plan": "Changer de plan",
+    "guide": "Guide",
+    "sec_tools": "Outils",
+    "sec_account": "Compte",
+    "credits": "Crédits",
+    "home": "Accueil",
+    "plan_free": "Gratuit",
+    "plan_essential": "Essentiel"
   }
 }
