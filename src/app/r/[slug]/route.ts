@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse, after } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { Plan } from '@/lib/plan-guard'
 
@@ -138,7 +138,7 @@ export async function GET(
     } catch {}
   }
 
-  // Async scan tracking (non-blocking)
+  // Scan tracking via after() — guaranteed to run after response is sent
   const isBot = /bot|crawler|spider|googlebot|bingbot|facebookexternalhit/i.test(ua)
 
   // Parse OS from user-agent
@@ -159,7 +159,7 @@ export async function GET(
 
   const city = request.headers.get('x-vercel-ip-city') || null
 
-  admin.from('scan_events').insert({
+  const scanPayload = {
     qr_id: qr.id,
     device_type: deviceType,
     country: country || null,
@@ -168,13 +168,15 @@ export async function GET(
     browser,
     is_bot: isBot,
     destination,
-  }).then(() => {
+  }
+  const notifyEmail = design.notify_on_scan as string | undefined
+
+  after(async () => {
+    await admin.from('scan_events').insert(scanPayload)
     if (!isBot) {
-      admin.rpc('increment_scan_count', { qr_uuid: qr.id })
-      // Scan notification (Pro+)
-      const notifyEmail = (design.notify_on_scan as string | undefined)
+      await admin.rpc('increment_scan_count', { qr_uuid: qr.id })
       if (notifyEmail && planAtLeast(ownerPlan, 'pro')) {
-        fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/notify-scan`, {
+        await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/notify-scan`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
