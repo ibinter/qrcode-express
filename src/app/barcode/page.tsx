@@ -157,7 +157,7 @@ export default function BarcodePage() {
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      if (!user) { alert('Connectez-vous pour sauvegarder.'); return }
+      if (!user) { alert(tb('login_alert')); return }
       const label = name.trim() || `${currentType.label} — ${text}`
       await supabase.from('qr_codes').insert({
         user_id: user.id,
@@ -180,12 +180,12 @@ export default function BarcodePage() {
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-[#041B4D]">📊 Codes-barres</h1>
-            <p className="text-sm text-gray-500 mt-1">26 formats • Export PNG & SVG • Sauvegarde et historique</p>
+            <h1 className="text-2xl font-extrabold text-[#041B4D]">{tb('page_title')}</h1>
+            <p className="text-sm text-gray-500 mt-1">{tb('page_sub')}</p>
           </div>
           <a href="/barcode/batch"
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#041B4D] text-white text-xs font-bold hover:bg-[#0a2a6a] transition-colors">
-            📋 Import CSV en masse
+            {tb('csv_btn')}
             <LockBadge requiredTier="essential" currentTier={tier} />
           </a>
         </div>
@@ -215,7 +215,7 @@ export default function BarcodePage() {
 
               {/* Type selector */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Type de code</p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">{tb('sec_type')}</p>
                 <div className="grid grid-cols-2 gap-2">
                   {BARCODE_TYPES.map(t => {
                     const locked = !tierAtLeast(tier, t.minPlan)
@@ -237,10 +237,10 @@ export default function BarcodePage() {
 
               {/* Content */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Contenu</p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{tb('sec_content')}</p>
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">
-                    Données {currentType.fixed ? `(${currentType.maxLen} chiffres exactement)` : `(max ${currentType.maxLen} caractères)`}
+                    {tb('lbl_data')} {currentType.fixed ? `(${currentType.maxLen} ${tb('lbl_data_fixed')})` : `(${tb('lbl_data_max')} ${currentType.maxLen} ${tb('lbl_data_chars')})`}
                   </label>
                   <input value={text}
                     onChange={e => { setText(e.target.value); setSaved(false) }}
@@ -250,7 +250,7 @@ export default function BarcodePage() {
                   <p className="text-[10px] text-gray-400 mt-1">ex : {currentType.example}</p>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Nom (sauvegarde)</label>
+                  <label className="block text-xs text-gray-500 mb-1">{tb('lbl_name')}</label>
                   <input value={name} onChange={e => setName(e.target.value)}
                     placeholder={`${currentType.label} — ${text.slice(0,12)}`}
                     className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
@@ -259,11 +259,11 @@ export default function BarcodePage() {
 
               {/* Apparence */}
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Apparence</p>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{tb('sec_appearance')}</p>
 
                 {/* Color presets */}
                 <div>
-                  <p className="text-xs text-gray-500 mb-2">Thèmes prédéfinis</p>
+                  <p className="text-xs text-gray-500 mb-2">{tb('lbl_presets')}</p>
                   <div className="flex flex-wrap gap-2">
                     {PRESETS.map(p => (
                       <button key={p.key} onClick={() => { setColor(p.color); setBg(p.bg) }}
@@ -327,12 +327,12 @@ export default function BarcodePage() {
                   <div className="text-center space-y-2">
                     <p className="text-3xl">⚠️</p>
                     <p className="text-sm text-red-600">{imgError}</p>
-                    <p className="text-xs text-gray-400">Vérifiez le format des données.</p>
+                    <p className="text-xs text-gray-400">{tb('err_check')}</p>
                   </div>
                 ) : (
                   <div className="text-center space-y-2">
                     <p className="text-4xl">📊</p>
-                    <p className="text-sm text-gray-400">Saisissez un contenu pour générer</p>
+                    <p className="text-sm text-gray-400">{tb('empty_msg')}</p>
                   </div>
                 )}
               </div>
@@ -344,13 +344,13 @@ export default function BarcodePage() {
                     <button onClick={() => downloadFile(pngUrl, 'png')}
                       className="py-3 rounded-xl font-bold text-white text-xs bg-[#041B4D] hover:bg-[#0a2a6a] transition-colors flex items-center justify-center gap-1.5">
                       ⬇️ PNG
-                      <span className="opacity-60 text-[10px]">écran/web</span>
+                      <span className="opacity-60 text-[10px]">{tb('png_screen')}</span>
                     </button>
                     {tierAtLeast(tier, 'starter') ? (
                       <button onClick={() => downloadFile(svgUrl, 'svg')}
                         className="py-3 rounded-xl font-bold text-xs border-2 border-[#041B4D] text-[#041B4D] hover:bg-[#041B4D] hover:text-white transition-colors flex items-center justify-center gap-1.5">
                         ⬇️ SVG
-                        <span className="opacity-60 text-[10px]">impression</span>
+                        <span className="opacity-60 text-[10px]">{tb('svg_print')}</span>
                       </button>
                     ) : (
                       <a href="/tarifs"
@@ -371,27 +371,27 @@ export default function BarcodePage() {
                     }
                   }}
                     className="w-full py-3 rounded-xl font-bold text-sm border-2 border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors flex items-center justify-center gap-2">
-                    🖨️ Imprimer (HD 300 dpi)
+                    {tb('btn_print')}
                   </button>
 
                   <button onClick={saveToAccount} disabled={saving || saved}
                     className="w-full py-3 rounded-xl font-bold text-sm border-2 border-[#FF6A00] text-[#FF6A00] hover:bg-orange-50 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
-                    {saved ? '✅ Sauvegardé !' : saving ? 'Sauvegarde…' : '💾 Sauvegarder dans mon compte'}
+                    {saved ? tb('btn_saved') : saving ? tb('btn_saving') : tb('btn_save')}
                   </button>
 
                   <a href="/labels"
                     className="w-full py-2.5 rounded-xl font-bold text-xs border border-gray-200 text-gray-600 hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors flex items-center justify-center gap-2 block text-center">
-                    🏷️ Créer une étiquette avec ce code
+                    {tb('btn_label')}
                   </a>
                 </div>
               )}
 
               {/* Info */}
               <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-xs text-blue-700 space-y-1">
-                <p className="font-bold">💡 PNG vs SVG</p>
-                <p><strong>PNG ×3–6</strong> : web, aperçus, petits formats</p>
-                <p><strong>SVG vectoriel</strong> : impression pro, grand format, sans perte de qualité</p>
-                <p className="text-blue-500 mt-1">Pour l'impression : toujours préférer le SVG</p>
+                <p className="font-bold">{tb('info_title')}</p>
+                <p><strong>PNG ×3–6</strong> : {tb('info_png')}</p>
+                <p><strong>SVG vectoriel</strong> : {tb('info_svg')}</p>
+                <p className="text-blue-500 mt-1">{tb('info_tip')}</p>
               </div>
             </div>
           </div>
@@ -400,10 +400,10 @@ export default function BarcodePage() {
         {tab === 'history' && (
           <div>
             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm text-gray-600 font-semibold">Vos codes-barres sauvegardés</p>
+              <p className="text-sm text-gray-600 font-semibold">{tb('history_saved')}</p>
               <a href="/barcode/batch"
                 className="text-xs font-bold text-[#FF6A00] hover:underline flex items-center gap-1">
-                📋 Générer en masse (CSV)
+                {tb('history_csv')}
               </a>
             </div>
 
@@ -416,11 +416,11 @@ export default function BarcodePage() {
             ) : history.length === 0 ? (
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-12 text-center">
                 <p className="text-4xl mb-3">📊</p>
-                <p className="text-gray-600 font-semibold mb-1">Aucun code-barres sauvegardé</p>
-                <p className="text-sm text-gray-400 mb-4">Générez un code et cliquez sur "Sauvegarder"</p>
+                <p className="text-gray-600 font-semibold mb-1">{tb('history_empty_title')}</p>
+                <p className="text-sm text-gray-400 mb-4">{tb('history_empty_sub')}</p>
                 <button onClick={() => setTab('generator')}
                   className="px-5 py-2.5 bg-[#FF6A00] text-white text-sm font-bold rounded-xl hover:bg-[#e05a00] transition-colors">
-                  Créer mon premier code
+                  {tb('history_create_btn')}
                 </button>
               </div>
             ) : (
@@ -443,16 +443,16 @@ export default function BarcodePage() {
                         <p className="text-xs font-bold text-gray-800 truncate">{item.name}</p>
                         <p className="text-[10px] text-gray-400 font-mono truncate">{parsed.text}</p>
                         <p className="text-[10px] text-[#FF6A00] font-bold mt-0.5">{typeMeta?.label || parsed.bctype}</p>
-                        <p className="text-[9px] text-gray-300">{new Date(item.created_at).toLocaleDateString('fr-FR')}</p>
+                        <p className="text-[9px] text-gray-300">{new Date(item.created_at).toLocaleDateString()}</p>
                       </div>
                       <div className="flex flex-col gap-1.5 shrink-0">
                         <button onClick={() => loadFromHistory(item)}
                           className="px-3 py-1.5 bg-[#FF6A00] text-white text-[10px] font-bold rounded-lg hover:bg-[#e05a00] transition-colors">
-                          Modifier
+                          {tb('btn_edit')}
                         </button>
                         <button onClick={() => deleteFromHistory(item.id)} disabled={deleting === item.id}
                           className="px-3 py-1.5 border border-red-200 text-red-500 text-[10px] font-bold rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50">
-                          {deleting === item.id ? '…' : 'Suppr.'}
+                          {deleting === item.id ? '…' : tb('btn_delete')}
                         </button>
                       </div>
                     </div>

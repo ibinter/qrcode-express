@@ -70,6 +70,7 @@ import Footer from '@/components/layout/Footer'
 
 export default async function HomePage() {
   const t = await getTranslations('generator')
+  const th = await getTranslations('homeProducts')
   return (
     <main>
       <script
@@ -84,13 +85,13 @@ export default async function HomePage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-10">
             <span className="inline-block bg-white/10 text-white text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4">
-              ✦ Une plateforme, 3 solutions
+              {th('badge')}
             </span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3">
-              QR Codes · Codes-barres · Étiquettes
+              {th('title')}
             </h2>
             <p className="text-white/60 text-lg max-w-2xl mx-auto">
-              La seule plateforme africaine qui couvre tout votre besoin de codes d'identification et d'étiquetage.
+              {th('subtitle')}
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -98,40 +99,40 @@ export default async function HomePage() {
             <a href="/#generateur" className="group relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-[#FF6A00]/50 rounded-2xl p-6 transition-all duration-300 cursor-pointer">
               <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-[#FF6A00] opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="w-14 h-14 bg-[#FF6A00]/20 rounded-2xl flex items-center justify-center text-3xl mb-4">📱</div>
-              <h3 className="text-white font-extrabold text-xl mb-2">QR Codes</h3>
-              <p className="text-white/50 text-sm leading-relaxed mb-4">URL, vCard, WhatsApp, Menu restaurant, Paiement Mobile Money, Événement, PDF, WiFi… 20+ types.</p>
+              <h3 className="text-white font-extrabold text-xl mb-2">{th('qr_title')}</h3>
+              <p className="text-white/50 text-sm leading-relaxed mb-4">{th('qr_desc')}</p>
               <div className="flex flex-wrap gap-2">
-                {['Dynamique', 'Analytics', 'Logo', 'SVG', '20+ types'].map(tag => (
+                {['Dynamic', 'Analytics', 'Logo', 'SVG', '20+ types'].map(tag => (
                   <span key={tag} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FF6A00]/20 text-[#FF6A00]">{tag}</span>
                 ))}
               </div>
-              <p className="text-[#FF6A00] text-sm font-bold mt-4 group-hover:translate-x-1 transition-transform">Créer un QR →</p>
+              <p className="text-[#FF6A00] text-sm font-bold mt-4 group-hover:translate-x-1 transition-transform">{th('qr_cta')}</p>
             </a>
             {/* Codes-barres */}
             <a href="/barcode" className="group relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-blue-400/50 rounded-2xl p-6 transition-all duration-300 cursor-pointer">
               <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-blue-400 opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="w-14 h-14 bg-blue-400/20 rounded-2xl flex items-center justify-center text-3xl mb-4">📊</div>
-              <h3 className="text-white font-extrabold text-xl mb-2">Codes-barres</h3>
-              <p className="text-white/50 text-sm leading-relaxed mb-4">EAN-13, Code 128, Data Matrix, PDF417, ISBN, GS1-128… 26 formats. Téléchargez PNG ou SVG vectoriel. Génération en masse via CSV.</p>
+              <h3 className="text-white font-extrabold text-xl mb-2">{th('bc_title')}</h3>
+              <p className="text-white/50 text-sm leading-relaxed mb-4">{th('bc_desc')}</p>
               <div className="flex flex-wrap gap-2">
-                {['26 formats', 'PNG + SVG', 'Import CSV', 'ZIP batch'].map(tag => (
+                {['26 formats', 'PNG + SVG', 'CSV import', 'ZIP batch'].map(tag => (
                   <span key={tag} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-400/20 text-blue-300">{tag}</span>
                 ))}
               </div>
-              <p className="text-blue-300 text-sm font-bold mt-4 group-hover:translate-x-1 transition-transform">Créer un code-barres →</p>
+              <p className="text-blue-300 text-sm font-bold mt-4 group-hover:translate-x-1 transition-transform">{th('bc_cta')}</p>
             </a>
             {/* Étiquettes */}
             <a href="/labels" className="group relative bg-white/5 hover:bg-white/10 border border-white/10 hover:border-purple-400/50 rounded-2xl p-6 transition-all duration-300 cursor-pointer">
               <div className="absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-purple-400 opacity-0 group-hover:opacity-100 transition-opacity" />
               <div className="w-14 h-14 bg-purple-400/20 rounded-2xl flex items-center justify-center text-3xl mb-4">🏷️</div>
-              <h3 className="text-white font-extrabold text-xl mb-2">Étiquettes</h3>
-              <p className="text-white/50 text-sm leading-relaxed mb-4">31 gabarits · 10 catégories : commerce, pharmacie, mode, bijoux, logistique, beauté… Logo uploadable, PDF Avery prêt à imprimer.</p>
+              <h3 className="text-white font-extrabold text-xl mb-2">{th('lb_title')}</h3>
+              <p className="text-white/50 text-sm leading-relaxed mb-4">{th('lb_desc')}</p>
               <div className="flex flex-wrap gap-2">
-                {['31 gabarits', 'Upload logo', 'PDF Avery', 'Thermique'].map(tag => (
+                {['31 templates', 'Upload logo', 'Avery PDF', 'Thermal'].map(tag => (
                   <span key={tag} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-400/20 text-purple-300">{tag}</span>
                 ))}
               </div>
-              <p className="text-purple-300 text-sm font-bold mt-4 group-hover:translate-x-1 transition-transform">Créer une étiquette →</p>
+              <p className="text-purple-300 text-sm font-bold mt-4 group-hover:translate-x-1 transition-transform">{th('lb_cta')}</p>
             </a>
           </div>
         </div>
@@ -143,7 +144,7 @@ export default async function HomePage() {
         <div className="relative max-w-6xl mx-auto">
           <div className="text-center mb-10">
             <span className="inline-block bg-orange-50 text-[#FF6A00] text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 border border-orange-100">
-              ✦ Générateur gratuit
+              {th('gen_badge')}
             </span>
             <h2 className="text-3xl md:text-4xl font-extrabold text-[#041B4D] mb-3">
               {t('title')}
@@ -159,20 +160,20 @@ export default async function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <span className="inline-block bg-blue-50 text-blue-700 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 border border-blue-100">
-                📊 Codes-barres
+                {th('bc_sect_badge')}
               </span>
               <h2 className="text-3xl md:text-4xl font-extrabold text-[#041B4D] mb-4">
-                Générez vos codes-barres <span className="text-blue-600">professionnels</span>
+                {th('bc_sect_h')} <span className="text-blue-600">{th('bc_sect_h_em')}</span>
               </h2>
               <p className="text-gray-500 text-lg mb-6 leading-relaxed">
-                26 formats pris en charge : EAN-13, EAN-8, UPC-A, Code 128, Code 39, ITF-14, Data Matrix, PDF417, ISBN, GS1-128, Aztec, Codabar, Code 93, POSTNET et plus. Export PNG haute résolution ou SVG vectoriel sans limite.
+                {th('bc_sect_p')}
               </p>
               <div className="grid grid-cols-2 gap-3 mb-8">
                 {[
-                  { icon: '🖨️', label: 'PNG + SVG vectoriel' },
-                  { icon: '📋', label: 'Import CSV en masse' },
-                  { icon: '📦', label: 'ZIP automatique' },
-                  { icon: '🎨', label: '6 couleurs + hauteur' },
+                  { icon: '🖨️', label: th('bc_f1') },
+                  { icon: '📋', label: th('bc_f2') },
+                  { icon: '📦', label: th('bc_f3') },
+                  { icon: '🎨', label: th('bc_f4') },
                 ].map(f => (
                   <div key={f.label} className="flex items-center gap-2 text-sm text-gray-600">
                     <span>{f.icon}</span>
@@ -181,7 +182,7 @@ export default async function HomePage() {
                 ))}
               </div>
               <a href="/barcode" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold text-sm transition-opacity hover:opacity-90" style={{ background: 'linear-gradient(135deg, #041B4D, #1e3a8a)' }}>
-                Ouvrir le générateur de codes-barres →
+                {th('bc_sect_cta')}
               </a>
             </div>
             <div className="relative bg-gradient-to-br from-slate-900 to-[#041B4D] rounded-3xl p-8 overflow-hidden">
@@ -223,10 +224,10 @@ export default async function HomePage() {
             <div className="order-2 lg:order-1 relative">
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { label: 'Commerce', bg: '#FF6A00', text: 'white', size: '58×40mm · Prix', emoji: '🏷️' },
-                  { label: 'Pharmacie', bg: '#041B4D', text: 'white', size: 'Format officiel', emoji: '💊' },
-                  { label: 'Logistique', bg: '#10b981', text: 'white', size: '100×30mm · ITF-14', emoji: '📦' },
-                  { label: 'Luxe & Bijoux', bg: '#8b5cf6', text: 'white', size: 'Format premium', emoji: '💎' },
+                  { label: th('card_retail'), bg: '#FF6A00', text: 'white', size: th('card_retail_size'), emoji: '🏷️' },
+                  { label: th('card_pharma'), bg: '#041B4D', text: 'white', size: th('card_pharma_size'), emoji: '💊' },
+                  { label: th('card_logistics'), bg: '#10b981', text: 'white', size: th('card_logistics_size'), emoji: '📦' },
+                  { label: th('card_luxury'), bg: '#8b5cf6', text: 'white', size: th('card_luxury_size'), emoji: '💎' },
                 ].map(card => (
                   <div key={card.label} className="rounded-xl p-4 shadow-sm" style={{ background: card.bg }}>
                     <p className="text-2xl mb-1">{card.emoji}</p>
@@ -238,20 +239,20 @@ export default async function HomePage() {
             </div>
             <div className="order-1 lg:order-2">
               <span className="inline-block bg-purple-50 text-purple-700 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 border border-purple-100">
-                🏷️ Étiquettes
+                {th('lb_sect_badge')}
               </span>
               <h2 className="text-3xl md:text-4xl font-extrabold text-[#041B4D] mb-4">
-                Créez des étiquettes <span className="text-purple-600">prêtes à imprimer</span>
+                {th('lb_sect_h')} <span className="text-purple-600">{th('lb_sect_h_em')}</span>
               </h2>
               <p className="text-gray-500 text-lg mb-6 leading-relaxed">
-                31 gabarits répartis en 10 catégories : commerce, alimentaire, pharmacie, logistique, événements, luxe, mode, beauté, bureau, QR Code. Uploadez votre logo, ajoutez un code-barres et téléchargez le PDF Avery.
+                {th('lb_sect_p')}
               </p>
               <div className="grid grid-cols-2 gap-3 mb-8">
                 {[
-                  { icon: '📤', label: 'Upload logo' },
-                  { icon: '📄', label: 'PDF Avery L7160' },
-                  { icon: '🎨', label: 'Thèmes couleur' },
-                  { icon: '🔥', label: 'Thermique & offset' },
+                  { icon: '📤', label: th('lb_f1') },
+                  { icon: '📄', label: th('lb_f2') },
+                  { icon: '🎨', label: th('lb_f3') },
+                  { icon: '🔥', label: th('lb_f4') },
                 ].map(f => (
                   <div key={f.label} className="flex items-center gap-2 text-sm text-gray-600">
                     <span>{f.icon}</span>
@@ -260,7 +261,7 @@ export default async function HomePage() {
                 ))}
               </div>
               <a href="/labels" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white font-semibold text-sm transition-opacity hover:opacity-90" style={{ background: 'linear-gradient(135deg, #7c3aed, #8b5cf6)' }}>
-                Ouvrir le créateur d'étiquettes →
+                {th('lb_sect_cta')}
               </a>
             </div>
           </div>

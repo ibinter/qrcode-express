@@ -50,7 +50,7 @@ export default function ShowcaseSlider() {
 
       <div className="relative max-w-6xl mx-auto px-4 mb-10 text-center">
         <span className="inline-block bg-white/10 text-white/70 text-xs font-bold uppercase tracking-widest px-4 py-1.5 rounded-full mb-4 border border-white/10">
-          📱 Tous types de QR
+          {t('badge')}
         </span>
         <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3">
           {t('title')}

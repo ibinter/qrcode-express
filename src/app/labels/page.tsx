@@ -286,8 +286,8 @@ export default function LabelsPage() {
 
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-extrabold text-[#041B4D]">🏷️ Créateur d'étiquettes</h1>
-          <p className="text-sm text-gray-500 mt-1">31 gabarits · 10 catégories · Upload logo · PDF Avery · Impression prête</p>
+          <h1 className="text-2xl font-extrabold text-[#041B4D]">{tl('page_title')}</h1>
+          <p className="text-sm text-gray-500 mt-1">{tl('page_sub')}</p>
         </div>
 
         <PlanHeaderBanner
@@ -305,8 +305,8 @@ export default function LabelsPage() {
             {/* Templates */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
               <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Gabarit</p>
-                <span className="text-[10px] text-gray-400">{TEMPLATES.filter(t => selectedCategory === 'all' || t.category === selectedCategory).length} modèles</span>
+                <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{tl('sec_template')}</p>
+                <span className="text-[10px] text-gray-400">{TEMPLATES.filter(t => selectedCategory === 'all' || t.category === selectedCategory).length} {tl('models_count')}</span>
               </div>
 
               {/* Category filter */}
@@ -332,7 +332,7 @@ export default function LabelsPage() {
                   .map(t => {
                     const locked = !tierAtLeast(tier, t.minPlan)
                     const PLAN_COLOR: Record<string, string> = { free: '#64748b', starter: '#3b82f6', essential: '#0ea5e9', pro: '#FF6A00', business: '#041B4D' }
-                    const PLAN_LABEL: Record<string, string> = { free: 'Gratuit', starter: 'Starter', essential: 'Essentiel', pro: 'Pro', business: 'Business' }
+                    const PLAN_LABEL: Record<string, string> = { free: tl('plan_free'), starter: tl('plan_starter'), essential: tl('plan_essential'), pro: tl('plan_pro'), business: tl('plan_biz') }
                     const theme = STYLE_THEMES[t.style] || STYLE_THEMES.retail
                     return (
                       <button key={t.id}
@@ -368,26 +368,26 @@ export default function LabelsPage() {
 
             {/* Fields */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">Contenu</p>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest">{tl('sec_content')}</p>
 
               {tpl.fields.includes('name') && (
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Nom du produit *</label>
+                  <label className="block text-xs text-gray-500 mb-1">{tl('lbl_name')}</label>
                   <input value={data.name} onChange={e => updateField('name', e.target.value)}
                     className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
                 </div>
               )}
               {tpl.fields.includes('subtitle') && (
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Sous-titre / fonction</label>
+                  <label className="block text-xs text-gray-500 mb-1">{tl('lbl_subtitle')}</label>
                   <input value={data.subtitle} onChange={e => updateField('subtitle', e.target.value)}
-                    placeholder="Ex : Directeur · Ref produit"
+                    placeholder={tl('lbl_subtitle_ph')}
                     className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
                 </div>
               )}
               {tpl.fields.includes('price') && (
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Prix</label>
+                  <label className="block text-xs text-gray-500 mb-1">{tl('lbl_price')}</label>
                   <input value={data.price} onChange={e => updateField('price', e.target.value)}
                     placeholder="4 900 FCFA"
                     className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
@@ -395,7 +395,7 @@ export default function LabelsPage() {
               )}
               {tpl.fields.includes('sku') && (
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">Référence / SKU</label>
+                  <label className="block text-xs text-gray-500 mb-1">{tl('lbl_sku')}</label>
                   <input value={data.sku} onChange={e => updateField('sku', e.target.value)}
                     placeholder="REF-001"
                     className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
@@ -404,12 +404,12 @@ export default function LabelsPage() {
               {tpl.fields.includes('barcode') && (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Code-barres</label>
+                    <label className="block text-xs text-gray-500 mb-1">{tl('lbl_barcode')}</label>
                     <input value={data.barcode} onChange={e => updateField('barcode', e.target.value)}
                       className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">Type</label>
+                    <label className="block text-xs text-gray-500 mb-1">{tl('lbl_type')}</label>
                     <select value={barcodeType} onChange={e => setBarcodeType(e.target.value)}
                       className="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40">
                       {BARCODE_TYPES.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
@@ -420,7 +420,7 @@ export default function LabelsPage() {
               {tpl.fields.includes('logo') && (
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">
-                    Logo / image (PNG, JPG, SVG)
+                    {tl('lbl_logo')}
                     <LockBadge requiredTier="starter" currentTier={tier} />
                   </label>
                   {tierAtLeast(tier, 'starter') ? (
@@ -428,7 +428,7 @@ export default function LabelsPage() {
                       <input ref={logoRef} type="file" accept="image/*" onChange={handleLogo} className="hidden" />
                       <button onClick={() => logoRef.current?.click()}
                         className="flex-1 py-2.5 rounded-xl border-2 border-dashed border-gray-300 text-xs text-gray-500 font-semibold hover:border-[#FF6A00] hover:text-[#FF6A00] transition-all">
-                        {logoDataUrl ? '✅ Logo chargé — changer' : '📤 Uploader votre logo'}
+                        {logoDataUrl ? tl('btn_change') : tl('btn_upload')}
                       </button>
                       {logoDataUrl && (
                         <button onClick={() => setLogoDataUrl('')}
@@ -438,7 +438,7 @@ export default function LabelsPage() {
                   ) : (
                     <Link href="/tarifs"
                       className="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border-2 border-dashed border-orange-200 text-xs text-[#b84d00] font-semibold bg-orange-50 hover:bg-orange-100 transition-all">
-                      🔒 Upload logo — Plan Starter requis
+                      {tl('btn_upload_locked')}
                     </Link>
                   )}
                 </div>
@@ -447,8 +447,8 @@ export default function LabelsPage() {
               {!tpl.isSheet && (
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">
-                    Nombre de copies ({copies})
-                    {!tierAtLeast(tier, 'starter') && <span className="ml-1 text-[#b84d00]">· max 5 (Gratuit)</span>}
+                    {tl('lbl_copies')} ({copies})
+                    {!tierAtLeast(tier, 'starter') && <span className="ml-1 text-[#b84d00]">· {tl('lbl_copies_free')}</span>}
                   </label>
                   <input type="range" min={1} max={tierAtLeast(tier, 'starter') ? 20 : 5} value={copies}
                     onChange={e => setCopies(Number(e.target.value))}
@@ -461,32 +461,32 @@ export default function LabelsPage() {
           {/* Right */}
           <div className="space-y-4">
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Aperçu</p>
+              <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">{tl('sec_preview')}</p>
               <div className="flex justify-center">
                 <LabelSVGPreview tpl={tpl} data={data} barcodeUrl={barcodeUrl} logoDataUrl={logoDataUrl} />
               </div>
               <p className="text-center text-xs text-gray-400 mt-3">
-                {tpl.isSheet ? '24 étiquettes par feuille A4 (compatible Avery L7160)' : `${copies} étiquette${copies > 1 ? 's' : ''} — ${tpl.w}×${tpl.h} mm`}
+                {tpl.isSheet ? tl('sheet_info') : `${copies} × ${tpl.w}×${tpl.h} mm`}
               </p>
             </div>
 
             <button onClick={generatePDF} disabled={generating}
               className="w-full py-3.5 rounded-xl font-bold text-white text-sm bg-gradient-to-r from-[#FF6A00] to-[#ee0979] hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-md">
-              {generating ? '⏳ Génération PDF…' : '⬇️ Télécharger PDF — Prêt à imprimer'}
+              {generating ? tl('btn_generating') : tl('btn_pdf')}
             </button>
 
             <a href="/barcode"
               className="w-full py-2.5 rounded-xl font-bold text-xs border border-gray-200 text-gray-600 hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors flex items-center justify-center gap-2 block text-center">
-              📊 Générateur de codes-barres
+              {tl('btn_barcode_gen')}
             </a>
 
             {/* Tips */}
             <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-xs text-amber-800 space-y-1">
-              <p className="font-bold">🖨️ Conseils d'impression premium</p>
-              <p>• Imprimez à <strong>100% (taille réelle)</strong> — désactiver "ajuster à la page"</p>
-              <p>• Feuille A4 : compatible <strong>Avery L7160</strong> (63.5 × 33.9 mm, 24 étiq.)</p>
-              <p>• Petits formats (58×40) : imprimante thermique <strong>Zebra / Dymo / Niimbot</strong></p>
-              <p>• Logo : préférez un PNG transparent pour un rendu optimal</p>
+              <p className="font-bold">{tl('tips_title')}</p>
+              <p>• {tl('tips_1')}</p>
+              <p>• {tl('tips_2')}</p>
+              <p>• {tl('tips_3')}</p>
+              <p>• {tl('tips_4')}</p>
             </div>
           </div>
         </div>

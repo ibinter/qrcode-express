@@ -10,6 +10,7 @@ import { buildQRContent } from '@/lib/qr-content'
 import { createClient } from '@/lib/supabase/client'
 import { Save, LogIn, CheckCircle, Zap, Lock, Calendar, Hash, Sparkles, Loader2 } from 'lucide-react'
 import Link from 'next/link'
+import { useTranslations } from 'next-intl'
 
 const DEFAULT_DESIGN: QRDesign = {
   fgColor: '#041B4D',
@@ -25,6 +26,7 @@ const ALWAYS_DYNAMIC = ['menu', 'coupon', 'biolink', 'vcard_plus', 'catalog', 'r
 const SUPPORTS_DYNAMIC = ['url', 'whatsapp', 'social', 'pdf', 'email', 'phone', 'sms', 'location', 'event', 'vcard', 'vcard_plus', 'app'] as const
 
 export default function QRGenerator() {
+  const tg = useTranslations('generator')
   const [type, setType] = useState<QRType>('url')
 
   useEffect(() => {
@@ -201,8 +203,8 @@ export default function QRGenerator() {
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
       <div className="p-6 pb-0">
-        <h2 className="text-2xl font-bold text-[#041B4D] mb-1">Créer un QR code</h2>
-        <p className="text-sm text-gray-500 mb-5">Gratuit · Sans inscription · Téléchargement PNG immédiat</p>
+        <h2 className="text-2xl font-bold text-[#041B4D] mb-1">{tg('create_title')}</h2>
+        <p className="text-sm text-gray-500 mb-5">{tg('create_sub')}</p>
 
         {/* Type selector */}
         <QRTypeSelector selected={type} onChange={setType} />
@@ -213,8 +215,8 @@ export default function QRGenerator() {
             <div className="flex items-center gap-2">
               <Zap size={16} className="text-blue-600" />
               <div>
-                <p className="text-sm font-semibold text-blue-800">Mode Dynamique</p>
-                <p className="text-xs text-blue-600">Modifiable après impression · Suivi des scans · URL courte</p>
+                <p className="text-sm font-semibold text-blue-800">{tg('dynamic_mode')}</p>
+                <p className="text-xs text-blue-600">{tg('dynamic_sub')}</p>
               </div>
             </div>
             <button
@@ -229,11 +231,11 @@ export default function QRGenerator() {
         {/* Security settings shown when dynamic mode is on */}
         {user && (effectiveDynamic && !isAlwaysDynamic || dynamicMode) && (
           <div className="mt-3 border border-gray-100 rounded-xl p-4 space-y-3 bg-gray-50">
-            <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Options avancées</p>
+            <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">{tg('adv_options')}</p>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="flex items-center gap-1 text-xs font-semibold text-gray-600 mb-1">
-                  <Calendar size={12} /> Expiration
+                  <Calendar size={12} /> {tg('lbl_expiry')}
                 </label>
                 <input
                   type="datetime-local"
@@ -244,27 +246,27 @@ export default function QRGenerator() {
               </div>
               <div>
                 <label className="flex items-center gap-1 text-xs font-semibold text-gray-600 mb-1">
-                  <Hash size={12} /> Scans max
+                  <Hash size={12} /> {tg('lbl_max_scans')}
                 </label>
                 <input
                   type="number"
                   min="1"
                   value={maxScans}
                   onChange={(e) => setMaxScans(e.target.value)}
-                  placeholder="Illimité"
+                  placeholder={tg('lbl_unlimited')}
                   className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40"
                 />
               </div>
             </div>
             <div>
               <label className="flex items-center gap-1 text-xs font-semibold text-gray-600 mb-1">
-                <Lock size={12} /> Mot de passe (optionnel)
+                <Lock size={12} /> {tg('lbl_password')}
               </label>
               <input
                 type="password"
                 value={qrPassword}
                 onChange={(e) => setQrPassword(e.target.value)}
-                placeholder="Laisser vide = accès libre"
+                placeholder={tg('lbl_password_ph')}
                 className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40"
               />
             </div>
@@ -283,7 +285,7 @@ export default function QRGenerator() {
                   : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              {t === 'content' ? 'Contenu' : 'Design'}
+              {t === 'content' ? tg('tab_content') : tg('tab_design')}
             </button>
           ))}
         </div>
@@ -312,12 +314,12 @@ export default function QRGenerator() {
                 className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm text-white transition-opacity hover:opacity-90 disabled:opacity-60"
                 style={{ background: 'linear-gradient(135deg, #7c3aed, #4f46e5)' }}
               >
-                {aiLoading ? <><Loader2 size={16} className="animate-spin" /> Génération IA (~30s)…</> : <><Sparkles size={16} /> Générer QR artistique IA</>}
+                {aiLoading ? <><Loader2 size={16} className="animate-spin" /> {tg('ai_loading')}</> : <><Sparkles size={16} /> {tg('ai_generate')}</>}
               </button>
               {aiError && <p className="text-xs text-red-500 text-center">{aiError}</p>}
               {aiImageUrl && (
                 <button onClick={() => setAiImageUrl(null)} className="w-full text-xs text-gray-400 hover:text-gray-600 text-center">
-                  ✕ Retour au QR normal
+                  {tg('ai_back')}
                 </button>
               )}
             </div>
@@ -327,14 +329,14 @@ export default function QRGenerator() {
           {/* Dynamic mode badge */}
           {effectiveDynamic && (
             <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-700 bg-blue-50 px-3 py-1.5 rounded-full">
-              <Zap size={12} /> QR Dynamique · URL modifiable après impression
+              <Zap size={12} /> {tg('dynamic_badge')}
             </div>
           )}
 
           {/* Saved URL display */}
           {savedUrl && (
             <div className="w-full max-w-[280px] bg-green-50 border border-green-200 rounded-xl p-3 text-center">
-              <p className="text-xs text-green-700 font-semibold mb-1">✅ QR sauvegardé !</p>
+              <p className="text-xs text-green-700 font-semibold mb-1">{tg('saved_ok')}</p>
               <p className="text-xs text-green-600 break-all font-mono">{savedUrl}</p>
             </div>
           )}
@@ -350,9 +352,9 @@ export default function QRGenerator() {
                     className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm border-2 border-[#041B4D] text-[#041B4D] hover:bg-[#041B4D] hover:text-white transition-colors disabled:opacity-50"
                   >
                     {saved ? (
-                      <><CheckCircle size={16} className="text-green-600" /><span className="text-green-600">Sauvegardé !</span></>
+                      <><CheckCircle size={16} className="text-green-600" /><span className="text-green-600">{tg('btn_saved')}</span></>
                     ) : (
-                      <><Save size={16} />{saving ? 'Sauvegarde…' : 'Sauvegarder dans mon espace'}</>
+                      <><Save size={16} />{saving ? tg('btn_saving') : tg('btn_save')}</>
                     )}
                   </button>
                   {saveError && <p className="text-xs text-red-500 text-center mt-1">{saveError}</p>}
@@ -363,7 +365,7 @@ export default function QRGenerator() {
                   className="w-full flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-semibold text-sm border-2 border-[#041B4D] text-[#041B4D] hover:bg-[#041B4D] hover:text-white transition-colors"
                 >
                   <LogIn size={16} />
-                  Se connecter pour sauvegarder
+                  {tg('btn_login')}
                 </Link>
               )}
             </div>
