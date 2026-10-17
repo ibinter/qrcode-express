@@ -19,159 +19,6 @@ type Plan = {
   href?: string
 }
 
-const planGroups = [
-  // Gratuit
-  [
-    { label: '📱 QR Codes', features: [
-      { text: '5 QR statiques permanents', ok: true },
-      { text: 'Générateur illimité (non sauvegardé)', ok: true },
-      { text: 'PNG uniquement', ok: true },
-      { text: 'SVG / PDF', ok: false },
-      { text: 'QR dynamiques', ok: false },
-    ]},
-    { label: '📊 Codes-barres', features: [
-      { text: '10 codes / mois', ok: true },
-      { text: 'EAN-13 + Code 128 uniquement', ok: true },
-      { text: 'PNG uniquement', ok: true },
-      { text: 'SVG / tous formats', ok: false },
-      { text: 'Batch CSV', ok: false },
-    ]},
-    { label: '🏷️ Étiquettes', features: [
-      { text: '1 gabarit (prix 58×40)', ok: true },
-      { text: 'Watermark "QR CODE EXPRESS"', ok: true },
-      { text: '5 étiquettes max / PDF', ok: true },
-      { text: 'Upload logo', ok: false },
-      { text: 'Gabarits premium', ok: false },
-    ]},
-    { label: '📊 Analytics', features: [{ text: 'Statistiques', ok: false }]},
-    { label: '🎁 Parrainage', features: [{ text: 'Programme de parrainage', ok: false }]},
-  ],
-  // Starter
-  [
-    { label: '📱 QR Codes', features: [
-      { text: '20 QR statiques', ok: true },
-      { text: '2 QR dynamiques', ok: true },
-      { text: 'PNG + SVG', ok: true },
-      { text: 'Modification sans réimpression', ok: true },
-      { text: 'Analytics basiques', ok: true },
-      { text: 'QR dynamiques illimités', ok: false },
-    ]},
-    { label: '📊 Codes-barres', features: [
-      { text: '100 codes / mois', ok: true },
-      { text: '10 formats (EAN-13, Code 128, Code 39, QR, PDF417…)', ok: true },
-      { text: 'PNG + SVG', ok: true },
-      { text: 'Batch CSV', ok: false },
-      { text: 'Tous les 26 formats', ok: false },
-    ]},
-    { label: '🏷️ Étiquettes', features: [
-      { text: '10 gabarits (prix, badge, étagère, pharmacie…)', ok: true },
-      { text: 'Upload logo', ok: true },
-      { text: 'Sans watermark', ok: true },
-      { text: '24 étiquettes / PDF', ok: true },
-      { text: 'Avery L7160', ok: false },
-    ]},
-    { label: '📊 Analytics', features: [{ text: 'Statistiques de base', ok: true }]},
-    { label: '🎁 Parrainage', features: [{ text: 'Programme de parrainage', ok: true }]},
-  ],
-  // Essentiel
-  [
-    { label: '📱 QR Codes', features: [
-      { text: '100 QR statiques', ok: true },
-      { text: '10 QR dynamiques', ok: true },
-      { text: 'PNG + SVG + PDF', ok: true },
-      { text: 'Logo centré sur QR', ok: true },
-      { text: '14 styles de cadre', ok: true },
-      { text: 'Analytics 30 jours', ok: true },
-    ]},
-    { label: '📊 Codes-barres', features: [
-      { text: 'Codes-barres illimités', ok: true },
-      { text: '26 formats complets', ok: true },
-      { text: 'PNG + SVG vectoriel', ok: true },
-      { text: 'Batch CSV — 100 codes / lot', ok: true },
-      { text: 'ZIP automatique', ok: true },
-    ]},
-    { label: '🏷️ Étiquettes', features: [
-      { text: '20 gabarits (10 catégories)', ok: true },
-      { text: 'Upload logo + code-barres', ok: true },
-      { text: 'Feuille Avery L7160', ok: true },
-      { text: 'Étiquettes illimitées / PDF', ok: true },
-    ]},
-    { label: '📋 Formulaires', features: [{ text: '3 formulaires actifs', ok: true }]},
-    { label: '🎁 Parrainage', features: [{ text: 'Programme de parrainage', ok: true }]},
-  ],
-  // Pro
-  [
-    { label: '📱 QR Codes', features: [
-      { text: 'QR statiques illimités', ok: true },
-      { text: '100 QR dynamiques', ok: true },
-      { text: 'Menu, Coupon, Bio Links, Catalogue', ok: true },
-      { text: 'vCard Plus + App Store + PDF', ok: true },
-      { text: 'Analytics 90 jours', ok: true },
-      { text: 'Export HD haute résolution', ok: true },
-    ]},
-    { label: '📊 Codes-barres', features: [
-      { text: 'Illimité — tous formats', ok: true },
-      { text: 'Batch CSV — 500 codes / lot', ok: true },
-      { text: 'Historique complet', ok: true },
-    ]},
-    { label: '🏷️ Étiquettes', features: [
-      { text: 'Tous les 31 gabarits · 10 catégories', ok: true },
-      { text: 'Avery · Thermique · Offset', ok: true },
-      { text: 'Historique étiquettes', ok: true },
-    ]},
-    { label: '🎟️ Billetterie', features: [
-      { text: '10 événements actifs', ok: true },
-      { text: 'Inscription + billet QR unique', ok: true },
-      { text: 'Validation scan à l\'entrée', ok: true },
-    ]},
-    { label: '💳 Paiement Mobile Money', features: [
-      { text: 'Wave + Orange Money + MTN MoMo', ok: true },
-      { text: 'Montant fixe ou libre', ok: true },
-    ]},
-    { label: '📋 Formulaires', features: [
-      { text: '10 formulaires actifs', ok: true },
-      { text: 'Export des réponses', ok: true },
-    ]},
-    { label: '🎁 Parrainage', features: [
-      { text: 'Programme de parrainage', ok: true },
-      { text: 'Lien personnalisé + crédits', ok: true },
-    ]},
-  ],
-  // Business
-  [
-    { label: '📱 QR Codes', features: [
-      { text: 'QR dynamiques illimités', ok: true },
-      { text: 'Génération en lot (1 000 QR)', ok: true },
-      { text: 'Analytics illimités + exports CSV', ok: true },
-      { text: 'Tests A/B de contenu', ok: true },
-      { text: 'API REST', ok: true },
-    ]},
-    { label: '📊 Codes-barres', features: [
-      { text: 'Batch CSV — 2 000 codes / lot', ok: true },
-      { text: 'API codes-barres', ok: true },
-    ]},
-    { label: '🏷️ Étiquettes', features: [
-      { text: 'Tout illimité', ok: true },
-    ]},
-    { label: '🎟️ Billetterie & Paiements', features: [
-      { text: 'Événements illimités', ok: true },
-      { text: 'Paiements QR illimités', ok: true },
-      { text: 'Tableau de bord encaissements', ok: true },
-    ]},
-    { label: '📋 Formulaires', features: [
-      { text: 'Formulaires illimités', ok: true },
-      { text: 'Notification WhatsApp des réponses', ok: true },
-    ]},
-    { label: '🏢 Équipes', features: [
-      { text: '10 collaborateurs inclus', ok: true },
-      { text: 'Rôles : admin / éditeur / lecteur', ok: true },
-    ]},
-    { label: '🎁 Support', features: [
-      { text: 'Support prioritaire WhatsApp', ok: true },
-    ]},
-  ],
-]
-
 function PricingCard({ p, onPay, loading }: { p: Plan; onPay: (id: string) => void; loading: string | null }) {
   const [expanded, setExpanded] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -318,6 +165,159 @@ export default function Pricing() {
   const router = useRouter()
   const t = useTranslations('pricing')
 
+  const planGroups = [
+    // Free
+    [
+      { label: t('grp_qr'), features: [
+        { text: t('pf_free_qr_1'), ok: true },
+        { text: t('pf_free_qr_2'), ok: true },
+        { text: t('pf_free_qr_3'), ok: true },
+        { text: t('pf_free_qr_4'), ok: false },
+        { text: t('pf_free_qr_5'), ok: false },
+      ]},
+      { label: t('grp_bc'), features: [
+        { text: t('pf_free_bc_1'), ok: true },
+        { text: t('pf_free_bc_2'), ok: true },
+        { text: t('pf_free_bc_3'), ok: true },
+        { text: t('pf_free_bc_4'), ok: false },
+        { text: t('pf_free_bc_5'), ok: false },
+      ]},
+      { label: t('grp_lbl'), features: [
+        { text: t('pf_free_lbl_1'), ok: true },
+        { text: t('pf_free_lbl_2'), ok: true },
+        { text: t('pf_free_lbl_3'), ok: true },
+        { text: t('pf_free_lbl_4'), ok: false },
+        { text: t('pf_free_lbl_5'), ok: false },
+      ]},
+      { label: t('grp_ana'), features: [{ text: t('pf_free_ana_1'), ok: false }]},
+      { label: t('grp_ref'), features: [{ text: t('pf_free_ref_1'), ok: false }]},
+    ],
+    // Starter
+    [
+      { label: t('grp_qr'), features: [
+        { text: t('pf_strt_qr_1'), ok: true },
+        { text: t('pf_strt_qr_2'), ok: true },
+        { text: t('pf_strt_qr_3'), ok: true },
+        { text: t('pf_strt_qr_4'), ok: true },
+        { text: t('pf_strt_qr_5'), ok: true },
+        { text: t('pf_strt_qr_6'), ok: false },
+      ]},
+      { label: t('grp_bc'), features: [
+        { text: t('pf_strt_bc_1'), ok: true },
+        { text: t('pf_strt_bc_2'), ok: true },
+        { text: t('pf_strt_bc_3'), ok: true },
+        { text: t('pf_strt_bc_4'), ok: false },
+        { text: t('pf_strt_bc_5'), ok: false },
+      ]},
+      { label: t('grp_lbl'), features: [
+        { text: t('pf_strt_lbl_1'), ok: true },
+        { text: t('pf_strt_lbl_2'), ok: true },
+        { text: t('pf_strt_lbl_3'), ok: true },
+        { text: t('pf_strt_lbl_4'), ok: true },
+        { text: t('pf_strt_lbl_5'), ok: false },
+      ]},
+      { label: t('grp_ana'), features: [{ text: t('pf_strt_ana_1'), ok: true }]},
+      { label: t('grp_ref'), features: [{ text: t('pf_strt_ref_1'), ok: true }]},
+    ],
+    // Essential
+    [
+      { label: t('grp_qr'), features: [
+        { text: t('pf_ess_qr_1'), ok: true },
+        { text: t('pf_ess_qr_2'), ok: true },
+        { text: t('pf_ess_qr_3'), ok: true },
+        { text: t('pf_ess_qr_4'), ok: true },
+        { text: t('pf_ess_qr_5'), ok: true },
+        { text: t('pf_ess_qr_6'), ok: true },
+      ]},
+      { label: t('grp_bc'), features: [
+        { text: t('pf_ess_bc_1'), ok: true },
+        { text: t('pf_ess_bc_2'), ok: true },
+        { text: t('pf_ess_bc_3'), ok: true },
+        { text: t('pf_ess_bc_4'), ok: true },
+        { text: t('pf_ess_bc_5'), ok: true },
+      ]},
+      { label: t('grp_lbl'), features: [
+        { text: t('pf_ess_lbl_1'), ok: true },
+        { text: t('pf_ess_lbl_2'), ok: true },
+        { text: t('pf_ess_lbl_3'), ok: true },
+        { text: t('pf_ess_lbl_4'), ok: true },
+      ]},
+      { label: t('grp_frm'), features: [{ text: t('pf_ess_frm_1'), ok: true }]},
+      { label: t('grp_ref'), features: [{ text: t('pf_ess_ref_1'), ok: true }]},
+    ],
+    // Pro
+    [
+      { label: t('grp_qr'), features: [
+        { text: t('pf_pro_qr_1'), ok: true },
+        { text: t('pf_pro_qr_2'), ok: true },
+        { text: t('pf_pro_qr_3'), ok: true },
+        { text: t('pf_pro_qr_4'), ok: true },
+        { text: t('pf_pro_qr_5'), ok: true },
+        { text: t('pf_pro_qr_6'), ok: true },
+      ]},
+      { label: t('grp_bc'), features: [
+        { text: t('pf_pro_bc_1'), ok: true },
+        { text: t('pf_pro_bc_2'), ok: true },
+        { text: t('pf_pro_bc_3'), ok: true },
+      ]},
+      { label: t('grp_lbl'), features: [
+        { text: t('pf_pro_lbl_1'), ok: true },
+        { text: t('pf_pro_lbl_2'), ok: true },
+        { text: t('pf_pro_lbl_3'), ok: true },
+      ]},
+      { label: t('grp_tkt'), features: [
+        { text: t('pf_pro_tkt_1'), ok: true },
+        { text: t('pf_pro_tkt_2'), ok: true },
+        { text: t('pf_pro_tkt_3'), ok: true },
+      ]},
+      { label: t('grp_pay'), features: [
+        { text: t('pf_pro_pay_1'), ok: true },
+        { text: t('pf_pro_pay_2'), ok: true },
+      ]},
+      { label: t('grp_frm'), features: [
+        { text: t('pf_pro_frm_1'), ok: true },
+        { text: t('pf_pro_frm_2'), ok: true },
+      ]},
+      { label: t('grp_ref'), features: [
+        { text: t('pf_pro_ref_1'), ok: true },
+        { text: t('pf_pro_ref_2'), ok: true },
+      ]},
+    ],
+    // Business
+    [
+      { label: t('grp_qr'), features: [
+        { text: t('pf_biz_qr_1'), ok: true },
+        { text: t('pf_biz_qr_2'), ok: true },
+        { text: t('pf_biz_qr_3'), ok: true },
+        { text: t('pf_biz_qr_4'), ok: true },
+        { text: t('pf_biz_qr_5'), ok: true },
+      ]},
+      { label: t('grp_bc'), features: [
+        { text: t('pf_biz_bc_1'), ok: true },
+        { text: t('pf_biz_bc_2'), ok: true },
+      ]},
+      { label: t('grp_lbl'), features: [
+        { text: t('pf_biz_lbl_1'), ok: true },
+      ]},
+      { label: t('grp_tkt'), features: [
+        { text: t('pf_biz_tkt_1'), ok: true },
+        { text: t('pf_biz_tkt_2'), ok: true },
+        { text: t('pf_biz_tkt_3'), ok: true },
+      ]},
+      { label: t('grp_frm'), features: [
+        { text: t('pf_biz_frm_1'), ok: true },
+        { text: t('pf_biz_frm_2'), ok: true },
+      ]},
+      { label: t('grp_team'), features: [
+        { text: t('pf_biz_team_1'), ok: true },
+        { text: t('pf_biz_team_2'), ok: true },
+      ]},
+      { label: t('grp_sup'), features: [
+        { text: t('pf_biz_sup_1'), ok: true },
+      ]},
+    ],
+  ]
+
   const priceUnit = t('price_unit')
   const starter = computePrice(BASE_PRICES.starter, billing, priceUnit)
   const essential = computePrice(BASE_PRICES.essential, billing, priceUnit)
@@ -392,6 +392,45 @@ export default function Pricing() {
       cta: t('plan_business_cta'),
       groups: planGroups[4],
     },
+  ]
+
+  const cmpRows = [
+    { label: t('cmp_r_0'), values: ['5', '20', '100', t('cmp_unlimited_pl'), t('cmp_unlimited_pl')] },
+    { label: t('cmp_r_1'), values: ['—', '2', '10', '100', t('cmp_unlimited_pl')] },
+    { label: t('cmp_r_2'), values: [t('cmp_png_only'), 'PNG+SVG', 'PNG+SVG+PDF', 'PNG+SVG+PDF', 'PNG+SVG+PDF'] },
+    { label: t('cmp_r_3'), values: ['10', '100', t('cmp_unlimited'), t('cmp_unlimited'), t('cmp_unlimited')] },
+    { label: t('cmp_r_4'), values: [t('cmp_2_formats'), t('cmp_10_formats'), t('cmp_26_formats'), t('cmp_26_formats'), t('cmp_26_formats')] },
+    { label: t('cmp_r_5'), values: ['—', '—', t('cmp_100_batch'), t('cmp_500_batch'), t('cmp_2000_batch')] },
+    { label: t('cmp_r_6'), values: [t('cmp_2_wm'), t('cmp_10_no_wm'), t('cmp_20_cat'), '31 + custom', '31 + custom'] },
+    { label: t('cmp_r_7'), values: ['—', '—', '✓', '✓', '✓'] },
+    { label: t('cmp_r_8'), values: ['—', t('cmp_basic'), t('cmp_30d'), t('cmp_90d'), t('cmp_unlimited')] },
+    { label: t('cmp_r_9'), values: ['—', '—', '✓', '✓', '✓'] },
+    { label: t('cmp_r_10'), values: ['—', '—', '—', '✓', '✓'] },
+    { label: t('cmp_r_11'), values: ['—', '—', '—', t('cmp_10_events'), t('cmp_unlimited')] },
+    { label: t('cmp_r_12'), values: ['—', '—', '—', '✓', '✓'] },
+    { label: t('cmp_r_13'), values: ['—', '—', '3', '10', t('cmp_unlimited')] },
+    { label: t('cmp_r_14'), values: ['—', '—', '—', '—', '10'] },
+    { label: t('cmp_r_15'), values: ['—', '—', '—', '—', '✓'] },
+    { label: t('cmp_r_16'), values: ['—', '✓', '✓', '✓', '✓'] },
+    { label: t('cmp_r_17'), values: ['—', 'Email', 'Email', 'Email', t('cmp_wa_prio')] },
+  ]
+
+  const entFeatures = [
+    t('ent_f_1'), t('ent_f_2'), t('ent_f_3'), t('ent_f_4'),
+    t('ent_f_5'), t('ent_f_6'), t('ent_f_7'), t('ent_f_8'),
+    t('ent_f_9'), t('ent_f_10'), t('ent_f_11'), t('ent_f_12'),
+  ]
+
+  const creditItems = [
+    { icon: '✨', label: t('cred_item_0'), cost: t('cred_cost_0') },
+    { icon: '⚡', label: t('cred_item_1'), cost: t('cred_cost_1') },
+    { icon: '📊', label: t('cred_item_2'), cost: t('cred_cost_2') },
+    { icon: '📥', label: t('cred_item_3'), cost: t('cred_cost_3') },
+  ]
+
+  const paymentMethods = [
+    t('pm_0'), t('pm_1'), t('pm_2'), t('pm_3'),
+    t('pm_4'), t('pm_5'), t('pm_6'), t('pm_7'),
   ]
 
   async function handlePay(planId: string) {
@@ -488,26 +527,7 @@ export default function Pricing() {
                 </tr>
               </thead>
               <tbody>
-                {[
-                  { label: '📱 QR statiques', values: ['5', '20', '100', 'Illimités', 'Illimités'] },
-                  { label: '⚡ QR dynamiques', values: ['—', '2', '10', '100', 'Illimités'] },
-                  { label: '🖼️ Export PNG/SVG/PDF', values: ['PNG seul', 'PNG+SVG', 'PNG+SVG+PDF', 'PNG+SVG+PDF', 'PNG+SVG+PDF'] },
-                  { label: '📊 Barcodes / mois', values: ['10', '100', 'Illimité', 'Illimité', 'Illimité'] },
-                  { label: '🔢 Formats barcode', values: ['2 formats', '10 formats', '26 formats', '26 formats', '26 formats'] },
-                  { label: '📋 Batch CSV barcodes', values: ['—', '—', '100 / lot', '500 / lot', '2 000 / lot'] },
-                  { label: '🏷️ Gabarits étiquettes', values: ['2 + watermark', '10 sans watermark', '20 (10 catégories)', '31 + custom', '31 + custom'] },
-                  { label: '📄 Avery L7160', values: ['—', '—', '✓', '✓', '✓'] },
-                  { label: '📈 Analytics', values: ['—', 'Basiques', '30 jours', '90 jours', 'Illimité'] },
-                  { label: '🎨 Design studio', values: ['—', '—', '✓', '✓', '✓'] },
-                  { label: '🍽️ Menu / Coupon / Bio', values: ['—', '—', '—', '✓', '✓'] },
-                  { label: '🎟️ Billetterie QR', values: ['—', '—', '—', '10 événements', 'Illimité'] },
-                  { label: '💳 Paiement Mobile Money', values: ['—', '—', '—', '✓', '✓'] },
-                  { label: '📋 Formulaires prospects', values: ['—', '—', '3', '10', 'Illimité'] },
-                  { label: '🏢 Équipes / collaborateurs', values: ['—', '—', '—', '—', '10 membres'] },
-                  { label: '🔌 API REST', values: ['—', '—', '—', '—', '✓'] },
-                  { label: '🎁 Parrainage', values: ['—', '✓', '✓', '✓', '✓'] },
-                  { label: '💬 Support', values: ['—', 'Email', 'Email', 'Email', 'WhatsApp prio'] },
-                ].map((row, i) => (
+                {cmpRows.map((row, i) => (
                   <tr key={row.label} className={i % 2 === 0 ? 'bg-gray-50/50' : 'bg-white'}>
                     <td className="px-5 py-3 font-medium text-gray-700">{row.label}</td>
                     {row.values.map((v, j) => (
@@ -547,14 +567,7 @@ export default function Pricing() {
               </a>
             </div>
             <div className="grid grid-cols-2 gap-2 flex-shrink-0 w-full md:w-auto">
-              {[
-                'QR codes illimités', 'Barcodes illimités',
-                'Étiquettes illimitées', 'Collaborateurs illimités',
-                'Billetterie illimitée', 'Paiements illimités',
-                'Formulaires illimités', 'Génération en lot illimitée',
-                'API REST illimitée', 'White label (votre marque)',
-                'SLA + Support dédié', 'Organisations illimitées',
-              ].map(f => (
+              {entFeatures.map(f => (
                 <div key={f} className="flex items-center gap-2 text-sm text-white/90 bg-white/5 rounded-xl px-3 py-2 border border-white/10">
                   <span className="text-green-400 font-bold">✓</span> {f}
                 </div>
@@ -598,7 +611,7 @@ export default function Pricing() {
                 <p className="text-white font-bold text-sm">{pack.label}</p>
                 <p className="text-white text-3xl font-extrabold">{pack.credits >= 1000 ? `${pack.credits / 1000}K` : pack.credits}<span className="text-sm font-normal text-white/60 ml-1">{t('credits_unit')}</span></p>
                 <p className="text-white/50 text-xs">{pack.desc}</p>
-                <p className="text-[#FF6A00] font-extrabold text-lg">{pack.amount.toLocaleString('fr')} FCFA</p>
+                <p className="text-[#FF6A00] font-extrabold text-lg">{pack.amount.toLocaleString()} FCFA</p>
                 <a href="/portefeuille" className="mt-1 block text-center py-2 rounded-lg text-xs font-bold text-white bg-white/10 hover:bg-white/20 transition-colors border border-white/10">
                   {t('credits_buy')}
                 </a>
@@ -609,12 +622,7 @@ export default function Pricing() {
           <div className="px-6 pb-6">
             <p className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3">{t('credits_what_title')}</p>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {[
-                { icon: '✨', label: 'QR artistique IA',              cost: '20 crédits' },
-                { icon: '⚡', label: 'QR dynamique supplémentaire',   cost: '50 crédits' },
-                { icon: '📊', label: 'Batch CSV (10 codes-barres)',    cost: '5 crédits' },
-                { icon: '📥', label: 'Import bulk QR (10 QR)',         cost: '1 crédit' },
-              ].map(item => (
+              {creditItems.map(item => (
                 <div key={item.label} className="bg-white/5 border border-white/10 rounded-xl px-4 py-3 flex items-center gap-3">
                   <span className="text-xl flex-shrink-0">{item.icon}</span>
                   <div>
@@ -631,7 +639,7 @@ export default function Pricing() {
         <div className="mt-10 text-center">
           <p className="text-sm text-gray-400 mb-3 font-medium">{t('payment_methods')}</p>
           <div className="flex flex-wrap justify-center gap-3">
-            {['💳 Carte Stripe', '🌊 Wave', '🟠 Orange Money', '🟡 MTN MoMo', '🔵 Moov Money', '🟣 Free Money', '🟢 M-Pesa', '🔴 Airtel Money'].map((m) => (
+            {paymentMethods.map((m) => (
               <span key={m} className="text-xs bg-white border border-gray-200 px-3 py-1.5 rounded-full text-gray-600 font-medium shadow-sm">
                 {m}
               </span>
