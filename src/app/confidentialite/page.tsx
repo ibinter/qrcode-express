@@ -24,7 +24,7 @@ const SECTIONS = [
     title: '2. Données collectées',
     categories: [
       { name: 'Données de compte', desc: 'Nom, prénom, adresse email, numéro de téléphone (optionnel).' },
-      { name: 'Données d\'utilisation', desc: 'QR codes créés, scans effectués, type d\'appareil, pays de scan (données agrégées et anonymisées).' },
+      { name: 'Données d\'utilisation', desc: 'QR codes créés, codes-barres générés, étiquettes PDF téléchargées, scans effectués, type d\'appareil, pays de scan (données agrégées et anonymisées).' },
       { name: 'Données de paiement', desc: 'Référence de transaction Mobile Money uniquement. Nous ne stockons jamais vos numéros de compte ni identifiants bancaires.' },
       { name: 'Données techniques', desc: 'Adresse IP, navigateur, cookies de session.' },
     ],
@@ -34,7 +34,7 @@ const SECTIONS = [
     title: '3. Finalités du traitement',
     list: [
       'Créer et gérer votre compte utilisateur',
-      'Fournir les services QR CODE EXPRESS',
+      'Fournir les services QR CODE EXPRESS (QR codes, codes-barres, étiquettes)',
       'Traiter vos paiements et abonnements',
       'Envoyer des notifications liées au service',
       'Améliorer la plateforme (statistiques agrégées)',
@@ -114,7 +114,7 @@ export default function ConfidentialitePage() {
             <div className="absolute inset-0 opacity-10" style={{ background: 'radial-gradient(circle at 80% 20%, #FF6A00, transparent 60%)' }} />
             <p className="text-[#FF6A00] text-xs font-bold uppercase tracking-widest mb-2 relative">Légal</p>
             <h1 className="text-2xl sm:text-3xl font-extrabold mb-1 relative">Politique de Confidentialité</h1>
-            <p className="text-blue-300 text-sm relative">Dernière mise à jour : janvier 2026</p>
+            <p className="text-blue-300 text-sm relative">Dernière mise à jour : octobre 2026</p>
             <p className="text-blue-200 text-xs mt-3 relative">
               <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">IBIG SOFT</a>
               {' '}— <a href="https://intermark-business.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">INTERMARK BUSINESS INTERNATIONAL GROUP</a>

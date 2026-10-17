@@ -22,6 +22,8 @@ export const CATEGORIES = [
   { slug: 'demarrage', label: 'Démarrage', icon: '🚀' },
   { slug: 'qr-codes', label: 'QR codes', icon: '📱' },
   { slug: 'dynamique', label: 'QR Dynamique', icon: '⚡' },
+  { slug: 'codes-barres', label: 'Codes-barres', icon: '📊' },
+  { slug: 'etiquettes', label: 'Étiquettes', icon: '🏷️' },
   { slug: 'impression', label: 'Impression', icon: '🖨️' },
   { slug: 'plans', label: 'Plans & Crédits', icon: '💳' },
   { slug: 'parrainage', label: 'Parrainage', icon: '🎁' },
@@ -94,7 +96,7 @@ export const ARTICLES: Article[] = [
       {
         type: 'faq',
         pairs: [
-          { q: 'Combien de QR codes puis-je créer gratuitement ?', a: 'Le plan gratuit permet de créer jusqu\'à 3 QR codes sauvegardés.' },
+          { q: 'Combien de QR codes puis-je créer gratuitement ?', a: 'Le plan gratuit permet de créer jusqu\'à 5 QR codes sauvegardés.' },
           { q: 'Est-ce que mes QR codes expirent ?', a: 'Non. Vos QR codes statiques sont permanents. Les QR dynamiques sont actifs tant que votre compte est actif.' },
         ],
       },
@@ -331,6 +333,174 @@ export const ARTICLES: Article[] = [
     ],
   },
 
+  // CODES-BARRES
+  {
+    slug: 'creer-code-barres',
+    title: 'Créer un code-barres',
+    description: 'EAN-13, Code 128, QR, Data Matrix, PDF417 — générez et téléchargez en PNG ou SVG vectoriel.',
+    category: 'codes-barres',
+    icon: '📊',
+    readTime: '3 min',
+    content: [
+      {
+        type: 'intro',
+        text: 'QR CODE EXPRESS propose un générateur de codes-barres complet, compatible avec tous les formats industriels. Téléchargez en PNG pour le web ou en SVG vectoriel pour l\'impression professionnelle.',
+      },
+      {
+        type: 'steps',
+        title: 'Types de codes-barres disponibles',
+        items: [
+          '📦 EAN-13 — Code universel pour produits en supermarché (13 chiffres)',
+          '📦 EAN-8 — Version courte pour petits emballages (8 chiffres)',
+          '🇺🇸 UPC-A — Standard américain (12 chiffres)',
+          '📬 Code 128 — Logistique, colis, inventaire (texte libre)',
+          '🔧 Code 39 — Industrie, inventaire (caractères alphanumériques)',
+          '📦 ITF-14 — Cartons et palettes (14 chiffres)',
+          '💊 Data Matrix — Pharma, composants électroniques (petit format)',
+          '🎫 PDF417 — Billets, cartes d\'identité, documents',
+          '📱 QR Code — Universel (liens, texte, contacts)',
+          '🚌 Aztec — Transport, billetterie (compact)',
+        ],
+      },
+      {
+        type: 'steps',
+        title: 'Générer votre code-barres',
+        items: [
+          'Depuis la sidebar, cliquez sur "Codes-barres".',
+          'Choisissez le type de code (EAN-13, Code 128, etc.).',
+          'Saisissez le contenu (numéro produit, texte, URL).',
+          'Personnalisez les couleurs, la hauteur et la résolution.',
+          'Aperçu en temps réel dans le panneau droit.',
+          'Téléchargez en PNG (web/écran) ou SVG (impression pro).',
+          'Optionnel : sauvegardez dans votre compte pour y revenir.',
+        ],
+      },
+      {
+        type: 'tip',
+        title: 'PNG vs SVG',
+        text: 'Le PNG ×3–6 est idéal pour le web et les petits formats. Le SVG est vectoriel (sans perte de qualité) : utilisez-le pour l\'impression professionnelle, grands formats, packaging.',
+      },
+      {
+        type: 'faq',
+        pairs: [
+          { q: 'Puis-je générer des centaines de codes d\'un coup ?', a: 'Oui. Utilisez la fonctionnalité Import CSV dans "Codes-barres > Import CSV". Téléchargez un fichier CSV avec vos données et recevez un ZIP de tous vos codes-barres PNG.' },
+          { q: 'Quel type pour un produit vendu en supermarché ?', a: 'EAN-13 (international) ou UPC-A (marché américain). Ces codes nécessitent un numéro officiel GS1 si vous distribuez en grande surface.' },
+          { q: 'Quel type pour mon inventaire interne ?', a: 'Code 128 (logistique) ou Code 39 (industrie). Ces formats acceptent du texte libre — pas besoin de numéro officiel.' },
+        ],
+      },
+      {
+        type: 'cta',
+        label: 'Créer mon code-barres →',
+        href: '/barcode',
+      },
+    ],
+  },
+  {
+    slug: 'codes-barres-en-masse',
+    title: 'Générer des codes-barres en masse (CSV)',
+    description: 'Importez un fichier CSV pour générer des centaines de codes-barres en un clic — téléchargement en ZIP.',
+    category: 'codes-barres',
+    icon: '📋',
+    readTime: '2 min',
+    content: [
+      {
+        type: 'intro',
+        text: 'La fonctionnalité Import CSV permet de générer jusqu\'à 500 codes-barres en une seule opération. Idéal pour les commerçants, responsables logistique et gestionnaires de stock.',
+      },
+      {
+        type: 'steps',
+        title: 'Étapes',
+        items: [
+          'Depuis /barcode, cliquez sur "Import CSV en masse" en haut à droite.',
+          'Préparez un fichier CSV avec au minimum une colonne "text".',
+          'Colonne optionnelle "name" pour nommer chaque fichier PNG.',
+          'Uploadez votre CSV ou collez son contenu directement.',
+          'Choisissez le type de code-barres, les couleurs et la résolution.',
+          'Cliquez "Générer" — une barre de progression apparaît.',
+          'Téléchargement automatique d\'un ZIP avec tous vos PNG nommés.',
+        ],
+      },
+      {
+        type: 'tip',
+        title: 'Format CSV',
+        text: 'Deux colonnes : text (le contenu du code, requis) et name (le nom du fichier PNG, optionnel). Téléchargez le modèle CSV depuis la page pour démarrer rapidement.',
+      },
+      {
+        type: 'warning',
+        title: 'Limite recommandée',
+        text: 'Pour des performances optimales, limitez vos batches à 500 codes-barres par import. Au-delà, découpez en plusieurs fichiers.',
+      },
+      {
+        type: 'cta',
+        label: 'Générer en masse →',
+        href: '/barcode/batch',
+      },
+    ],
+  },
+
+  // ÉTIQUETTES
+  {
+    slug: 'creer-etiquette',
+    title: 'Créer des étiquettes imprimables',
+    description: '31 gabarits · 10 catégories : commerce, pharmacie, logistique, luxe, feuilles A4 Avery — export PDF prêt à imprimer.',
+    category: 'etiquettes',
+    icon: '🏷️',
+    readTime: '3 min',
+    content: [
+      {
+        type: 'intro',
+        text: 'QR CODE EXPRESS propose 31 gabarits d\'étiquettes dans 10 catégories métier. Générez des PDF professionnels avec code-barres intégré, logo et mise en page adaptée à votre secteur.',
+      },
+      {
+        type: 'steps',
+        title: 'Les 10 catégories de gabarits',
+        items: [
+          '🛒 Commerce & Distribution — étiquettes prix, rayonnage, promotions',
+          '💊 Pharmacie & Santé — médicaments, flacons, dispositifs médicaux',
+          '🚚 Logistique & Transport — colis, palettes, expéditions',
+          '✨ Luxe & Bijoux — haute couture, parfums, joaillerie',
+          '🍽️ Alimentation & Restauration — ingrédients, dates limite, menus',
+          '🏭 Industrie & Fabrication — composants, maintenance, traçabilité',
+          '🖥️ Informatique & Électronique — asset management, référencement',
+          '📅 Événements & Badges — conférences, salons, passes VIP',
+          '📦 E-commerce — envois, retours, codes de réduction',
+          '📄 Feuilles A4 Avery — 24 étiquettes 63.5×33.9 mm, compatibles L7160',
+        ],
+      },
+      {
+        type: 'steps',
+        title: 'Créer votre étiquette',
+        items: [
+          'Depuis la sidebar, cliquez sur "Étiquettes".',
+          'Choisissez votre gabarit.',
+          'Remplissez les champs : nom, prix, référence, code-barres.',
+          'Uploadez votre logo (PNG/JPG/SVG) — apparaît dans l\'étiquette.',
+          'Aperçu en temps réel avec le thème coloré du gabarit.',
+          'Ajustez le nombre de copies ou utilisez la feuille A4 (24 étiquettes).',
+          'Cliquez "Télécharger PDF" — imprimez directement.',
+        ],
+      },
+      {
+        type: 'tip',
+        title: 'Impression parfaite',
+        text: 'Toujours imprimer à 100% (taille réelle). Désactivez "Ajuster à la page" dans votre imprimante. Pour la feuille A4, utilisez du papier autocollant Avery L7160.',
+      },
+      {
+        type: 'faq',
+        pairs: [
+          { q: 'Puis-je mettre mon logo sur l\'étiquette ?', a: 'Oui. Uploadez votre logo (PNG transparent recommandé) dans le champ "Logo / image". Il s\'intègre automatiquement dans l\'aperçu et dans le PDF.' },
+          { q: 'Quelle imprimante pour les petits formats ?', a: 'Pour les étiquettes 58×40mm et 70×35mm, une imprimante thermique (Zebra, Dymo, Niimbot) est recommandée. Pour les feuilles A4, n\'importe quelle imprimante laser ou jet d\'encre.' },
+          { q: 'Le code-barres est-il scannable dans le PDF ?', a: 'Oui. Le code-barres est généré en haute résolution et intégré au PDF. Il est scannable par tous les lecteurs de codes-barres standard.' },
+        ],
+      },
+      {
+        type: 'cta',
+        label: 'Créer mes étiquettes →',
+        href: '/labels',
+      },
+    ],
+  },
+
   // IMPRESSION
   {
     slug: 'guide-impression',
@@ -376,33 +546,32 @@ export const ARTICLES: Article[] = [
   {
     slug: 'plans-tarifs',
     title: 'Comprendre les plans et tarifs',
-    description: 'Différences entre les plans Gratuit, Essentiel, Pro, Business et Agency.',
+    description: 'Différences entre les plans Gratuit, Starter, Essentiel, Pro et Business — QR codes, codes-barres, étiquettes.',
     category: 'plans',
     icon: '🏷️',
     readTime: '3 min',
     content: [
       {
         type: 'intro',
-        text: 'QR CODE EXPRESS propose plusieurs plans adaptés à chaque usage, du particulier à l\'agence.',
+        text: 'QR CODE EXPRESS propose 5 plans adaptés à chaque usage. Tous incluent le générateur de QR codes, de codes-barres et d\'étiquettes PDF.',
       },
       {
         type: 'steps',
         title: 'Les plans disponibles',
         items: [
-          '🆓 Gratuit : 3 QR codes, PNG uniquement, statistiques basiques',
-          '✅ Essentiel : 10 QR, SVG, statistiques avancées',
-          '⚡ Pro : 50 QR, PDF, logo dans le QR, règles de redirection',
-          '🏢 Business : 200 QR, import CSV, multi-utilisateurs',
-          '🌐 Agency : 1000 QR, domaine personnalisé, marque blanche',
-          '🏆 Enterprise : illimité, SLA, support dédié',
+          '🆓 Gratuit — 0 FCFA/mois : 5 QR, PNG uniquement, 2 formats codes-barres, statistiques basiques',
+          '🚀 Starter — 4 900 FCFA/mois : 20 QR, SVG, 10 formats codes-barres, 10 gabarits étiquettes',
+          '✅ Essentiel — 9 900 FCFA/mois : 100 QR, export SVG/PDF, 26 formats codes-barres, 20 gabarits (10 catégories)',
+          '⚡ Pro — 19 900 FCFA/mois : QR illimités, logo dans le QR, 31 gabarits · 10 catégories, règles de redirection',
+          '🏢 Business — 29 900 FCFA/mois : Multi-utilisateurs, organisations, étiquettes custom, support prioritaire',
         ],
       },
       {
         type: 'faq',
         pairs: [
-          { q: 'Puis-je changer de plan à tout moment ?', a: 'Oui. Vous pouvez upgrader ou downgrader votre plan depuis la page Tarifs. Le changement est immédiat.' },
-          { q: 'Que se passe-t-il si je dépasse ma limite de QR codes ?', a: 'Vous ne pourrez pas créer de nouveaux QR codes jusqu\'à ce que vous supprimiez des anciens ou que vous passiez à un plan supérieur.' },
-          { q: 'Les QR codes créés restent-ils actifs si je rétrograde ?', a: 'Oui, vos QR codes existants restent actifs mais vous ne pourrez pas en créer de nouveaux au-delà de la limite du nouveau plan.' },
+          { q: 'Puis-je changer de plan à tout moment ?', a: 'Oui. Vous pouvez upgrader depuis la page Tarifs. Le changement est immédiat, payable par Wave, Orange Money ou MTN MoMo.' },
+          { q: 'Y a-t-il un engagement ?', a: 'Non, sans engagement. Choisissez mensuel, semestriel (1 mois offert) ou annuel (2 mois offerts).' },
+          { q: 'Que se passe-t-il si je dépasse ma limite de QR codes ?', a: 'Vous ne pourrez pas créer de nouveaux QR codes jusqu\'à ce que vous supprimiez des anciens ou passiez à un plan supérieur.' },
         ],
       },
       {
@@ -540,15 +709,15 @@ export const ARTICLES: Article[] = [
   // MULTILINGUE
   {
     slug: 'pages-multilingues',
-    title: 'Pages publiques multilingues (fr / en / ar)',
-    description: 'Vos pages vCard, menu, coupon et formulaire s\'affichent dans la langue du visiteur. Support arabe avec écriture droite-gauche.',
+    title: 'Pages publiques multilingues (fr / en / ar / pt)',
+    description: 'Vos pages vCard, menu, coupon et formulaire s\'affichent dans la langue du visiteur. Support arabe RTL et portugais.',
     category: 'i18n',
     icon: '🌍',
     readTime: '2 min',
     content: [
       {
         type: 'intro',
-        text: 'QR CODE EXPRESS détecte automatiquement la langue du navigateur de vos visiteurs et affiche vos pages publiques dans leur langue. Trois langues sont supportées : français, anglais et arabe.',
+        text: 'QR CODE EXPRESS détecte automatiquement la langue du navigateur de vos visiteurs et affiche vos pages publiques dans leur langue. Quatre langues sont supportées : français, anglais, arabe et portugais.',
       },
       {
         type: 'steps',
@@ -570,6 +739,7 @@ export const ARTICLES: Article[] = [
           'Le serveur lit l\'en-tête Accept-Language envoyé par le navigateur.',
           'Si la langue principale est l\'arabe → page en arabe + direction RTL (droite à gauche).',
           'Si la langue est l\'anglais → page en anglais.',
+          'Si la langue est le portugais → page en portugais (Brésil, Angola, Mozambique…).',
           'Sinon → page en français (langue par défaut).',
           'Aucune action requise de votre part : c\'est automatique.',
         ],
@@ -583,7 +753,7 @@ export const ARTICLES: Article[] = [
         type: 'faq',
         pairs: [
           { q: 'Puis-je forcer une langue spécifique ?', a: 'Non, la langue est détectée automatiquement selon la préférence du navigateur du visiteur. C\'est volontaire pour offrir la meilleure expérience.' },
-          { q: 'D\'autres langues seront-elles ajoutées ?', a: 'Oui. Portugais, Wolof et Haoussa sont en cours de préparation pour mieux servir les marchés africains.' },
+          { q: 'D\'autres langues seront-elles ajoutées ?', a: 'Oui. Wolof et Haoussa sont en préparation pour mieux servir les marchés d\'Afrique de l\'Ouest.' },
         ],
       },
     ],

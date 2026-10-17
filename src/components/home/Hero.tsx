@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useEffect, useState, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 
-const SLIDE_IDS = ['menu', 'ticket', 'payment', 'form', 'biolink'] as const
+const SLIDE_IDS = ['menu', 'ticket', 'payment', 'form', 'biolink', 'barcode', 'labels'] as const
 type SlideId = typeof SLIDE_IDS[number]
 
 const SLIDE_META: Record<SlideId, { accent: string; bg: string; qrColor: string; badge2Icon: string }> = {
@@ -12,6 +12,8 @@ const SLIDE_META: Record<SlideId, { accent: string; bg: string; qrColor: string;
   payment: { accent: '#16a34a', bg: 'from-[#052e16] via-[#14532d] to-[#0a2010]', qrColor: '#16a34a', badge2Icon: '🌊' },
   form:    { accent: '#0ea5e9', bg: 'from-[#0c1a2e] via-[#0a2d5e] to-[#0c1a2e]', qrColor: '#0ea5e9', badge2Icon: '📈' },
   biolink: { accent: '#8b5cf6', bg: 'from-[#1a0a3c] via-[#2d1a5e] to-[#1a0a3c]', qrColor: '#8b5cf6', badge2Icon: '📱' },
+  barcode: { accent: '#3b82f6', bg: 'from-[#0a1628] via-[#1e3a5e] to-[#0a1628]', qrColor: '#3b82f6', badge2Icon: '📦' },
+  labels:  { accent: '#a855f7', bg: 'from-[#150630] via-[#2d1158] to-[#150630]', qrColor: '#a855f7', badge2Icon: '🎨' },
 }
 
 // Keep legacy SLIDES only for backwards compat — now driven by translations
@@ -80,6 +82,32 @@ const SLIDES = [
     badge3: { icon: '✨', title: 'Page personnalisée', sub: 'Vos couleurs & logo', color: '#8b5cf6' },
     qrColor: '#8b5cf6',
     trust: ['Page personnalisée', 'Instagram · TikTok · WhatsApp', 'Stats de clics incluses'],
+  },
+  {
+    id: 'barcode',
+    tag: '📊 Codes-barres Pro',
+    title: '26 formats\npour chaque besoin',
+    subtitle: 'EAN-13, Code 128, Data Matrix, PDF417, ISBN, GS1-128... Exportez PNG haute résolution ou SVG vectoriel. Générez en masse via CSV.',
+    accent: '#3b82f6',
+    bg: 'from-[#0a1628] via-[#1e3a5e] to-[#0a1628]',
+    badge1: { icon: '📊', title: 'EAN-13 généré', sub: 'PNG HD · 300 dpi', color: '#3b82f6' },
+    badge2: { icon: '📦', title: '+350 codes', sub: 'ce mois-ci', dark: true },
+    badge3: { icon: '⚡', title: 'Batch CSV', sub: '500 codes en 1 clic', color: '#3b82f6' },
+    qrColor: '#3b82f6',
+    trust: ['26 formats standard', 'PNG + SVG vectoriel', 'Import CSV · Export ZIP'],
+  },
+  {
+    id: 'labels',
+    tag: '🏷️ Étiquettes Premium',
+    title: '31 gabarits\nprêts à imprimer',
+    subtitle: 'Commerce, pharmacie, mode, bijoux, logistique, beauté… Uploadez votre logo et téléchargez un PDF compatible Avery en quelques secondes.',
+    accent: '#a855f7',
+    bg: 'from-[#150630] via-[#2d1158] to-[#150630]',
+    badge1: { icon: '🏷️', title: 'PDF généré', sub: 'Prêt à imprimer', color: '#a855f7' },
+    badge2: { icon: '🎨', title: '24 étiquettes', sub: 'par feuille A4 Avery', dark: true },
+    badge3: { icon: '⬆️', title: 'Upload logo', sub: 'PNG · JPG · SVG', color: '#a855f7' },
+    qrColor: '#a855f7',
+    trust: ['31 gabarits · 10 catégories', 'PDF compatible Avery', 'Thermique · Offset'],
   },
 ]
 

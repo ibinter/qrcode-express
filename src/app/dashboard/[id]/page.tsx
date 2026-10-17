@@ -201,6 +201,15 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
     ? await admin.from('routing_rules').select('*').eq('qr_id', id).order('priority', { ascending: false })
     : { data: null }
 
+  // Event-specific: ticket stats
+  const ticketStats = qr.type === 'event' ? await (async () => {
+    const { count: total } = await admin.from('tickets').select('id', { count: 'exact', head: true }).eq('event_id', id)
+    const { count: used } = await admin.from('tickets').select('id', { count: 'exact', head: true }).eq('event_id', id).eq('status', 'used')
+    const { count: cancelled } = await admin.from('tickets').select('id', { count: 'exact', head: true }).eq('event_id', id).eq('status', 'cancelled')
+    const { data: recent } = await admin.from('tickets').select('code, holder_name, holder_email, status, created_at').eq('event_id', id).order('created_at', { ascending: false }).limit(10)
+    return { total: total ?? 0, used: used ?? 0, cancelled: cancelled ?? 0, recent: recent ?? [] }
+  })() : null
+
   // A/B test stats: count scans per destination for ab_test rules
   const abRules = (routingRules || []).filter(r => r.rule_type === 'ab_test')
   const abStats: { ruleId: string; variants: { url: string; weight: number; scans: number }[] }[] = []
@@ -448,6 +457,66 @@ export default async function AnalyticsPage({ params }: { params: Promise<{ id: 
               url={qr.content}
               initialHealth={(qr.design as Record<string, unknown>)?.link_health as any ?? null}
             />
+          </div>
+        )}
+
+        {/* Event management panel */}
+        {qr.type === 'event' && ticketStats && (
+          <div className="bg-white rounded-2xl border border-blue-100 shadow-sm p-5 mb-4">
+            <h2 className="text-sm font-bold text-[#041B4D] mb-4">🎟️ Gestion des billets</h2>
+
+            {/* KPIs */}
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              {[
+                { label: 'Inscrits', value: ticketStats.total, color: '#041B4D', icon: '👥' },
+                { label: 'Validés', value: ticketStats.used, color: '#16a34a', icon: '✅' },
+                { label: 'Annulés', value: ticketStats.cancelled, color: '#dc2626', icon: '❌' },
+              ].map(s => (
+                <div key={s.label} className="text-center bg-gray-50 rounded-xl p-3">
+                  <p className="text-lg">{s.icon}</p>
+                  <p className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</p>
+                  <p className="text-xs text-gray-500">{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-3 mb-4">
+              <Link href={`/scan/${id}`}
+                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-white text-sm bg-[#041B4D] hover:bg-[#0a2a6a] transition-colors">
+                📷 Scanner à l&apos;entrée
+              </Link>
+              <a href={`/api/event/${id}/export`}
+                className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl font-bold text-sm border border-gray-200 hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors">
+                📥 Exporter CSV
+              </a>
+            </div>
+
+            {/* Recent registrations */}
+            {ticketStats.recent.length > 0 && (
+              <div>
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Dernières inscriptions</p>
+                <div className="space-y-1.5">
+                  {ticketStats.recent.map((t: { code: string; holder_name: string; holder_email: string; status: string; created_at: string }) => (
+                    <div key={t.code} className="flex items-center gap-3 py-1.5 border-b border-gray-50 last:border-0">
+                      <span className="text-sm">{t.status === 'used' ? '✅' : t.status === 'cancelled' ? '❌' : '🎟️'}</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-800 truncate">{t.holder_name}</p>
+                        <p className="text-xs text-gray-400 truncate">{t.holder_email}</p>
+                      </div>
+                      <div className="text-right shrink-0">
+                        <p className="text-xs font-mono text-gray-500">{t.code}</p>
+                        <p className="text-[10px] text-gray-400">{new Date(t.created_at).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' })}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {ticketStats.total === 0 && (
+              <p className="text-sm text-gray-400 text-center py-4">Aucune inscription pour l&apos;instant.</p>
+            )}
           </div>
         )}
 

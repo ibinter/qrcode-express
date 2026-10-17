@@ -68,7 +68,7 @@ export default function MentionsLegalesPage() {
             <div className="absolute inset-0 opacity-10" style={{ background: 'radial-gradient(circle at 80% 20%, #FF6A00, transparent 60%)' }} />
             <p className="text-[#FF6A00] text-xs font-bold uppercase tracking-widest mb-2 relative">Légal</p>
             <h1 className="text-2xl sm:text-3xl font-extrabold mb-2 relative">Mentions Légales</h1>
-            <p className="text-blue-300 text-sm relative">Dernière mise à jour : janvier 2026</p>
+            <p className="text-blue-300 text-sm relative">Dernière mise à jour : octobre 2026</p>
             <div className="mt-4 flex flex-wrap gap-2 relative">
               <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer"
                 className="text-xs bg-white/10 hover:bg-white/20 transition-colors px-3 py-1 rounded-full text-blue-200 hover:text-white">

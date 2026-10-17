@@ -16,6 +16,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${BASE}/inscription`, priority: 0.7, changeFrequency: 'yearly' as const },
     { url: `${BASE}/connexion`, priority: 0.6, changeFrequency: 'yearly' as const },
     { url: `${BASE}/parrainage`, priority: 0.6, changeFrequency: 'monthly' as const },
+    { url: `${BASE}/barcode`, priority: 0.8, changeFrequency: 'monthly' as const },
+    { url: `${BASE}/barcode/batch`, priority: 0.7, changeFrequency: 'monthly' as const },
+    { url: `${BASE}/labels`, priority: 0.8, changeFrequency: 'monthly' as const },
   ]
 
   const blogPages = BLOG_ARTICLES.map((article) => ({

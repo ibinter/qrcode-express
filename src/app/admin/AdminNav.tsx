@@ -27,6 +27,16 @@ const SECTIONS = [
     ],
   },
   {
+    id: 'barcodes',
+    label: 'Codes-barres & Étiquettes',
+    items: [
+      { href: '/admin/qr?type=barcode', icon: '📊', label: 'Codes-barres', color: '#041B4D' },
+      { href: '/barcode', icon: '⚡', label: 'Générateur (client)', color: '#FF6A00' },
+      { href: '/barcode/batch', icon: '📋', label: 'Import CSV batch', color: '#10b981' },
+      { href: '/labels', icon: '🏷️', label: 'Étiquettes (client)', color: '#8b5cf6' },
+    ],
+  },
+  {
     id: 'features',
     label: 'Fonctionnalités',
     items: [

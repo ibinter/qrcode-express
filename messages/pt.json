@@ -2,6 +2,9 @@
   "locale": "pt",
   "nav": {
     "create": "Criar QR",
+    "tools": "Nossas ferramentas",
+    "barcode": "Criar código de barras",
+    "labels": "Criar etiqueta",
     "pricing": "Preços",
     "features": "Funcionalidades",
     "myQR": "Meus QRs",
@@ -86,20 +89,52 @@
         "badge2_sub": "este mês",
         "badge3_title": "Página personalizada",
         "badge3_sub": "As suas cores & logótipo"
+      },
+      "barcode": {
+        "tag": "📊 Códigos de Barras Pro",
+        "title": "26 formatos\npara cada necessidade",
+        "subtitle": "EAN-13, Code 128, Data Matrix, PDF417, ISBN, GS1-128... Exporte PNG de alta resolução ou SVG vetorial. Gere em massa via CSV.",
+        "trust_0": "26 formatos padrão",
+        "trust_1": "PNG + SVG vetorial",
+        "trust_2": "Importação CSV · ZIP",
+        "badge1_title": "EAN-13 gerado",
+        "badge1_sub": "PNG HD · 300 dpi",
+        "badge2_title": "+350 códigos",
+        "badge2_sub": "este mês",
+        "badge3_title": "Lote CSV",
+        "badge3_sub": "500 códigos em 1 clique"
+      },
+      "labels": {
+        "tag": "🏷️ Etiquetas Premium",
+        "title": "31 modelos\nprontos a imprimir",
+        "subtitle": "Comércio, farmácia, moda, joalharia, logística, beleza… Faça upload do logótipo e descarregue um PDF compatível com Avery.",
+        "trust_0": "31 modelos · 10 categorias",
+        "trust_1": "PDF compatível com Avery",
+        "trust_2": "Térmico · Offset",
+        "badge1_title": "PDF gerado",
+        "badge1_sub": "Pronto a imprimir",
+        "badge2_title": "24 etiquetas",
+        "badge2_sub": "por folha A4 Avery",
+        "badge3_title": "Upload logótipo",
+        "badge3_sub": "PNG · JPG · SVG"
       }
     }
   },
   "stats": {
-    "types": "tipos de QR codes",
-    "time": "para criar um QR",
-    "watermark": "sem marca d'água",
+    "barcodes": "formatos de código de barras",
+    "labels_count": "modelos de etiquetas",
+    "qrtypes": "tipos de QR codes",
     "free": "para começar"
   },
   "features": {
-    "title": "A plataforma QR mais completa de África",
-    "subtitle": "Bilheteira, pagamentos Mobile Money, formulários, organizações — ferramentas profissionais para o mercado africano",
+    "title": "QR Codes · Códigos de barras · Etiquetas",
+    "subtitle": "A plataforma mais completa de África para identificar, rastrear e etiquetar os seus produtos, eventos e contactos.",
     "new": "Novo ✦",
     "items": {
+      "barcode_title": "Códigos de barras profissionais",
+      "barcode_desc": "EAN-13, Code 128, Data Matrix, PDF417, QR, Aztec… 10 formatos. Exporte PNG de alta resolução ou SVG vetorial. Geração em massa via CSV — ZIP automático.",
+      "labels_title": "Etiquetas imprimíveis",
+      "labels_desc": "6 modelos pro (preço 58×40, crachá, prateleira, farmácia, luxo, A4 Avery). Faça upload do seu logótipo, adicione um código de barras e descarregue um PDF pronto a imprimir.",
       "ticketing_title": "Bilheteira com QR",
       "ticketing_desc": "Crie um evento, gira as inscrições e gere um bilhete QR único para cada participante. Validação na entrada com uma leitura.",
       "payment_title": "Pagamento Mobile Money QR",
@@ -123,7 +158,15 @@
       "vcard_title": "vCard Plus interativo",
       "vcard_desc": "Cartão de visita digital com foto, redes sociais, botão WhatsApp e link de download do contacto.",
       "security_title": "Segurança e fiabilidade",
-      "security_desc": "Infraestrutura Supabase + Vercel. Dados encriptados, RLS ativado, links seguros. Os seus QRs nunca ficam em baixo."
+      "security_desc": "Infraestrutura Supabase + Vercel. Dados encriptados, RLS ativado, links seguros. Os seus QRs nunca ficam em baixo.",
+      "multilingual_title": "Páginas multilingues fr / en / ar",
+      "multilingual_desc": "As suas páginas públicas (vCard, menu, cupão, formulário…) são exibidas automaticamente em francês, inglês ou árabe segundo o idioma do visitante. Suporte completo RTL para árabe.",
+      "ai_title": "QR artísticos com IA",
+      "ai_desc": "Transforme o seu QR numa obra de arte com IA ControlNet. Natureza, cidade, espaço, vintage — 8 estilos ou prompt personalizado. Os seus QRs notados à primeira vista.",
+      "bulk_title": "Importação em massa (CSV)",
+      "bulk_desc": "Importe até 500 QR codes via CSV em segundos. Export ZIP automático de todos os PNGs em alta resolução. Ideal para grandes campanhas.",
+      "print_title": "Export pronto a imprimir",
+      "print_desc": "PNG até 2048px (4K), PDF A4 com dimensões de impressão, SVG vetorial ilimitado para CMYK. Os seus QRs prontos para impressoras profissionais."
     }
   },
   "howItWorks": {

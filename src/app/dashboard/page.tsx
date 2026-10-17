@@ -89,11 +89,12 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const maxChart = Math.max(...chartData7d.map(d => d.count), 1)
 
   const PLAN_LIMITS: Record<string, { qr: number; scans: number }> = {
-    free: { qr: 3, scans: 100 },
-    essential: { qr: 10, scans: 500 },
-    pro: { qr: 50, scans: 5000 },
-    business: { qr: 200, scans: 50000 },
-    agency: { qr: 1000, scans: 999999 },
+    free: { qr: 5, scans: 100 },
+    starter: { qr: 20, scans: 1000 },
+    essential: { qr: 100, scans: 5000 },
+    pro: { qr: 9999, scans: 50000 },
+    business: { qr: 9999, scans: 999999 },
+    agency: { qr: 9999, scans: 999999 },
     enterprise: { qr: 9999, scans: 999999 },
   }
   const limits = PLAN_LIMITS[plan] ?? PLAN_LIMITS.free
@@ -127,7 +128,15 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               {(qrs?.length ?? 0) === 0 ? 'Créez votre premier QR code ci-dessous' : 'Voici votre tableau de bord'}
             </p>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 flex-wrap">
+            <Link href="/barcode"
+              className="text-center px-3 py-2 rounded-xl text-xs font-semibold border border-blue-200 text-blue-700 hover:bg-blue-50 transition-colors">
+              📊 <span className="hidden sm:inline">Codes-barres</span>
+            </Link>
+            <Link href="/labels"
+              className="text-center px-3 py-2 rounded-xl text-xs font-semibold border border-purple-200 text-purple-700 hover:bg-purple-50 transition-colors">
+              🏷️ <span className="hidden sm:inline">Étiquettes</span>
+            </Link>
             <Link href="/dashboard/bulk"
               className="text-center px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors">
               📥 <span className="hidden sm:inline">Import </span>CSV
@@ -355,7 +364,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               </div>
               <p className="font-bold text-lg text-[#041B4D] mb-1">Aucun QR code encore</p>
               <p className="text-sm text-gray-500 mb-6 max-w-xs mx-auto">
-                Créez votre premier QR code — URL, bio link, menu restaurant, coupon... tout est possible !
+                QR codes, codes-barres (26 formats), étiquettes (31 gabarits)… Tout est possible en quelques secondes.
               </p>
               <div className="flex flex-wrap justify-center gap-2 mb-6">
                 {QUICK_TYPES.slice(0, 4).map(t => (

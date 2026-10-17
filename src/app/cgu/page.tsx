@@ -20,11 +20,14 @@ En accédant à la plateforme, l'utilisateur accepte sans réserve l'intégralit
     icon: '🛠️',
     title: '2. Services proposés',
     list: [
-      'Création et personnalisation de QR codes statiques et dynamiques',
+      'Création et personnalisation de QR codes statiques et dynamiques (20+ types)',
+      'Génération de codes-barres professionnels — 26 formats (EAN-13, Code 128, Data Matrix, PDF417, ISBN, GS1-128…)',
+      'Création d\'étiquettes imprimables — 31 gabarits · 10 catégories · PDF compatible Avery',
       'Gestion de menus digitaux, billetterie événementielle, paiements Mobile Money',
       'Formulaires de collecte de prospects',
       'Bio Links et cartes de visite digitales (vCard)',
       'Statistiques et analytics de scan',
+      'Génération en masse via import CSV et export ZIP',
       'Gestion d\'organisations et d\'équipes',
     ],
     note: 'Certains services sont disponibles gratuitement. D\'autres sont soumis à un abonnement payant ou à l\'achat de crédits.',
@@ -61,7 +64,14 @@ Le contenu créé par l'utilisateur (QR codes, données, textes) reste sa propri
     title: '6. Abonnements et paiements',
     content: `Les abonnements sont facturés mensuellement en FCFA via les opérateurs de Mobile Money (Wave, Orange Money, MTN MoMo) ou par carte bancaire Visa/Mastercard. L'abonnement est sans engagement et peut être résilié à tout moment depuis le profil utilisateur.
 
-En cas de non-paiement, les QR codes dynamiques passent en lecture seule. Les données sont conservées pendant 30 jours après résiliation, puis définitivement supprimées.`,
+Tarifs en vigueur (FCFA/mois TTC) :
+• Gratuit : 0 FCFA — accès limité aux fonctions de base
+• Starter : 4 900 FCFA/mois
+• Essentiel : 9 900 FCFA/mois
+• Pro : 19 900 FCFA/mois
+• Business : 29 900 FCFA/mois
+
+En cas de non-paiement, les QR codes dynamiques et codes-barres premium passent en lecture seule. Les données sont conservées pendant 30 jours après résiliation, puis définitivement supprimées.`,
   },
   {
     icon: '🔒',
@@ -97,7 +107,7 @@ export default function CGUPage() {
             <div className="absolute inset-0 opacity-10" style={{ background: 'radial-gradient(circle at 80% 20%, #FF6A00, transparent 60%)' }} />
             <p className="text-[#FF6A00] text-xs font-bold uppercase tracking-widest mb-2 relative">Légal</p>
             <h1 className="text-2xl sm:text-3xl font-extrabold mb-1 relative">Conditions Générales d&apos;Utilisation</h1>
-            <p className="text-blue-300 text-sm relative">Dernière mise à jour : janvier 2026</p>
+            <p className="text-blue-300 text-sm relative">Dernière mise à jour : octobre 2026</p>
             <p className="text-blue-200 text-sm mt-3 relative">
               Éditeur :{' '}
               <a href="https://ibigsoft.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-white">IBIG SOFT</a>

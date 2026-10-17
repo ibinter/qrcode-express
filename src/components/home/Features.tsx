@@ -41,6 +41,8 @@ function FeatureCard({ f, delay }: { f: FeatureItem; delay: number }) {
 }
 
 const FEATURE_KEYS = [
+  { icon: '📊', color: '#041B4D', bg: '#EEF2FF', titleKey: 'barcode_title', descKey: 'barcode_desc' },
+  { icon: '🏷️', color: '#8b5cf6', bg: '#F5F3FF', titleKey: 'labels_title', descKey: 'labels_desc' },
   { icon: '🎟️', color: '#7c3aed', bg: '#F5F3FF', titleKey: 'ticketing_title', descKey: 'ticketing_desc' },
   { icon: '💳', color: '#16a34a', bg: '#F0FDF4', titleKey: 'payment_title', descKey: 'payment_desc' },
   { icon: '📋', color: '#0ea5e9', bg: '#F0F9FF', titleKey: 'forms_title', descKey: 'forms_desc' },
@@ -48,7 +50,7 @@ const FEATURE_KEYS = [
   { icon: '🎁', color: '#FF6A00', bg: '#FFF7ED', titleKey: 'referral_title', descKey: 'referral_desc' },
   { icon: '🎨', color: '#ec4899', bg: '#FDF2F8', titleKey: 'design_title', descKey: 'design_desc' },
   { icon: '⚡', color: '#3b82f6', bg: '#EFF6FF', titleKey: 'dynamic_title', descKey: 'dynamic_desc' },
-  { icon: '📊', color: '#10b981', bg: '#ECFDF5', titleKey: 'analytics_title', descKey: 'analytics_desc' },
+  { icon: '📈', color: '#10b981', bg: '#ECFDF5', titleKey: 'analytics_title', descKey: 'analytics_desc' },
   { icon: '🍽️', color: '#f97316', bg: '#FFF7ED', titleKey: 'menu_title', descKey: 'menu_desc' },
   { icon: '💬', color: '#25d366', bg: '#F0FDF4', titleKey: 'whatsapp_title', descKey: 'whatsapp_desc' },
   { icon: '🪪', color: '#8b5cf6', bg: '#F5F3FF', titleKey: 'vcard_title', descKey: 'vcard_desc' },

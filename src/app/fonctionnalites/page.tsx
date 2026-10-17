@@ -6,11 +6,11 @@ import ShowcaseSlider from '@/components/home/ShowcaseSlider'
 import Footer from '@/components/layout/Footer'
 
 export const metadata: Metadata = {
-  title: 'Fonctionnalités QR CODE EXPRESS | Billetterie, Paiement, Menu, Analytics',
-  description: 'Billetterie QR, paiements Wave & Orange Money, menus digitaux, vCard, formulaires, analytics avancés — tout ce que QR CODE EXPRESS peut faire pour votre business.',
+  title: 'Fonctionnalités QR CODE EXPRESS | QR codes, Codes-barres, Étiquettes, Analytics',
+  description: 'QR codes professionnels, 26 formats de codes-barres, 31 gabarits d\'étiquettes PDF, billetterie, paiements Wave & Orange Money, menus digitaux, analytics avancés.',
   openGraph: {
     title: 'Fonctionnalités | QR CODE EXPRESS',
-    description: "Billetterie, paiement Mobile Money, menu digital, analytics — la plateforme QR complète d'Afrique.",
+    description: "QR codes, 26 formats codes-barres, 31 gabarits étiquettes, billetterie, Mobile Money — la plateforme complète d'Afrique.",
     url: 'https://qrcode-express.com/fonctionnalites',
     type: 'website',
     images: [{ url: 'https://qrcode-express.com/og-default.png', width: 1200, height: 630 }],

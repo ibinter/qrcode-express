@@ -60,19 +60,23 @@ export default function Header() {
         scrolled ? 'shadow-md border-gray-200' : 'shadow-sm border-gray-100'
       }`}
     >
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
-        <Logo size="sm" />
+        <div className="flex-shrink-0">
+          <Logo size="sm" />
+        </div>
 
         {/* Nav desktop */}
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-gray-600">
-          <Link href="/#generateur" className="hover:text-[#FF6A00] transition-colors">{t('create')}</Link>
-          <Link href="/tarifs" className="hover:text-[#FF6A00] transition-colors">{t('pricing')}</Link>
-          <Link href="/fonctionnalites" className="hover:text-[#FF6A00] transition-colors">{t('features')}</Link>
+        <nav className="hidden lg:flex items-center gap-0.5 text-[13px] font-medium text-gray-600 flex-shrink-0">
+          <Link href="/#generateur" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('create')}</Link>
+          <Link href="/#barcode" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('barcode')}</Link>
+          <Link href="/#etiquettes" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('labels')}</Link>
+          <Link href="/tarifs" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('pricing')}</Link>
+          <Link href="/fonctionnalites" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('features')}</Link>
         </nav>
 
         {/* Actions desktop */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-2 flex-shrink-0">
           {user ? (
             <>
               <Link
@@ -140,9 +144,11 @@ export default function Header() {
         aria-hidden={!open}
       >
         <div className="border-t border-gray-100 bg-white px-4 py-2 flex flex-col">
-          <Link href="/#generateur" className="py-3 text-base text-gray-700 border-b border-gray-50 active:text-[#FF6A00]" onClick={close}>{t('create')}</Link>
-          <Link href="/tarifs" className="py-3 text-base text-gray-700 border-b border-gray-50 active:text-[#FF6A00]" onClick={close}>{t('pricing')}</Link>
-          <Link href="/fonctionnalites" className="py-3 text-base text-gray-700 border-b border-gray-50 active:text-[#FF6A00]" onClick={close}>{t('features')}</Link>
+          <Link href="/#generateur" className="flex items-center gap-2 py-3 text-sm font-medium text-gray-700 border-b border-gray-50" onClick={close}>📱 {t('create')}</Link>
+          <Link href="/#barcode" className="flex items-center gap-2 py-3 text-sm font-medium text-gray-700 border-b border-gray-50" onClick={close}>📊 {t('barcode')}</Link>
+          <Link href="/#etiquettes" className="flex items-center gap-2 py-3 text-sm font-medium text-gray-700 border-b border-gray-50" onClick={close}>🏷️ {t('labels')}</Link>
+          <Link href="/tarifs" className="py-3 text-sm font-medium text-gray-700 border-b border-gray-50 block" onClick={close}>{t('pricing')}</Link>
+          <Link href="/fonctionnalites" className="py-3 text-sm font-medium text-gray-700 border-b border-gray-50 block" onClick={close}>{t('features')}</Link>
           {user ? (
             <>
               <Link href="/dashboard" className="py-3 text-base font-bold text-[#FF6A00] border-b border-gray-50" onClick={close}>← Dashboard</Link>

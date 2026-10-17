@@ -4,7 +4,7 @@ import { useState } from 'react'
 const FAQS = [
   {
     q: 'Est-ce que QR CODE EXPRESS est gratuit ?',
-    a: 'Oui ! Le plan gratuit vous permet de créer jusqu\'à 3 QR codes statiques sans limite de temps, sans carte bancaire. Les QR dynamiques (modifiables), les analytics et les fonctionnalités avancées sont disponibles dès le plan Essentiel à partir de 1 500 FCFA/mois.',
+    a: 'Oui ! Le plan gratuit vous permet de créer jusqu\'à 5 QR codes sans carte bancaire. Les QR dynamiques (modifiables), les analytics, les codes-barres avancés et les étiquettes PDF sont disponibles dès le plan Starter à partir de 4 900 FCFA/mois.',
   },
   {
     q: 'Quelle est la différence entre un QR statique et un QR dynamique ?',

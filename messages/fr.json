@@ -2,6 +2,9 @@
   "locale": "fr",
   "nav": {
     "create": "Créer un QR",
+    "tools": "Nos outils",
+    "barcode": "Créer un code-barres",
+    "labels": "Créer une étiquette",
     "pricing": "Tarifs",
     "features": "Fonctionnalités",
     "myQR": "Mes QR",
@@ -12,7 +15,7 @@
     "signup": "Commencer gratuitement"
   },
   "hero": {
-    "cta_primary": "Créer mon QR gratuit →",
+    "cta_primary": "Commencer gratuitement →",
     "cta_secondary": "Ouvrir un compte",
     "prev": "Précédent",
     "next": "Suivant",
@@ -86,20 +89,52 @@
         "badge2_sub": "ce mois",
         "badge3_title": "Page personnalisée",
         "badge3_sub": "Vos couleurs & logo"
+      },
+      "barcode": {
+        "tag": "📊 Codes-barres Pro",
+        "title": "26 formats\npour chaque besoin",
+        "subtitle": "EAN-13, Code 128, Data Matrix, PDF417, ISBN, GS1-128... Exportez PNG haute résolution ou SVG vectoriel. Générez en masse via CSV.",
+        "trust_0": "26 formats standard",
+        "trust_1": "PNG + SVG vectoriel",
+        "trust_2": "Import CSV · Export ZIP",
+        "badge1_title": "EAN-13 généré",
+        "badge1_sub": "PNG HD · 300 dpi",
+        "badge2_title": "+350 codes",
+        "badge2_sub": "ce mois-ci",
+        "badge3_title": "Batch CSV",
+        "badge3_sub": "500 codes en 1 clic"
+      },
+      "labels": {
+        "tag": "🏷️ Étiquettes Premium",
+        "title": "31 gabarits\nprêts à imprimer",
+        "subtitle": "Commerce, pharmacie, mode, bijoux, logistique, beauté… Uploadez votre logo et téléchargez un PDF compatible Avery en quelques secondes.",
+        "trust_0": "31 gabarits · 10 catégories",
+        "trust_1": "PDF compatible Avery",
+        "trust_2": "Thermique · Offset",
+        "badge1_title": "PDF généré",
+        "badge1_sub": "Prêt à imprimer",
+        "badge2_title": "24 étiquettes",
+        "badge2_sub": "par feuille A4 Avery",
+        "badge3_title": "Upload logo",
+        "badge3_sub": "PNG · JPG · SVG"
       }
     }
   },
   "stats": {
-    "types": "types de QR codes",
-    "time": "pour créer un QR",
-    "watermark": "sans filigrane",
+    "barcodes": "formats de codes-barres",
+    "labels_count": "gabarits d'étiquettes",
+    "qrtypes": "types de QR codes",
     "free": "pour commencer"
   },
   "features": {
-    "title": "La plateforme QR la plus complète d'Afrique",
-    "subtitle": "Billetterie, paiements Mobile Money, formulaires, organisations — des outils professionnels adaptés au marché africain",
+    "title": "QR Codes · Codes-barres · Étiquettes",
+    "subtitle": "La plateforme la plus complète d'Afrique pour identifier, tracer et étiqueter vos produits, événements et contacts.",
     "new": "Nouveau ✦",
     "items": {
+      "barcode_title": "Codes-barres professionnels",
+      "barcode_desc": "EAN-13, Code 128, Data Matrix, PDF417, QR, Aztec… 10 formats. Export PNG haute résolution ou SVG vectoriel. Génération en masse via CSV — ZIP automatique.",
+      "labels_title": "Étiquettes imprimables",
+      "labels_desc": "6 gabarits pro (prix 58×40, badge, étagère, pharmacie, luxe, A4 Avery). Uploadez votre logo, ajoutez un code-barres et téléchargez un PDF prêt à imprimer.",
       "ticketing_title": "Billetterie avec QR billet",
       "ticketing_desc": "Créez un événement, gérez les inscriptions et générez un QR billet unique pour chaque participant. Validation à l'entrée en un scan.",
       "payment_title": "Paiement universel par QR",

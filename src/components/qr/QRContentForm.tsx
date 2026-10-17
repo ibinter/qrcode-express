@@ -80,15 +80,23 @@ function Field({ label, name, type = 'text', placeholder, data, onChange, requir
 }
 
 function MenuForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
-  const parsed = data.menu_json ? JSON.parse(data.menu_json) : { restaurant: '', description: '', categories: [] }
+  const parsed = data.menu_json ? JSON.parse(data.menu_json) : {
+    restaurant: '', description: '', categories: [],
+    cover: '', logo: '', phone: '', whatsapp: '', website: '',
+    facebook: '', instagram: '', tiktok: '', address: '', map_url: '',
+    color: '#FF6A00', theme: 'light', hours: {},
+  }
 
   function update(patch: object) {
-    const updated = { ...parsed, ...patch }
-    onChange({ ...data, menu_json: JSON.stringify(updated) })
+    onChange({ ...data, menu_json: JSON.stringify({ ...parsed, ...patch }) })
   }
 
   function addCategory() {
     update({ categories: [...(parsed.categories || []), { category: 'Nouvelle catégorie', items: [] }] })
+  }
+
+  function removeCategory(ci: number) {
+    update({ categories: parsed.categories.filter((_: any, i: number) => i !== ci) })
   }
 
   function updateCategory(ci: number, name: string) {
@@ -99,11 +107,11 @@ function MenuForm({ data, onChange }: { data: Record<string, string>; onChange: 
 
   function addItem(ci: number) {
     const cats = [...parsed.categories]
-    cats[ci] = { ...cats[ci], items: [...(cats[ci].items || []), { name: '', price: '', description: '' }] }
+    cats[ci] = { ...cats[ci], items: [...(cats[ci].items || []), { name: '', price: '', description: '', photo: '', available: true }] }
     update({ categories: cats })
   }
 
-  function updateItem(ci: number, ii: number, field: string, value: string) {
+  function updateItem(ci: number, ii: number, field: string, value: string | boolean) {
     const cats = [...parsed.categories]
     cats[ci].items[ii] = { ...cats[ci].items[ii], [field]: value }
     update({ categories: cats })
@@ -115,30 +123,123 @@ function MenuForm({ data, onChange }: { data: Record<string, string>; onChange: 
     update({ categories: cats })
   }
 
-  return (
-    <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
-      <input value={parsed.restaurant || ''} onChange={(e) => update({ restaurant: e.target.value })}
-        placeholder="Nom du restaurant" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
-      <input value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
-        placeholder="Description (optionnel)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+  function updateHours(day: string, field: string, value: string | boolean) {
+    const hours = { ...(parsed.hours || {}) }
+    hours[day] = { ...(hours[day] || { open: '08:00', close: '22:00', closed: false }), [field]: value }
+    update({ hours })
+  }
 
+  const days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche']
+  const themes = [{ v: 'light', l: '☀️ Clair' }, { v: 'dark', l: '🌙 Sombre' }, { v: 'gradient', l: '🌈 Gradient' }]
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40'
+  const sec = 'text-xs font-bold text-gray-400 uppercase tracking-widest pt-3 pb-1 border-t border-gray-100 mt-2'
+
+  return (
+    <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
+      {/* Identité */}
+      <input value={parsed.restaurant || ''} onChange={(e) => update({ restaurant: e.target.value })}
+        placeholder="Nom du restaurant *" className={inp} />
+      <textarea value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description / slogan" rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+
+      {/* Visuels */}
+      <p className={sec}>Visuels &amp; Apparence</p>
+      <ImageUploadField label="Photo de couverture (bannière)" value={parsed.cover || ''} onChange={(url) => update({ cover: url })} hint="1200×400 recommandé" />
+      <ImageUploadField label="Logo du restaurant" value={parsed.logo || ''} onChange={(url) => update({ logo: url })} hint="Format carré" />
+      <div className="flex gap-2">
+        {themes.map(t => (
+          <button key={t.v} type="button" onClick={() => update({ theme: t.v })}
+            className={`flex-1 py-1.5 rounded-lg text-xs font-semibold border transition-colors ${parsed.theme === t.v ? 'bg-[#041B4D] text-white border-[#041B4D]' : 'bg-white text-gray-600 border-gray-200'}`}>
+            {t.l}
+          </button>
+        ))}
+      </div>
+      <div className="flex items-center gap-2">
+        <label className="text-xs text-gray-500 flex-1">Couleur accent</label>
+        <input type="color" value={parsed.color || '#FF6A00'} onChange={(e) => update({ color: e.target.value })}
+          className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
+      </div>
+
+      {/* Contact */}
+      <p className={sec}>Contact</p>
+      <input type="tel" value={parsed.phone || ''} onChange={(e) => update({ phone: e.target.value })}
+        placeholder="Téléphone (ex: +225 07 00 00 00)" className={inp} />
+      <input type="tel" value={parsed.whatsapp || ''} onChange={(e) => update({ whatsapp: e.target.value })}
+        placeholder="WhatsApp (ex: +22507000000)" className={inp} />
+      <input type="url" value={parsed.website || ''} onChange={(e) => update({ website: e.target.value })}
+        placeholder="Site web (https://...)" className={inp} />
+      <input value={parsed.address || ''} onChange={(e) => update({ address: e.target.value })}
+        placeholder="Adresse complète" className={inp} />
+      <input type="url" value={parsed.map_url || ''} onChange={(e) => update({ map_url: e.target.value })}
+        placeholder="Lien Google Maps (https://maps.google.com/...)" className={inp} />
+
+      {/* Réseaux sociaux */}
+      <p className={sec}>Réseaux sociaux</p>
+      <input type="url" value={parsed.facebook || ''} onChange={(e) => update({ facebook: e.target.value })}
+        placeholder="Facebook (https://facebook.com/...)" className={inp} />
+      <input type="url" value={parsed.instagram || ''} onChange={(e) => update({ instagram: e.target.value })}
+        placeholder="Instagram (https://instagram.com/...)" className={inp} />
+      <input type="url" value={parsed.tiktok || ''} onChange={(e) => update({ tiktok: e.target.value })}
+        placeholder="TikTok (https://tiktok.com/@...)" className={inp} />
+
+      {/* Horaires */}
+      <p className={sec}>Horaires d&apos;ouverture</p>
+      {days.map(day => {
+        const h = ((parsed.hours || {}) as Record<string, { open: string; close: string; closed: boolean }>)[day] || { open: '08:00', close: '22:00', closed: false }
+        return (
+          <div key={day} className="flex items-center gap-2 text-xs">
+            <span className="w-14 font-semibold text-gray-600 shrink-0">{day.slice(0, 3)}</span>
+            <input type="time" value={h.open || '08:00'} disabled={h.closed}
+              onChange={(e) => updateHours(day, 'open', e.target.value)}
+              className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none disabled:opacity-40" />
+            <span className="text-gray-400">—</span>
+            <input type="time" value={h.close || '22:00'} disabled={h.closed}
+              onChange={(e) => updateHours(day, 'close', e.target.value)}
+              className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none disabled:opacity-40" />
+            <label className="flex items-center gap-1 shrink-0 cursor-pointer text-gray-500">
+              <input type="checkbox" checked={!!h.closed} onChange={(e) => updateHours(day, 'closed', e.target.checked)} className="rounded" />
+              Fermé
+            </label>
+          </div>
+        )
+      })}
+
+      {/* Menu */}
+      <p className={sec}>Menu / Plats</p>
       {(parsed.categories || []).map((cat: any, ci: number) => (
         <div key={ci} className="border border-gray-200 rounded-xl p-3 space-y-2">
-          <input value={cat.category} onChange={(e) => updateCategory(ci, e.target.value)}
-            className="w-full font-semibold text-sm border border-gray-100 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#FF6A00]/40" />
+          <div className="flex gap-2 items-center">
+            <input value={cat.category} onChange={(e) => updateCategory(ci, e.target.value)}
+              className="flex-1 font-semibold text-sm border border-gray-100 rounded-lg px-2 py-1 focus:outline-none focus:ring-1 focus:ring-[#FF6A00]/40" />
+            <button type="button" onClick={() => removeCategory(ci)} className="text-red-400 hover:text-red-600 text-xs px-2">✕</button>
+          </div>
           {(cat.items || []).map((item: any, ii: number) => (
-            <div key={ii} className="flex gap-2 items-center">
-              <input value={item.name} onChange={(e) => updateItem(ci, ii, 'name', e.target.value)}
-                placeholder="Plat" className="flex-1 border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
-              <input value={item.price} onChange={(e) => updateItem(ci, ii, 'price', e.target.value)}
-                placeholder="Prix" className="w-20 border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
-              <button onClick={() => removeItem(ci, ii)} className="text-red-400 hover:text-red-600 text-xs">✕</button>
+            <div key={ii} className="bg-gray-50 rounded-lg p-2 space-y-1.5">
+              <div className="flex gap-2 items-center">
+                <input value={item.name} onChange={(e) => updateItem(ci, ii, 'name', e.target.value)}
+                  placeholder="Nom du plat" className="flex-1 border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
+                <input value={item.price} onChange={(e) => updateItem(ci, ii, 'price', e.target.value)}
+                  placeholder="Prix" className="w-20 border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
+                <button type="button" onClick={() => removeItem(ci, ii)} className="text-red-400 hover:text-red-600 text-xs">✕</button>
+              </div>
+              <input value={item.description || ''} onChange={(e) => updateItem(ci, ii, 'description', e.target.value)}
+                placeholder="Description (ingrédients, allergènes…)" className="w-full border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
+              <div className="flex items-center gap-3">
+                <div className="flex-1">
+                  <ImageUploadField label="Photo du plat" value={item.photo || ''} onChange={(url) => updateItem(ci, ii, 'photo', url)} hint="Optionnel" />
+                </div>
+                <label className="flex items-center gap-1 text-xs text-gray-500 cursor-pointer shrink-0">
+                  <input type="checkbox" checked={item.available !== false} onChange={(e) => updateItem(ci, ii, 'available', e.target.checked)} className="rounded" />
+                  Dispo
+                </label>
+              </div>
             </div>
           ))}
-          <button onClick={() => addItem(ci)} className="text-xs text-[#FF6A00] font-semibold hover:underline">+ Ajouter un plat</button>
+          <button type="button" onClick={() => addItem(ci)} className="text-xs text-[#FF6A00] font-semibold hover:underline">+ Ajouter un plat</button>
         </div>
       ))}
-      <button onClick={addCategory} className="w-full py-2 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors">
+      <button type="button" onClick={addCategory} className="w-full py-2 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors">
         + Ajouter une catégorie
       </button>
     </div>
@@ -152,24 +253,47 @@ function CouponForm({ data, onChange }: { data: Record<string, string>; onChange
     onChange({ ...data, coupon_json: JSON.stringify({ ...parsed, ...patch }) })
   }
 
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40'
+
   return (
     <div className="space-y-3">
       <input value={parsed.title || ''} onChange={(e) => update({ title: e.target.value })}
-        placeholder="Titre du coupon (ex: Offre spéciale)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+        placeholder="Titre du coupon (ex: Offre spéciale)" className={inp} />
       <input value={parsed.brand || ''} onChange={(e) => update({ brand: e.target.value })}
-        placeholder="Nom de la marque / boutique" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+        placeholder="Nom de la marque / boutique" className={inp} />
       <input value={parsed.discount || ''} onChange={(e) => update({ discount: e.target.value })}
-        placeholder="Réduction (ex: -20%, 500 FCFA offerts)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+        placeholder="Réduction (ex: -20%, 500 FCFA offerts)" className={inp} />
       <input value={parsed.code || ''} onChange={(e) => update({ code: e.target.value })}
-        placeholder="Code promo (ex: PROMO2025)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
-      <input value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
-        placeholder="Description / conditions" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
-      <div>
-        <label className="block text-xs text-gray-500 mb-1">Date d'expiration</label>
-        <input type="date" value={parsed.expires || ''} onChange={(e) => update({ expires: e.target.value })}
-          className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40" />
+        placeholder="Code promo (ex: PROMO2025)" className={`${inp} font-mono`} />
+      <textarea value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description / conditions d'utilisation" rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">Date d&apos;expiration</label>
+          <input type="date" value={parsed.expires || ''} onChange={(e) => update({ expires: e.target.value })}
+            className={inp} />
+        </div>
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">Nombre max d&apos;utilisations</label>
+          <input type="number" min={1} value={parsed.max_uses || ''} onChange={(e) => update({ max_uses: e.target.value })}
+            placeholder="ex: 100" className={inp} />
+        </div>
       </div>
-      <ImageUploadField label="Logo / Image" value={parsed.logo || ''} onChange={(url) => update({ logo: url })} hint="Optionnel" />
+      <input type="url" value={parsed.redeem_url || ''} onChange={(e) => update({ redeem_url: e.target.value })}
+        placeholder="URL pour utiliser le coupon (optionnel)" className={inp} />
+      <input value={parsed.whatsapp || ''} onChange={(e) => update({ whatsapp: e.target.value })}
+        placeholder="WhatsApp pour valider (ex: +22507...)" className={inp} />
+      <div className="flex items-center gap-3">
+        <label className="text-xs text-gray-500 whitespace-nowrap">Couleur accent</label>
+        <input type="color" value={parsed.color || '#FF6A00'} onChange={(e) => update({ color: e.target.value })}
+          className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
+        <label className="text-xs text-gray-500 whitespace-nowrap ml-2">Fond</label>
+        <input type="color" value={parsed.bg_color || '#FFF7ED'} onChange={(e) => update({ bg_color: e.target.value })}
+          className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
+      </div>
+      <ImageUploadField label="Bannière / Image promo" value={parsed.cover || ''} onChange={(url) => update({ cover: url })} hint="1200×400 recommandé" />
+      <ImageUploadField label="Logo de la marque" value={parsed.logo || ''} onChange={(url) => update({ logo: url })} hint="Format carré" />
     </div>
   )
 }
@@ -811,12 +935,85 @@ function EventForm({ data, onChange }: { data: Record<string, string>; onChange:
       <input value={(parsed.whatsapp as string) || ''} onChange={(e) => update({ whatsapp: e.target.value })}
         placeholder="WhatsApp organisateur (ex: +22507...)"
         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
+      <input type="url" value={(parsed.website as string) || ''} onChange={(e) => update({ website: e.target.value })}
+        placeholder="Site de l'événement (https://...)"
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className="text-xs text-gray-500 mb-1 block">Date de fin (optionnel)</label>
+          <input type="date" value={(parsed.end_date as string) || ''} onChange={(e) => update({ end_date: e.target.value })}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
+        </div>
+        <div>
+          <label className="text-xs text-gray-500 mb-1 block">Heure de fin</label>
+          <input type="time" value={(parsed.end_time as string) || ''} onChange={(e) => update({ end_time: e.target.value })}
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#041B4D]/40" />
+        </div>
+      </div>
       <div className="flex items-center gap-3">
         <label className="text-xs text-gray-500 whitespace-nowrap">Couleur accent</label>
         <input type="color" value={(parsed.color as string) || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
           className="w-8 h-8 rounded cursor-pointer border border-gray-200" />
       </div>
-      <ImageUploadField label="Logo / Bannière" value={(parsed.logo as string) || ''} onChange={(url) => update({ logo: url })} hint="Optionnel — affiché en haut de la page événement" />
+      <ImageUploadField label="Bannière / Affiche" value={(parsed.cover as string) || ''} onChange={(url) => update({ cover: url })} hint="1200×600 recommandé — affichée en haut" />
+      <ImageUploadField label="Logo organisateur" value={(parsed.logo as string) || ''} onChange={(url) => update({ logo: url })} hint="Optionnel — petit logo en superposition" />
+
+      {/* Speakers */}
+      {(() => {
+        const speakers: { name: string; role: string; photo: string }[] = Array.isArray(parsed.speakers) ? parsed.speakers as any : []
+        function addSpeaker() { update({ speakers: [...speakers, { name: '', role: '', photo: '' }] }) }
+        function updateSpeaker(i: number, field: string, value: string) {
+          const s = [...speakers]; s[i] = { ...s[i], [field]: value }; update({ speakers: s })
+        }
+        function removeSpeaker(i: number) { update({ speakers: speakers.filter((_, j) => j !== i) }) }
+        return (
+          <div className="space-y-2 pt-2 border-t border-gray-100 mt-2">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Intervenants / Speakers</p>
+              <button type="button" onClick={addSpeaker} className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-700 font-semibold">+ Ajouter</button>
+            </div>
+            {speakers.map((s, i) => (
+              <div key={i} className="bg-gray-50 rounded-lg p-2 space-y-1.5">
+                <div className="flex gap-2 items-center">
+                  <input value={s.name} onChange={(e) => updateSpeaker(i, 'name', e.target.value)}
+                    placeholder="Nom" className="flex-1 border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
+                  <input value={s.role} onChange={(e) => updateSpeaker(i, 'role', e.target.value)}
+                    placeholder="Rôle / titre" className="flex-1 border border-gray-100 rounded-lg px-2 py-1 text-xs focus:outline-none" />
+                  <button type="button" onClick={() => removeSpeaker(i)} className="text-red-400 text-xs">✕</button>
+                </div>
+                <ImageUploadField label="Photo" value={s.photo || ''} onChange={(url) => updateSpeaker(i, 'photo', url)} hint="Optionnel" />
+              </div>
+            ))}
+          </div>
+        )
+      })()}
+
+      {/* Agenda */}
+      {(() => {
+        const agenda: { time: string; title: string }[] = Array.isArray(parsed.agenda) ? parsed.agenda as any : []
+        function addAgendaItem() { update({ agenda: [...agenda, { time: '', title: '' }] }) }
+        function updateAgendaItem(i: number, field: string, value: string) {
+          const a = [...agenda]; a[i] = { ...a[i], [field]: value }; update({ agenda: a })
+        }
+        function removeAgendaItem(i: number) { update({ agenda: agenda.filter((_, j) => j !== i) }) }
+        return (
+          <div className="space-y-2 pt-2 border-t border-gray-100 mt-2">
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Programme / Agenda</p>
+              <button type="button" onClick={addAgendaItem} className="text-xs px-2 py-1 rounded bg-blue-100 text-blue-700 font-semibold">+ Ajouter</button>
+            </div>
+            {agenda.map((item, i) => (
+              <div key={i} className="flex gap-2 items-center">
+                <input type="time" value={item.time} onChange={(e) => updateAgendaItem(i, 'time', e.target.value)}
+                  className="w-24 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
+                <input value={item.title} onChange={(e) => updateAgendaItem(i, 'title', e.target.value)}
+                  placeholder="Intitulé de l'activité" className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
+                <button type="button" onClick={() => removeAgendaItem(i)} className="text-red-400 text-xs">✕</button>
+              </div>
+            ))}
+          </div>
+        )
+      })()}
     </div>
   )
 }

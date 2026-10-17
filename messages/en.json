@@ -2,6 +2,9 @@
   "locale": "en",
   "nav": {
     "create": "Create a QR",
+    "tools": "Our tools",
+    "barcode": "Create a barcode",
+    "labels": "Create a label",
     "pricing": "Pricing",
     "features": "Features",
     "myQR": "My QRs",
@@ -86,20 +89,52 @@
         "badge2_sub": "this month",
         "badge3_title": "Custom page",
         "badge3_sub": "Your colors & logo"
+      },
+      "barcode": {
+        "tag": "📊 Professional Barcodes",
+        "title": "26 formats\nfor every need",
+        "subtitle": "EAN-13, Code 128, Data Matrix, PDF417, ISBN, GS1-128... Export high-resolution PNG or vector SVG. Generate in bulk via CSV.",
+        "trust_0": "26 standard formats",
+        "trust_1": "PNG + vector SVG",
+        "trust_2": "CSV import · ZIP export",
+        "badge1_title": "EAN-13 generated",
+        "badge1_sub": "HD PNG · 300 dpi",
+        "badge2_title": "+350 codes",
+        "badge2_sub": "this month",
+        "badge3_title": "Batch CSV",
+        "badge3_sub": "500 codes in 1 click"
+      },
+      "labels": {
+        "tag": "🏷️ Premium Labels",
+        "title": "31 templates\nprint-ready",
+        "subtitle": "Retail, pharmacy, fashion, jewelry, logistics, beauty… Upload your logo and download a print-ready Avery-compatible PDF.",
+        "trust_0": "31 templates · 10 categories",
+        "trust_1": "Avery-compatible PDF",
+        "trust_2": "Thermal · Offset",
+        "badge1_title": "PDF generated",
+        "badge1_sub": "Print-ready",
+        "badge2_title": "24 labels",
+        "badge2_sub": "per A4 Avery sheet",
+        "badge3_title": "Logo upload",
+        "badge3_sub": "PNG · JPG · SVG"
       }
     }
   },
   "stats": {
-    "types": "QR code types",
-    "time": "to create a QR",
-    "watermark": "watermark-free",
+    "barcodes": "barcode formats",
+    "labels_count": "label templates",
+    "qrtypes": "QR code types",
     "free": "to get started"
   },
   "features": {
-    "title": "Africa's most complete QR platform",
-    "subtitle": "Ticketing, Mobile Money payments, forms, organizations — professional tools built for the African market",
-    "new": "New ❖",
+    "title": "QR Codes · Barcodes · Labels",
+    "subtitle": "Africa's most complete platform to identify, track and label your products, events and contacts.",
+    "new": "New ✦",
     "items": {
+      "barcode_title": "Professional barcodes",
+      "barcode_desc": "EAN-13, Code 128, Data Matrix, PDF417, QR, Aztec… 10 formats. Export high-res PNG or vector SVG. Bulk generation via CSV — automatic ZIP download.",
+      "labels_title": "Printable labels",
+      "labels_desc": "6 pro templates (price 58×40, badge, shelf, pharma, luxury, A4 Avery). Upload your logo, add a barcode and download a print-ready PDF.",
       "ticketing_title": "QR Ticketing",
       "ticketing_desc": "Create an event, manage registrations and generate a unique QR ticket for each attendee. Entry validation with one scan.",
       "payment_title": "Mobile Money QR Payment",

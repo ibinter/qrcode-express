@@ -6,6 +6,8 @@ import { useState, useEffect, useCallback } from 'react'
 const NAV_ITEMS = [
   { href: '/dashboard', icon: '📱', label: 'Mes QR codes', exact: true },
   { href: '/dashboard/bulk', icon: '📥', label: 'Import CSV' },
+  { href: '/barcode', icon: '📊', label: 'Codes-barres' },
+  { href: '/labels', icon: '🏷️', label: 'Étiquettes' },
 ]
 
 const TOOLS_ITEMS = [

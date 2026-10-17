@@ -298,7 +298,7 @@ export const BLOG_ARTICLES: BlogArticle[] = [
         h2: 'Étape 5 : Téléchargez et utilisez',
         paragraphs: [
           'Cliquez sur "Télécharger PNG". Votre QR code est sauvegardé sur votre appareil. Imprimez-le, partagez-le par WhatsApp, mettez-le sur votre Instagram — il est prêt à l\'emploi.',
-          'Pour sauvegarder votre QR et accéder aux statistiques de scan, créez un compte gratuit. Vous bénéficiez alors de 3 QR codes sauvegardés, modifiables à tout moment.',
+          'Pour sauvegarder votre QR et accéder aux statistiques de scan, créez un compte gratuit. Vous bénéficiez alors de 5 QR codes sauvegardés, modifiables à tout moment.',
         ],
       },
     ],

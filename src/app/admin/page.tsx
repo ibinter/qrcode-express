@@ -80,7 +80,7 @@ export default async function AdminOverview() {
   }, {})
 
   const PLAN_COLORS: Record<string, string> = {
-    free: '#94a3b8', essential: '#10b981', pro: '#3b82f6', business: '#7c3aed', agency: '#f59e0b', enterprise: '#ec4899',
+    free: '#94a3b8', starter: '#3b82f6', essential: '#10b981', pro: '#FF6A00', business: '#7c3aed', agency: '#f59e0b', enterprise: '#ec4899',
   }
 
   const qrByType = (scanData as unknown as { type?: string }[] | null)
@@ -125,6 +125,30 @@ export default async function AdminOverview() {
         <KPI icon="✅" label="Soumissions forms" value={formSubmissionsCount ?? 0} color="#3b82f6" />
         <KPI icon="🎟️" label="Tickets vendus" value={totalTickets ?? 0} color="#7c3aed" href="/admin/evenements" />
         <KPI icon="⭐" label="Avis clients" value={totalReviews ?? 0} color="#f59e0b" href="/admin/avis" />
+      </div>
+
+      {/* Plateforme complète */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-7">
+        <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-2xl border border-blue-100 p-5">
+          <div className="flex items-center gap-2 mb-2"><span className="text-2xl">📊</span><span className="text-[10px] font-bold text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full">CODES-BARRES</span></div>
+          <p className="text-2xl font-extrabold text-blue-900">26 formats</p>
+          <p className="text-xs text-blue-600 mt-0.5">EAN · Code 128 · GS1 · ISBN · PDF417…</p>
+        </div>
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-2xl border border-purple-100 p-5">
+          <div className="flex items-center gap-2 mb-2"><span className="text-2xl">🏷️</span><span className="text-[10px] font-bold text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">ÉTIQUETTES</span></div>
+          <p className="text-2xl font-extrabold text-purple-900">31 gabarits</p>
+          <p className="text-xs text-purple-600 mt-0.5">10 catégories · PDF Avery · Thermique</p>
+        </div>
+        <div className="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl border border-orange-100 p-5">
+          <div className="flex items-center gap-2 mb-2"><span className="text-2xl">📱</span><span className="text-[10px] font-bold text-orange-600 bg-orange-100 px-2 py-0.5 rounded-full">QR CODES</span></div>
+          <p className="text-2xl font-extrabold text-orange-900">20+ types</p>
+          <p className="text-xs text-orange-600 mt-0.5">Statiques · Dynamiques · IA</p>
+        </div>
+        <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border border-green-100 p-5">
+          <div className="flex items-center gap-2 mb-2"><span className="text-2xl">💳</span><span className="text-[10px] font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full">TARIFS</span></div>
+          <p className="text-2xl font-extrabold text-green-900">5 plans</p>
+          <p className="text-xs text-green-600 mt-0.5">0 · 4 900 · 9 900 · 19 900 · 29 900 FCFA</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-5">
@@ -211,6 +235,8 @@ export default async function AdminOverview() {
             { href: '/admin/utilisateurs', icon: '👥', label: 'Utilisateurs' },
             { href: '/admin/transactions', icon: '💰', label: 'Revenus' },
             { href: '/admin/qr', icon: '📱', label: 'QR Codes' },
+            { href: '/barcode', icon: '📊', label: 'Codes-barres' },
+            { href: '/labels', icon: '🏷️', label: 'Étiquettes' },
             { href: '/admin/analytics', icon: '📈', label: 'Analytics' },
             { href: '/admin/organisations', icon: '🏢', label: 'Orgs' },
             { href: '/admin/formulaires', icon: '📋', label: 'Formulaires' },

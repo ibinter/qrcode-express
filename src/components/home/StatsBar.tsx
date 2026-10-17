@@ -3,10 +3,10 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 
 const STATS_META = [
-  { value: 20, suffix: '+', key: 'types', icon: '📱', color: '#FF6A00' },
-  { value: 30, suffix: 's', key: 'time', icon: '⚡', color: '#10b981' },
-  { value: 100, suffix: '%', key: 'watermark', icon: '✨', color: '#8b5cf6' },
-  { value: 0, suffix: ' FCFA', key: 'free', icon: '🎁', color: '#FF6A00' },
+  { value: 26, suffix: '+', key: 'barcodes', icon: '📊', color: '#3b82f6' },
+  { value: 31, suffix: '', key: 'labels_count', icon: '🏷️', color: '#a855f7' },
+  { value: 20, suffix: '+', key: 'qrtypes', icon: '📱', color: '#FF6A00' },
+  { value: 0, suffix: ' FCFA', key: 'free', icon: '🎁', color: '#10b981' },
 ]
 
 function Counter({ target, suffix }: { target: number; suffix: string }) {
