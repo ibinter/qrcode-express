@@ -1,7 +1,5 @@
 'use client'
 import { useState, useRef } from 'react'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
 
 const BARCODE_TYPES = [
   { id: 'ean13',      label: 'EAN-13'      },
@@ -109,8 +107,6 @@ export default function BarcodeBatchPage() {
   const errCount = rows.filter(r => r.status === 'error').length
 
   return (
-    <>
-    <Header />
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
 
@@ -249,7 +245,5 @@ export default function BarcodeBatchPage() {
         </div>
       </div>
     </div>
-    <Footer />
-    </>
   )
 }
