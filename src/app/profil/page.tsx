@@ -3,7 +3,6 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import Header from '@/components/layout/Header'
 import ProfileActions from './ProfileActions'
 
 
@@ -43,9 +42,7 @@ export default async function ProfilPage() {
     : 'bg-gray-100 text-gray-500'
 
   return (
-    <>
-    <Header />
-    <main className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-4 py-10">
         <div className="flex items-center gap-3 mb-8">
           <Link href="/dashboard" className="text-gray-400 hover:text-gray-600 transition-colors">← Tableau de bord</Link>
@@ -181,7 +178,6 @@ export default async function ProfilPage() {
           </Link>
         </div>
       </div>
-    </main>
-    </>
+  </div>
   )
 }

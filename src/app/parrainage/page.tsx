@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 ﻿import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
-import Header from '@/components/layout/Header'
 import ReferralDashboard from './ReferralDashboard'
 
 
@@ -66,9 +65,7 @@ export default async function ParrainagePage() {
   const referralLink = `${appUrl}/inscription?ref=${profile?.referral_code || ''}`
 
   return (
-    <>
-      <Header />
-      <main className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <h1 className="text-xl font-bold text-[#041B4D] mb-1">🎁 Parrainage</h1>
         <p className="text-sm text-gray-500 mb-6">
@@ -94,7 +91,6 @@ export default async function ParrainagePage() {
           referredCredits={REFERRED_CREDITS}
         />
       </div>
-    </main>
-    </>
+  </div>
   )
 }

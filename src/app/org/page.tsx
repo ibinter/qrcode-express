@@ -2,7 +2,6 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import Header from '@/components/layout/Header'
 
 export const instant = false
 
@@ -33,9 +32,7 @@ export default async function OrgsPage() {
     })
 
   return (
-    <>
-    <Header />
-    <main className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
           <div>
@@ -109,7 +106,6 @@ export default async function OrgsPage() {
           </div>
         )}
       </div>
-    </main>
-    </>
+  </div>
   )
 }
