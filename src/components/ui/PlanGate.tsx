@@ -28,6 +28,8 @@ export function usePlan() {
     const supabase = createClient()
     supabase.auth.getUser().then(async ({ data }) => {
       if (!data.user) { setLoading(false); return }
+
+      // Primary: active subscription record
       const { data: sub } = await supabase
         .from('subscriptions')
         .select('plan_id, status')
@@ -36,7 +38,23 @@ export function usePlan() {
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle()
-      setTier(tierFromPlanId(sub?.plan_id ?? null))
+
+      if (sub?.plan_id) {
+        setTier(tierFromPlanId(sub.plan_id))
+        setLoading(false)
+        return
+      }
+
+      // Fallback: profiles.plan (set by admin or manual upgrade)
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('plan')
+        .eq('id', data.user.id)
+        .single()
+      const planVal = profile?.plan as string | null
+      if (planVal && PLAN_ORDER.includes(planVal as PlanTier)) {
+        setTier(planVal as PlanTier)
+      }
       setLoading(false)
     })
   }, [])

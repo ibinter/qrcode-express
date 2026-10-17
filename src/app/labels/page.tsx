@@ -2,8 +2,6 @@
 import { useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { usePlan, PlanHeaderBanner, LockBadge, tierAtLeast, type PlanTier } from '@/components/ui/PlanGate'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
 
 // Categories
 const CATEGORIES = [
@@ -281,8 +279,6 @@ export default function LabelsPage() {
   }
 
   return (
-    <>
-    <Header />
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto px-4 py-8">
 
@@ -494,8 +490,6 @@ export default function LabelsPage() {
         </div>
       </div>
     </div>
-    <Footer />
-    </>
   )
 }
 

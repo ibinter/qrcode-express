@@ -2,8 +2,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { usePlan, UpgradeBanner, PlanHeaderBanner, LockBadge, tierAtLeast, type PlanTier } from '@/components/ui/PlanGate'
-import Header from '@/components/layout/Header'
-import Footer from '@/components/layout/Footer'
 
 const BARCODE_TYPES = [
   // --- GRATUIT ---
@@ -174,8 +172,6 @@ export default function BarcodePage() {
   }
 
   return (
-    <>
-    <Header />
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-5xl mx-auto px-4 py-8">
 
@@ -466,7 +462,5 @@ export default function BarcodePage() {
         )}
       </div>
     </div>
-    <Footer />
-    </>
   )
 }
