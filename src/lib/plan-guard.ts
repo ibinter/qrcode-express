@@ -22,6 +22,14 @@ const PLAN_NAMES: Record<Plan, string> = {
   enterprise: 'Enterprise',
 }
 
+// Static QR limits per plan (undefined = unlimited)
+export const STATIC_QR_LIMITS: Partial<Record<Plan, number>> = {
+  free: 5,
+  essential: 20,  // UI Starter
+  pro: 100,       // UI Essentiel
+  // business / agency / enterprise = unlimited
+}
+
 // Dynamic QR limits per plan (undefined = unlimited)
 export const DYNAMIC_QR_LIMITS: Partial<Record<Plan, number>> = {
   free: 0,

@@ -4,7 +4,7 @@ import { QRType } from '@/lib/types'
 
 // Plan display labels (UI names, not internal codes)
 const TYPE_PLAN_LABEL: Partial<Record<QRType, string>> = {
-  vcard_plus: 'Starter', giftcard: 'Starter', job: 'Starter',
+  vcard_plus: 'Essentiel', giftcard: 'Starter', job: 'Starter',
   ticket: 'Essentiel', appointment: 'Essentiel', download: 'Essentiel',
   menu: 'Essentiel', coupon: 'Essentiel', biolink: 'Essentiel',
   catalog: 'Essentiel', review: 'Essentiel', event: 'Essentiel',
@@ -14,7 +14,7 @@ const TYPE_PLAN_LABEL: Partial<Record<QRType, string>> = {
 
 // Credit cost for pay-per-use (without subscription)
 const TYPE_CREDIT_COST: Partial<Record<QRType, number>> = {
-  vcard_plus: 30, giftcard: 30, job: 30,
+  vcard_plus: 35, giftcard: 30, job: 30,
   ticket: 35, appointment: 35, download: 35,
   menu: 35, coupon: 35, biolink: 35,
   catalog: 35, review: 35, event: 35,

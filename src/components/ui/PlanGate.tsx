@@ -46,14 +46,25 @@ export function usePlan() {
       }
 
       // Fallback: profiles.plan (set by admin or manual upgrade)
+      // profiles.plan uses internal names (essential=Starter, pro=Essentiel, business=Pro, agency=Business)
+      // must translate to UI names before comparing with PLAN_ORDER
+      const INTERNAL_TO_UI: Record<string, PlanTier> = {
+        free: 'free',
+        essential: 'starter',
+        pro: 'essential',
+        business: 'pro',
+        agency: 'business',
+        enterprise: 'business',
+      }
       const { data: profile } = await supabase
         .from('profiles')
         .select('plan')
         .eq('id', data.user.id)
         .single()
       const planVal = profile?.plan as string | null
-      if (planVal && PLAN_ORDER.includes(planVal as PlanTier)) {
-        setTier(planVal as PlanTier)
+      if (planVal) {
+        const uiTier = INTERNAL_TO_UI[planVal]
+        if (uiTier) setTier(uiTier)
       }
       setLoading(false)
     })

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createHash } from 'crypto'
-import { requirePlan, DYNAMIC_QR_LIMITS, getMinPlanForType, QR_TYPE_CREDIT_COST } from '@/lib/plan-guard'
+import { requirePlan, DYNAMIC_QR_LIMITS, STATIC_QR_LIMITS, getMinPlanForType, QR_TYPE_CREDIT_COST } from '@/lib/plan-guard'
 
 function hashPassword(pw: string): string {
   return createHash('sha256').update(pw).digest('hex')
@@ -46,6 +46,30 @@ export async function POST(req: NextRequest) {
     const creditCost = QR_TYPE_CREDIT_COST[type] ?? 30
     const { ok, error: typeError } = await requirePlan(minPlanForType, creditCost)
     if (!ok) return typeError
+  }
+
+  // Static QR: enforce per-plan quota (hard cap, no credit bypass)
+  if (!mode || mode === 'static') {
+    const { ok, user: profileForStatic, error: staticPlanError } = await requirePlan('free', 0)
+    if (!ok) return staticPlanError
+    const staticLimit = STATIC_QR_LIMITS[profileForStatic.plan]
+    if (staticLimit !== undefined) {
+      const { count } = await supabase
+        .from('qr_codes')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('mode', 'static')
+        .neq('status', 'archived')
+      if ((count ?? 0) >= staticLimit) {
+        return NextResponse.json(
+          {
+            error: `Votre plan est limité à ${staticLimit} QR code${staticLimit > 1 ? 's' : ''} statique${staticLimit > 1 ? 's' : ''}. Passez au plan supérieur pour en créer davantage.`,
+            upgradeUrl: '/tarifs',
+          },
+          { status: 403 }
+        )
+      }
+    }
   }
 
   // Dynamic QR: check plan limits (1 crédit si quota dépassé)
