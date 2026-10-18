@@ -10,8 +10,11 @@ export async function GET(req: NextRequest) {
   const type = searchParams.get('type') || 'code128'
   const text = searchParams.get('text') || '0000000000000'
 
+  const isDownload = searchParams.get('download') === '1'
+  const isPremiumType = !!BARCODE_MIN_PLAN[type]
+
   // Gate on download — preview is always free, download requires plan or credits
-  if (searchParams.get('download') === '1') {
+  if (isDownload) {
     const minPlan = BARCODE_MIN_PLAN[type]
     if (minPlan) {
       const creditCost = BARCODE_CREDIT_COST[type] ?? 30
@@ -21,8 +24,10 @@ export async function GET(req: NextRequest) {
   }
   const color = (searchParams.get('color') || '000000').replace('#', '')
   const bg = (searchParams.get('bg') || 'ffffff').replace('#', '')
-  const height = Math.min(Number(searchParams.get('height') || 15), 60)
-  const scale = Math.min(Number(searchParams.get('scale') || 3), 8)
+  // For premium types in preview mode: force low resolution to prevent free use
+  const isPremiumPreview = isPremiumType && !isDownload
+  const height = isPremiumPreview ? 8 : Math.min(Number(searchParams.get('height') || 15), 60)
+  const scale = isPremiumPreview ? 1 : Math.min(Number(searchParams.get('scale') || 3), 8)
   const includetext = searchParams.get('includetext') !== 'false'
 
   if (!text.trim()) {
