@@ -1,12 +1,22 @@
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
-import { redirect } from 'next/navigation'
 import ClientSidebar from '@/components/dashboard/ClientSidebar'
+import Header from '@/components/layout/Header'
 
 export default async function CreateLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/connexion')
+
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Header />
+        <main className="pt-16">
+          {children}
+        </main>
+      </div>
+    )
+  }
 
   const admin = createAdminClient()
   const { data: profile } = await admin
