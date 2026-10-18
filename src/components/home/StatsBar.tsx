@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 const STATS_META = [
   { value: 26, suffix: '+', key: 'barcodes', icon: '📊', color: '#3b82f6' },
   { value: 31, suffix: '', key: 'labels_count', icon: '🏷️', color: '#a855f7' },
-  { value: 20, suffix: '+', key: 'qrtypes', icon: '📱', color: '#FF6A00' },
+  { value: 33, suffix: '', key: 'qrtypes', icon: '📱', color: '#FF6A00' },
   { value: 0, suffix: ' FCFA', key: 'free', icon: '🎁', color: '#10b981' },
 ]
 

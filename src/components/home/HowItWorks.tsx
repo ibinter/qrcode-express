@@ -3,35 +3,7 @@ import { useEffect, useRef } from 'react'
 import { useTranslations } from 'next-intl'
 
 const STEP_ICONS = ['🎯', '🎨', '⬇️', '📊']
-const STEP_NUMS = ['01', '02', '03', '04']
 const STEP_KEYS = ['s1', 's2', 's3', 's4'] as const
-
-const steps = [
-  {
-    n: '01',
-    icon: '🎯',
-    title: 'Choisissez le type',
-    desc: 'URL, menu, billetterie, paiement, formulaire, vCard… 20+ types pour chaque besoin professionnel.',
-  },
-  {
-    n: '02',
-    icon: '🎨',
-    title: 'Personnalisez',
-    desc: 'Logo, couleurs, cadre, style — votre QR à votre image en quelques clics. Design pro garanti.',
-  },
-  {
-    n: '03',
-    icon: '⬇️',
-    title: 'Téléchargez & partagez',
-    desc: 'PNG gratuit, SVG vectoriel, PDF imprimable. Prêt à imprimer, coller ou envoyer.',
-  },
-  {
-    n: '04',
-    icon: '📊',
-    title: 'Suivez & gérez',
-    desc: 'Analytics en temps réel, modification sans réimpression, gestion d\'équipe et paiements reçus.',
-  },
-]
 
 export default function HowItWorks() {
   const t = useTranslations('howItWorks')
