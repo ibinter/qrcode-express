@@ -1784,7 +1784,7 @@ function AppointmentForm({ data, onChange }: { data: Record<string, string>; onC
   const parsed = data.appointment_json ? JSON.parse(data.appointment_json) : {
     name: '', profession: '', phone: '', email: '', address: '', booking_url: '',
     description: '', color: '#041B4D', services: [], schedule: '', photo: '',
-    whatsapp: '', instagram: '', website: '', languages: '',
+    whatsapp: '', instagram: '', website: '', languages: '', page_theme: 'light',
   }
   function update(patch: object) { onChange({ ...data, appointment_json: JSON.stringify({ ...parsed, ...patch }) }) }
   const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
@@ -1814,8 +1814,17 @@ function AppointmentForm({ data, onChange }: { data: Record<string, string>; onC
       <input value={parsed.instagram || ''} onChange={(e) => update({ instagram: e.target.value })} placeholder="Instagram (optionnel)" className={inp} />
       <input type="url" value={parsed.website || ''} onChange={(e) => update({ website: e.target.value })} placeholder="Site web (optionnel)" className={inp} />
       <input value={parsed.languages || ''} onChange={(e) => update({ languages: e.target.value })} placeholder="Langues parlées (ex: Français, English)" className={inp} />
+      <p className={sec}>Apparence de la page</p>
+      <div className="grid grid-cols-4 gap-2">
+        {(['light', 'dark', 'glass', 'gradient'] as const).map((t) => (
+          <button key={t} type="button" onClick={() => update({ page_theme: t })}
+            className={`py-2 rounded-lg text-[10px] font-bold capitalize border transition-all ${parsed.page_theme === t ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-gray-500 border-gray-200 hover:border-orange-300'}`}>
+            {t === 'light' ? '☀️ Clair' : t === 'dark' ? '🌙 Sombre' : t === 'glass' ? '✨ Verre' : '🌈 Dégradé'}
+          </button>
+        ))}
+      </div>
       <div className="flex items-center gap-2">
-        <label className="text-xs font-semibold text-gray-600">Couleur</label>
+        <label className="text-xs font-semibold text-gray-600">Couleur principale</label>
         <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
           className="h-8 w-16 border border-gray-200 rounded cursor-pointer" />
       </div>
@@ -1902,9 +1911,17 @@ function SurveyForm({ data, onChange }: { data: Record<string, string>; onChange
         </div>
       ))}
 
-      <p className={sec}>Fin</p>
+      <p className={sec}>Fin & apparence</p>
       <input value={parsed.success_message || ''} onChange={(e) => update({ success_message: e.target.value })}
         placeholder="Message de remerciement après envoi" className={inp} />
+      <div className="grid grid-cols-4 gap-2">
+        {(['light', 'dark', 'glass', 'gradient'] as const).map((t) => (
+          <button key={t} type="button" onClick={() => update({ page_theme: t })}
+            className={`py-2 rounded-lg text-[10px] font-bold capitalize border transition-all ${parsed.page_theme === t ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-gray-500 border-gray-200 hover:border-orange-300'}`}>
+            {t === 'light' ? '☀️' : t === 'dark' ? '🌙' : t === 'glass' ? '✨' : '🌈'}
+          </button>
+        ))}
+      </div>
       <div className="flex items-center gap-2">
         <label className="text-xs font-semibold text-gray-600">Couleur</label>
         <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
@@ -1986,9 +2003,17 @@ function JobForm({ data, onChange }: { data: Record<string, string>; onChange: (
       <input value={parsed.whatsapp || ''} onChange={(e) => update({ whatsapp: e.target.value })}
         placeholder="WhatsApp RH (optionnel — ex: +22507...)" className={inp} />
 
-      <p className={sec}>Visuels</p>
+      <p className={sec}>Visuels & apparence</p>
       <ImageUploadField label="Logo / Photo de l'entreprise" value={parsed.logo || ''} onChange={(url) => update({ logo: url })} hint="Format carré recommandé" />
       <ImageUploadField label="Bannière / Image d'en-tête" value={parsed.cover || ''} onChange={(url) => update({ cover: url })} hint="Optionnel — 1200×400 recommandé" />
+      <div className="grid grid-cols-4 gap-2">
+        {(['light', 'dark', 'glass', 'gradient'] as const).map((t) => (
+          <button key={t} type="button" onClick={() => update({ page_theme: t })}
+            className={`py-2 rounded-lg text-[10px] font-bold capitalize border transition-all ${parsed.page_theme === t ? 'bg-orange-500 text-white border-orange-500' : 'bg-white text-gray-500 border-gray-200 hover:border-orange-300'}`}>
+            {t === 'light' ? '☀️' : t === 'dark' ? '🌙' : t === 'glass' ? '✨' : '🌈'}
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
