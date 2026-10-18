@@ -1307,44 +1307,90 @@ function PaymentForm({ data, onChange }: { data: Record<string, string>; onChang
         </div>
       </div>
       <div>
-        <p className="text-xs text-gray-500 mb-2">Méthodes acceptées <span className="text-gray-400">(GeniusPay gère la sélection finale)</span></p>
-        <div className="grid grid-cols-3 gap-2">
+        <p className="text-xs text-gray-500 mb-2">Méthodes acceptées <span className="text-gray-400">(GeniusPay sélectionne selon le pays du client)</span></p>
+
+        {/* Mobile Money — Afrique de l'Ouest */}
+        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5">📱 Mobile Money — Afrique de l'Ouest</p>
+        <div className="grid grid-cols-3 gap-1.5 mb-3">
           {[
-            { id: 'stripe', label: '💳 Carte', color: 'bg-indigo-100 text-indigo-700 border-indigo-200' },
-            { id: 'wave',   label: '🌊 Wave',   color: 'bg-blue-100 text-blue-700 border-blue-200' },
-            { id: 'orange', label: '🟠 Orange', color: 'bg-orange-100 text-orange-700 border-orange-200' },
-            { id: 'mtn',    label: '🟡 MTN',    color: 'bg-yellow-100 text-yellow-700 border-yellow-200' },
-            { id: 'moov',   label: '🔵 Moov',   color: 'bg-sky-100 text-sky-700 border-sky-200' },
-            { id: 'free',   label: '🟣 Free',   color: 'bg-purple-100 text-purple-700 border-purple-200' },
-            { id: 'mpesa',  label: '🟢 M-Pesa', color: 'bg-green-100 text-green-700 border-green-200' },
-            { id: 'airtel', label: '🔴 Airtel', color: 'bg-red-100 text-red-700 border-red-200' },
-          ].map(({ id, label, color }) => (
-            <button key={id} type="button"
-              onClick={() => toggleMethod(id)}
-              className={`py-2 text-xs font-semibold rounded-lg border transition-all ${methods.includes(id) ? color : 'bg-gray-50 text-gray-400 border-gray-200'}`}>
-              {label}
+            { id: 'wave',     label: '🌊 Wave',        color: 'bg-blue-100 text-blue-700 border-blue-200',       hint: 'CI · SN' },
+            { id: 'orange',   label: '🟠 Orange Money', color: 'bg-orange-100 text-orange-700 border-orange-200', hint: 'CI · SN · CM · ML…' },
+            { id: 'mtn',      label: '🟡 MTN MoMo',    color: 'bg-yellow-100 text-yellow-700 border-yellow-200', hint: 'CI · GH · CM · BJ…' },
+            { id: 'moov',     label: '🔵 Moov Money',  color: 'bg-sky-100 text-sky-700 border-sky-200',          hint: 'BJ · TG · BF · ML' },
+            { id: 'free',     label: '🟣 Free Money',  color: 'bg-purple-100 text-purple-700 border-purple-200', hint: 'SN' },
+            { id: 'wizall',   label: '🔷 Wizall',      color: 'bg-cyan-100 text-cyan-700 border-cyan-200',       hint: 'SN · CI' },
+            { id: 'expresso', label: '🟤 Expresso',    color: 'bg-amber-100 text-amber-700 border-amber-200',    hint: 'SN · GN' },
+            { id: 'emoney',   label: '🟢 E-Money',     color: 'bg-lime-100 text-lime-700 border-lime-200',       hint: 'GN' },
+            { id: 'tmoney',   label: '🟩 T-Money',     color: 'bg-teal-100 text-teal-700 border-teal-200',       hint: 'TG' },
+          ].map(({ id, label, color, hint }) => (
+            <button key={id} type="button" onClick={() => toggleMethod(id)}
+              className={`py-1.5 px-2 text-[11px] font-semibold rounded-lg border transition-all text-left ${methods.includes(id) ? color : 'bg-gray-50 text-gray-400 border-gray-200'}`}>
+              <div>{label}</div>
+              <div className={`text-[9px] font-normal ${methods.includes(id) ? 'opacity-60' : 'text-gray-300'}`}>{hint}</div>
             </button>
           ))}
-          {customMethods.map(({ id, label }) => (
-            <div key={id} className={`relative py-2 px-2 text-xs font-semibold rounded-lg border transition-all flex items-center justify-between gap-1 ${methods.includes(id) ? 'bg-teal-100 text-teal-700 border-teal-200' : 'bg-gray-50 text-gray-400 border-gray-200'}`}>
-              <button type="button" onClick={() => toggleMethod(id)} className="flex-1 text-left truncate">
-                💼 {label}
-              </button>
-              <button type="button" onClick={() => removeCustomMethod(id)} className="text-gray-400 hover:text-red-500 transition-colors ml-1 flex-shrink-0" title="Supprimer">
-                ×
-              </button>
-            </div>
+        </div>
+
+        {/* Mobile Money — Afrique de l'Est & Centrale */}
+        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5">📱 Mobile Money — Afrique de l'Est & Centrale</p>
+        <div className="grid grid-cols-3 gap-1.5 mb-3">
+          {[
+            { id: 'mpesa',    label: '🟢 M-Pesa',      color: 'bg-green-100 text-green-700 border-green-200',   hint: 'KE · TZ · MZ · RW' },
+            { id: 'airtel',   label: '🔴 Airtel Money', color: 'bg-red-100 text-red-700 border-red-200',         hint: 'UG · RW · ZM · MW' },
+            { id: 'mtn_momo', label: '🟡 MTN Rwanda',  color: 'bg-yellow-100 text-yellow-700 border-yellow-200', hint: 'RW · UG · ZM' },
+            { id: 'zamtel',   label: '🟠 Zamtel',      color: 'bg-orange-100 text-orange-800 border-orange-200', hint: 'ZM' },
+            { id: 'tigo',     label: '🔵 Tigo Pesa',   color: 'bg-blue-100 text-blue-700 border-blue-200',       hint: 'TZ · GH' },
+            { id: 'halopesa', label: '🟤 HaloPesa',    color: 'bg-amber-100 text-amber-700 border-amber-200',    hint: 'TZ' },
+          ].map(({ id, label, color, hint }) => (
+            <button key={id} type="button" onClick={() => toggleMethod(id)}
+              className={`py-1.5 px-2 text-[11px] font-semibold rounded-lg border transition-all text-left ${methods.includes(id) ? color : 'bg-gray-50 text-gray-400 border-gray-200'}`}>
+              <div>{label}</div>
+              <div className={`text-[9px] font-normal ${methods.includes(id) ? 'opacity-60' : 'text-gray-300'}`}>{hint}</div>
+            </button>
           ))}
         </div>
-        <div className="mt-2 flex gap-2">
-          <input
-            value={newMethod}
-            onChange={(e) => setNewMethod(e.target.value)}
+
+        {/* Cartes & Wallets */}
+        <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5">💳 Cartes & Wallets internationaux</p>
+        <div className="grid grid-cols-3 gap-1.5 mb-3">
+          {[
+            { id: 'visa',       label: '💳 Visa',        color: 'bg-indigo-100 text-indigo-700 border-indigo-200', hint: 'Monde entier' },
+            { id: 'mastercard', label: '💳 Mastercard',  color: 'bg-indigo-100 text-indigo-700 border-indigo-200', hint: 'Monde entier' },
+            { id: 'amex',       label: '💳 Amex',        color: 'bg-violet-100 text-violet-700 border-violet-200', hint: 'International' },
+            { id: 'verve',      label: '💳 Verve',       color: 'bg-fuchsia-100 text-fuchsia-700 border-fuchsia-200', hint: 'GH · NG' },
+            { id: 'applepay',   label: '🍎 Apple Pay',   color: 'bg-gray-200 text-gray-700 border-gray-300',      hint: 'iOS / Mac' },
+            { id: 'googlepay',  label: '🔵 Google Pay',  color: 'bg-blue-100 text-blue-700 border-blue-200',       hint: 'Android' },
+            { id: 'paypal',     label: '🅿️ PayPal',      color: 'bg-sky-100 text-sky-700 border-sky-200',          hint: 'International' },
+            { id: 'stripe',     label: '⚡ Stripe',      color: 'bg-purple-100 text-purple-700 border-purple-200', hint: '135+ devises' },
+          ].map(({ id, label, color, hint }) => (
+            <button key={id} type="button" onClick={() => toggleMethod(id)}
+              className={`py-1.5 px-2 text-[11px] font-semibold rounded-lg border transition-all text-left ${methods.includes(id) ? color : 'bg-gray-50 text-gray-400 border-gray-200'}`}>
+              <div>{label}</div>
+              <div className={`text-[9px] font-normal ${methods.includes(id) ? 'opacity-60' : 'text-gray-300'}`}>{hint}</div>
+            </button>
+          ))}
+        </div>
+
+        {/* Méthodes personnalisées */}
+        {customMethods.length > 0 && (
+          <>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-1.5">➕ Méthodes personnalisées</p>
+            <div className="grid grid-cols-3 gap-1.5 mb-2">
+              {customMethods.map(({ id, label }) => (
+                <div key={id} className={`relative py-1.5 px-2 text-[11px] font-semibold rounded-lg border transition-all flex items-center justify-between gap-1 ${methods.includes(id) ? 'bg-teal-100 text-teal-700 border-teal-200' : 'bg-gray-50 text-gray-400 border-gray-200'}`}>
+                  <button type="button" onClick={() => toggleMethod(id)} className="flex-1 text-left truncate">💼 {label}</button>
+                  <button type="button" onClick={() => removeCustomMethod(id)} className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0">×</button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        <div className="mt-1 flex gap-2">
+          <input value={newMethod} onChange={(e) => setNewMethod(e.target.value)}
             onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustomMethod() } }}
-            placeholder="Ajouter un moyen de paiement…"
-            maxLength={40}
-            className="flex-1 border border-dashed border-green-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-400/40 bg-green-50 placeholder:text-green-400"
-          />
+            placeholder="Autre moyen de paiement…" maxLength={40}
+            className="flex-1 border border-dashed border-green-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-400/40 bg-green-50 placeholder:text-green-400" />
           <button type="button" onClick={addCustomMethod}
             className="px-3 py-2 rounded-lg bg-green-600 text-white text-xs font-bold hover:bg-green-700 transition-colors whitespace-nowrap">
             + Ajouter
