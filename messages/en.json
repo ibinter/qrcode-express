@@ -12,7 +12,18 @@
     "profile": "Profile",
     "logout": "Log out",
     "login": "Sign in",
-    "signup": "Start for free"
+    "signup": "Start for free",
+    "ticker": [
+      "🌍 Africa's professional QR platform",
+      "📱 33 QR code types · Dynamic & Static",
+      "📊 26 professional barcode formats",
+      "🏷️ 31 label templates · Avery compatible",
+      "💳 Payment via Wave · Orange Money · MTN MoMo · Moov · M-Pesa · Airtel · Bank card",
+      "🎫 Ticketing · Restaurant menu · Bio link",
+      "⚡ QR editable after printing · Analytics included",
+      "🔒 Secure data · Hosted in Europe",
+      "🎁 Start for free · No credit card required"
+    ]
   },
   "hero": {
     "cta_primary": "Create my free QR →",

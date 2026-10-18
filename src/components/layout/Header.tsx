@@ -106,17 +106,7 @@ export default function Header() {
 
   const close = () => setOpen(false)
 
-  const TICKER_ITEMS = [
-    '🌍 La plateforme QR professionnelle d\'Afrique',
-    '📱 33 types de QR codes · Dynamiques & Statiques',
-    '📊 26 formats de codes-barres professionnels',
-    '🏷️ 31 gabarits d\'étiquettes compatibles Avery',
-    '💳 Paiement Wave · Orange Money · MTN MoMo · Moov · M-Pesa · Airtel · Carte bancaire',
-    '🎫 Billetterie · Menu restaurant · Lien bio',
-    '⚡ QR modifiables après impression · Analytics inclus',
-    '🔒 Données sécurisées · Hébergé en Europe',
-    '🎁 Commencez gratuitement · Sans carte bancaire',
-  ]
+  const TICKER_ITEMS: string[] = t.raw('ticker') as string[]
 
   return (
     <header
