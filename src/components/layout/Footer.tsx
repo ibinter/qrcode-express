@@ -57,6 +57,7 @@ export default function Footer() {
     {
       title: t('col_resources'),
       links: [
+        { label: 'FAQ', href: '/faq' },
         { label: t('link_guide'), href: '/guide' },
         { label: t('link_blog'), href: '/blog' },
         { label: t('link_support'), href: 'https://wa.me/2250778882592' },

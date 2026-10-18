@@ -73,6 +73,7 @@ export default function Header() {
           <Link href="/labels" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('labels')}</Link>
           <Link href="/tarifs" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('pricing')}</Link>
           <Link href="/fonctionnalites" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('features')}</Link>
+          <Link href="/faq" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">FAQ</Link>
         </nav>
 
         {/* Actions desktop */}
@@ -149,6 +150,7 @@ export default function Header() {
           <Link href="/labels" className="flex items-center gap-2 py-3 text-sm font-medium text-gray-700 border-b border-gray-50" onClick={close}>🏷️ {t('labels')}</Link>
           <Link href="/tarifs" className="py-3 text-sm font-medium text-gray-700 border-b border-gray-50 block" onClick={close}>{t('pricing')}</Link>
           <Link href="/fonctionnalites" className="py-3 text-sm font-medium text-gray-700 border-b border-gray-50 block" onClick={close}>{t('features')}</Link>
+          <Link href="/faq" className="py-3 text-sm font-medium text-gray-700 border-b border-gray-50 block" onClick={close}>❓ FAQ</Link>
           {user ? (
             <>
               <Link href="/dashboard" className="py-3 text-base font-bold text-[#FF6A00] border-b border-gray-50" onClick={close}>← Dashboard</Link>
