@@ -30,10 +30,21 @@ export function buildQRContent(type: QRType, data: Record<string, string>): stri
       return data.bio_json ? `${typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'}/bio/__ID__` : ''
     case 'pdf':
       return data.pdf_url || ''
-    case 'social':
+    case 'social': {
+      // If multi-network form data, point to a social landing page, else fallback to single URL
+      if (data.social_name) {
+        const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
+        return `${origin}/social/__ID__`
+      }
       return data.url || ''
-    case 'location':
-      return `geo:${data.lat},${data.lng}`
+    }
+    case 'location': {
+      // Prefer Google Maps URL if provided, else address, else GPS coords
+      if (data.loc_maps_url) return data.loc_maps_url
+      if (data.loc_address) return `https://maps.google.com/?q=${encodeURIComponent(data.loc_address)}`
+      if (data.lat && data.lng) return `geo:${data.lat},${data.lng}`
+      return ''
+    }
     case 'event': {
       const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
       return data.event_json ? `${origin}/event/__ID__` : buildVEvent(data)

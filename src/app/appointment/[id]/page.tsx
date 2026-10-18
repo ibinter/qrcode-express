@@ -1,6 +1,5 @@
 import { createAdminClient } from '@/lib/supabase/admin'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
 
 export const instant = false
 
@@ -20,9 +19,14 @@ export default async function AppointmentPage({ params }: { params: Promise<{ id
     <main className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
       <div className="w-full max-w-sm space-y-4">
         <div className="rounded-3xl text-white text-center p-8 shadow-lg" style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}>
-          <p className="text-5xl mb-3">📆</p>
+          {d.photo ? (
+            <img src={d.photo} alt="profile" className="w-24 h-24 rounded-full object-cover mx-auto mb-4 border-4 border-white/30 shadow-lg" />
+          ) : (
+            <p className="text-5xl mb-3">📆</p>
+          )}
           <h1 className="text-2xl font-extrabold">{d.name || 'Rendez-vous'}</h1>
           {d.profession && <p className="text-sm opacity-80 mt-1">{d.profession}</p>}
+          {d.languages && <p className="text-xs opacity-60 mt-1">🌐 {d.languages}</p>}
         </div>
 
         {d.description && (
@@ -64,8 +68,8 @@ export default async function AppointmentPage({ params }: { params: Promise<{ id
               📅 Prendre rendez-vous
             </a>
           )}
-          {d.phone && (
-            <a href={`https://wa.me/${d.phone.replace(/\D/g, '')}`} target="_blank" rel="noopener"
+          {d.whatsapp && (
+            <a href={`https://wa.me/${d.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noopener"
               className="flex items-center justify-center gap-2 w-full py-4 rounded-2xl bg-green-500 text-white font-bold text-sm shadow">
               💬 WhatsApp
             </a>
@@ -80,6 +84,18 @@ export default async function AppointmentPage({ params }: { params: Promise<{ id
             <a href={`mailto:${d.email}`}
               className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl border border-gray-200 bg-white text-gray-700 font-semibold text-sm">
               ✉️ Envoyer un e-mail
+            </a>
+          )}
+          {d.instagram && (
+            <a href={d.instagram.startsWith('http') ? d.instagram : `https://instagram.com/${d.instagram}`} target="_blank" rel="noopener"
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl border border-gray-200 bg-white text-gray-700 font-semibold text-sm">
+              📸 Instagram
+            </a>
+          )}
+          {d.website && (
+            <a href={d.website} target="_blank" rel="noopener"
+              className="flex items-center justify-center gap-2 w-full py-3 rounded-2xl border border-gray-200 bg-white text-gray-700 font-semibold text-sm">
+              🌐 Site web
             </a>
           )}
         </div>

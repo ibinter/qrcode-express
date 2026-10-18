@@ -591,31 +591,62 @@ export default function QRContentForm({ type, data, onChange }: Props) {
         <Field label="Numéro de téléphone" name="phone" type="tel" placeholder="+225 07 00 00 00 00" data={data} onChange={onChange} required />
         <Field label="Message (optionnel)" name="message" placeholder="Votre message..." data={data} onChange={onChange} />
       </>
-    case 'wifi':
-      return <>
-        <Field label="Nom du réseau (SSID)" name="ssid" placeholder="MonWiFi" data={data} onChange={onChange} required />
-        <Field label="Mot de passe" name="password" type="password" placeholder="••••••••" data={data} onChange={onChange} />
-        <div className="mb-4">
-          <label className="block text-sm font-semibold text-gray-700 mb-1">Sécurité</label>
-          <select
-            value={data.encryption || 'WPA'}
-            onChange={(e) => onChange({ ...data, encryption: e.target.value })}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none"
-          >
-            <option value="WPA">WPA/WPA2</option>
-            <option value="WEP">WEP</option>
-            <option value="nopass">Aucun</option>
-          </select>
+    case 'wifi': {
+      const inp2 = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
+      return (
+        <div className="space-y-3">
+          <Field label="Nom du réseau (SSID)" name="ssid" placeholder="MonWiFi" data={data} onChange={onChange} required />
+          <Field label="Mot de passe" name="password" type="password" placeholder="••••••••" data={data} onChange={onChange} />
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Sécurité</label>
+            <select value={data.encryption || 'WPA'} onChange={(e) => onChange({ ...data, encryption: e.target.value })} className={inp2}>
+              <option value="WPA">WPA/WPA2</option>
+              <option value="WEP">WEP</option>
+              <option value="nopass">Aucun</option>
+            </select>
+          </div>
+          <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+            <div>
+              <p className="text-sm font-semibold text-gray-700">Réseau masqué</p>
+              <p className="text-xs text-gray-400">SSID non diffusé</p>
+            </div>
+            <button type="button" onClick={() => onChange({ ...data, hidden: data.hidden === 'true' ? 'false' : 'true' })}
+              className={`relative w-10 h-5 rounded-full transition-colors ${data.hidden === 'true' ? 'bg-orange-500' : 'bg-gray-200'}`}>
+              <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform shadow ${data.hidden === 'true' ? 'translate-x-5' : 'translate-x-0.5'}`} />
+            </button>
+          </div>
+          <ImageUploadField label="Logo / Image d'accueil (optionnel)" value={data.wifi_logo || ''} onChange={(url) => onChange({ ...data, wifi_logo: url })} hint="Affiché sur la page de connexion" />
+          <input value={data.welcome_msg || ''} onChange={(e) => onChange({ ...data, welcome_msg: e.target.value })} placeholder="Message d'accueil (ex: Bienvenue chez nous !)" className={inp2} />
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-semibold text-gray-600">Couleur</label>
+            <input type="color" value={data.wifi_color || '#041B4D'} onChange={(e) => onChange({ ...data, wifi_color: e.target.value })}
+              className="h-8 w-16 border border-gray-200 rounded cursor-pointer" />
+          </div>
         </div>
-      </>
-    case 'vcard':
-      return <>
-        <Field label="Nom complet" name="name" placeholder="Marie Kouassi" data={data} onChange={onChange} required />
-        <Field label="Téléphone" name="phone" type="tel" placeholder="+225 07 00 00 00 00" data={data} onChange={onChange} />
-        <Field label="E-mail" name="email" type="email" placeholder="contact@exemple.com" data={data} onChange={onChange} />
-        <Field label="Entreprise" name="org" placeholder="IBIG SARL" data={data} onChange={onChange} />
-        <Field label="Site web" name="website" type="url" placeholder="https://monsite.com" data={data} onChange={onChange} />
-      </>
+      )
+    }
+    case 'vcard': {
+      const inp3 = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
+      return (
+        <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
+          <ImageUploadField label="Photo de profil" value={data.vcard_photo || ''} onChange={(url) => onChange({ ...data, vcard_photo: url })} hint="Photo ou avatar" />
+          <Field label="Nom complet" name="name" placeholder="Marie Kouassi" data={data} onChange={onChange} required />
+          <Field label="Titre / Fonction" name="title" placeholder="Directrice Commerciale" data={data} onChange={onChange} />
+          <Field label="Téléphone" name="phone" type="tel" placeholder="+225 07 00 00 00 00" data={data} onChange={onChange} />
+          <Field label="Téléphone 2 (optionnel)" name="phone2" type="tel" placeholder="+225 05 00 00 00 00" data={data} onChange={onChange} />
+          <Field label="E-mail" name="email" type="email" placeholder="contact@exemple.com" data={data} onChange={onChange} />
+          <Field label="Entreprise" name="org" placeholder="IBIG SARL" data={data} onChange={onChange} />
+          <Field label="Site web" name="website" type="url" placeholder="https://monsite.com" data={data} onChange={onChange} />
+          <Field label="Adresse" name="address" placeholder="Abidjan, Cocody" data={data} onChange={onChange} />
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Date de naissance (optionnel)</label>
+            <input type="date" value={data.birthday || ''} onChange={(e) => onChange({ ...data, birthday: e.target.value })} className={inp3} />
+          </div>
+          <Field label="LinkedIn (optionnel)" name="linkedin" placeholder="https://linkedin.com/in/..." data={data} onChange={onChange} />
+          <Field label="WhatsApp (optionnel)" name="whatsapp" type="tel" placeholder="+225 07 00 00 00 00" data={data} onChange={onChange} />
+        </div>
+      )
+    }
     case 'whatsapp':
       return <>
         <Field label="Numéro WhatsApp (avec indicatif)" name="phone" placeholder="+225 07 00 00 00 00" data={data} onChange={onChange} required />
@@ -640,13 +671,69 @@ export default function QRContentForm({ type, data, onChange }: Props) {
       return <CouponForm data={data} onChange={onChange} />
     case 'biolink':
       return <BioForm data={data} onChange={onChange} />
-    case 'social':
-      return <Field label="Lien du profil" name="url" type="url" placeholder="https://facebook.com/votrepage" data={data} onChange={onChange} required />
-    case 'location':
-      return <>
-        <Field label="Latitude" name="lat" placeholder="5.3484" data={data} onChange={onChange} required />
-        <Field label="Longitude" name="lng" placeholder="-4.0167" data={data} onChange={onChange} required />
-      </>
+    case 'social': {
+      const NETWORKS = [
+        { key: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/...' },
+        { key: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/...' },
+        { key: 'tiktok', label: 'TikTok', placeholder: 'https://tiktok.com/@...' },
+        { key: 'youtube', label: 'YouTube', placeholder: 'https://youtube.com/...' },
+        { key: 'twitter', label: 'X / Twitter', placeholder: 'https://x.com/...' },
+        { key: 'linkedin', label: 'LinkedIn', placeholder: 'https://linkedin.com/in/...' },
+        { key: 'whatsapp', label: 'WhatsApp', placeholder: '+225 07 00 00 00 00' },
+        { key: 'telegram', label: 'Telegram', placeholder: 'https://t.me/...' },
+        { key: 'snapchat', label: 'Snapchat', placeholder: 'https://snapchat.com/add/...' },
+        { key: 'pinterest', label: 'Pinterest', placeholder: 'https://pinterest.com/...' },
+        { key: 'website', label: 'Site web', placeholder: 'https://monsite.com' },
+      ]
+      const inp4 = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
+      return (
+        <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
+          <ImageUploadField label="Photo de profil / Avatar" value={data.social_photo || ''} onChange={(url) => onChange({ ...data, social_photo: url })} hint="Votre photo ou logo" />
+          <input value={data.social_name || ''} onChange={(e) => onChange({ ...data, social_name: e.target.value })} placeholder="Votre nom / pseudo *" className={inp4} />
+          <input value={data.social_bio || ''} onChange={(e) => onChange({ ...data, social_bio: e.target.value })} placeholder="Bio courte (optionnel)" className={inp4} />
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-widest pt-2">Vos liens</p>
+          {NETWORKS.map((n) => (
+            <div key={n.key}>
+              <label className="block text-xs font-semibold text-gray-600 mb-1">{n.label}</label>
+              <input type="url" value={(data as Record<string, string>)[`social_${n.key}`] || ''} onChange={(e) => onChange({ ...data, [`social_${n.key}`]: e.target.value })}
+                placeholder={n.placeholder} className={inp4} />
+            </div>
+          ))}
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-semibold text-gray-600">Couleur</label>
+            <input type="color" value={data.social_color || '#041B4D'} onChange={(e) => onChange({ ...data, social_color: e.target.value })}
+              className="h-8 w-16 border border-gray-200 rounded cursor-pointer" />
+          </div>
+        </div>
+      )
+    }
+    case 'location': {
+      const inp5 = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
+      return (
+        <div className="space-y-3">
+          <ImageUploadField label="Photo du lieu (optionnel)" value={data.loc_photo || ''} onChange={(url) => onChange({ ...data, loc_photo: url })} hint="Photo ou image du lieu" />
+          <input value={data.loc_name || ''} onChange={(e) => onChange({ ...data, loc_name: e.target.value })} placeholder="Nom du lieu (ex: Hôtel Ivoire)" className={inp5} />
+          <input value={data.loc_description || ''} onChange={(e) => onChange({ ...data, loc_description: e.target.value })} placeholder="Description (optionnel)" className={inp5} />
+          <div className="bg-gray-50 rounded-lg p-3 space-y-2">
+            <p className="text-xs font-bold text-gray-400 uppercase">Option 1 — Adresse</p>
+            <input value={data.loc_address || ''} onChange={(e) => onChange({ ...data, loc_address: e.target.value })} placeholder="Adresse complète" className={inp5} />
+            <input type="url" value={data.loc_maps_url || ''} onChange={(e) => onChange({ ...data, loc_maps_url: e.target.value })} placeholder="Lien Google Maps (optionnel)" className={inp5} />
+          </div>
+          <div className="bg-gray-50 rounded-lg p-3 space-y-2">
+            <p className="text-xs font-bold text-gray-400 uppercase">Option 2 — Coordonnées GPS</p>
+            <div className="grid grid-cols-2 gap-2">
+              <input value={data.lat || ''} onChange={(e) => onChange({ ...data, lat: e.target.value })} placeholder="Latitude (ex: 5.3484)" className={inp5} />
+              <input value={data.lng || ''} onChange={(e) => onChange({ ...data, lng: e.target.value })} placeholder="Longitude (ex: -4.0167)" className={inp5} />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-semibold text-gray-600">Couleur</label>
+            <input type="color" value={data.loc_color || '#041B4D'} onChange={(e) => onChange({ ...data, loc_color: e.target.value })}
+              className="h-8 w-16 border border-gray-200 rounded cursor-pointer" />
+          </div>
+        </div>
+      )
+    }
     case 'event':
       return <EventForm data={data} onChange={onChange} />
     case 'lead':
@@ -1583,27 +1670,40 @@ function AudioForm({ data, onChange }: { data: Record<string, string>; onChange:
 function TicketForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
   const parsed = data.ticket_json ? JSON.parse(data.ticket_json) : {
     event_name: '', date: '', time: '', location: '', category: 'Standard', color: '#041B4D',
-    holder_name: '', holder_email: '', note: '',
+    holder_name: '', holder_email: '', note: '', cover: '', logo: '', organizer: '', price: '', seat: '',
   }
   function update(patch: object) { onChange({ ...data, ticket_json: JSON.stringify({ ...parsed, ...patch }) }) }
   const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
   const sec = 'text-xs font-bold text-gray-400 uppercase tracking-widest pt-2 pb-1 border-t border-gray-100 mt-1'
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
       <p className={sec}>Événement</p>
       <input value={parsed.event_name || ''} onChange={(e) => update({ event_name: e.target.value })} placeholder="Nom de l'événement *" className={inp} />
+      <input value={parsed.organizer || ''} onChange={(e) => update({ organizer: e.target.value })} placeholder="Organisateur" className={inp} />
       <div className="grid grid-cols-2 gap-2">
         <input type="date" value={parsed.date || ''} onChange={(e) => update({ date: e.target.value })} className={inp} />
         <input type="time" value={parsed.time || ''} onChange={(e) => update({ time: e.target.value })} className={inp} />
       </div>
       <input value={parsed.location || ''} onChange={(e) => update({ location: e.target.value })} placeholder="Lieu / Adresse" className={inp} />
+
       <div className="grid grid-cols-2 gap-2">
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1">Catégorie</label>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Catégorie de billet</label>
           <select value={parsed.category || 'Standard'} onChange={(e) => update({ category: e.target.value })} className={inp}>
             <option>Standard</option><option>VIP</option><option>Premium</option>
-            <option>Presse</option><option>Invité</option><option>Staff</option>
+            <option>Presse</option><option>Invité</option><option>Staff</option><option>Gratuit</option>
           </select>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Prix du billet</label>
+          <input value={parsed.price || ''} onChange={(e) => update({ price: e.target.value })} placeholder="ex: 5 000 FCFA" className={inp} />
+        </div>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Siège / Zone (optionnel)</label>
+          <input value={parsed.seat || ''} onChange={(e) => update({ seat: e.target.value })} placeholder="ex: A12 / Zone VIP" className={inp} />
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-600 mb-1">Couleur</label>
@@ -1611,11 +1711,16 @@ function TicketForm({ data, onChange }: { data: Record<string, string>; onChange
             className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer" />
         </div>
       </div>
-      <p className={sec}>Participant (optionnel — billet nominatif)</p>
+
+      <p className={sec}>Participant (billet nominatif)</p>
       <input value={parsed.holder_name || ''} onChange={(e) => update({ holder_name: e.target.value })} placeholder="Nom du participant" className={inp} />
       <input type="email" value={parsed.holder_email || ''} onChange={(e) => update({ holder_email: e.target.value })} placeholder="E-mail du participant" className={inp} />
-      <textarea value={parsed.note || ''} onChange={(e) => update({ note: e.target.value })} placeholder="Note / instructions (optionnel)" rows={2}
+      <textarea value={parsed.note || ''} onChange={(e) => update({ note: e.target.value })} placeholder="Note / instructions / conditions (optionnel)" rows={2}
         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+
+      <p className={sec}>Visuels</p>
+      <ImageUploadField label="Affiche / Bannière de l'événement" value={parsed.cover || ''} onChange={(url) => update({ cover: url })} hint="1200×600 recommandé" />
+      <ImageUploadField label="Logo de l'organisateur" value={parsed.logo || ''} onChange={(url) => update({ logo: url })} hint="Format carré" />
     </div>
   )
 }
@@ -1623,16 +1728,22 @@ function TicketForm({ data, onChange }: { data: Record<string, string>; onChange
 // ─── Loyalty Form ────────────────────────────────────────────────────────────
 function LoyaltyForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
   const parsed = data.loyalty_json ? JSON.parse(data.loyalty_json) : {
-    name: '', description: '', total_stamps: 10, reward_text: '', color: '#041B4D', logo: '',
+    name: '', description: '', total_stamps: 10, reward_text: '', color: '#041B4D', logo: '', cover: '', card_expiry: '', stamp_type: '🪙',
   }
   function update(patch: object) { onChange({ ...data, loyalty_json: JSON.stringify({ ...parsed, ...patch }) }) }
   const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
+  const sec = 'text-xs font-bold text-gray-400 uppercase tracking-widest pt-2 pb-1 border-t border-gray-100 mt-1'
+  const stampEmojis = ['🪙', '⭐', '☕', '🍕', '🎯', '❤️', '✅', '🔥', '🎁', '💎']
   return (
     <div className="space-y-3">
       <input value={parsed.name || ''} onChange={(e) => update({ name: e.target.value })} placeholder="Nom de la carte (ex: Café Fidélité) *" className={inp} />
       <textarea value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
         placeholder="Description (ex: 1 tampon par achat de café)" rows={2}
         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+      <input value={parsed.reward_text || ''} onChange={(e) => update({ reward_text: e.target.value })}
+        placeholder="Récompense (ex: 1 café offert, -20% sur votre commande) *" className={inp} />
+
+      <p className={sec}>Paramètres de la carte</p>
       <div className="grid grid-cols-2 gap-2">
         <div>
           <label className="block text-xs font-semibold text-gray-600 mb-1">Tampons pour récompense</label>
@@ -1640,15 +1751,30 @@ function LoyaltyForm({ data, onChange }: { data: Record<string, string>; onChang
             onChange={(e) => update({ total_stamps: parseInt(e.target.value) || 10 })} className={inp} />
         </div>
         <div>
-          <label className="block text-xs font-semibold text-gray-600 mb-1">Couleur</label>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Couleur accent</label>
           <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
             className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer" />
         </div>
       </div>
-      <input value={parsed.reward_text || ''} onChange={(e) => update({ reward_text: e.target.value })}
-        placeholder="Récompense (ex: 1 café offert, -20% sur votre commande)" className={inp} />
-      <input type="url" value={parsed.logo || ''} onChange={(e) => update({ logo: e.target.value })}
-        placeholder="URL du logo (optionnel)" className={inp} />
+      <div>
+        <label className="block text-xs font-semibold text-gray-600 mb-1">Icône de tampon</label>
+        <div className="flex flex-wrap gap-2">
+          {stampEmojis.map((e) => (
+            <button key={e} type="button" onClick={() => update({ stamp_type: e })}
+              className={`w-9 h-9 rounded-xl text-xl flex items-center justify-center border-2 transition-all ${parsed.stamp_type === e ? 'border-[#FF6A00] bg-orange-50' : 'border-gray-200 hover:border-gray-400'}`}>
+              {e}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div>
+        <label className="block text-xs font-semibold text-gray-600 mb-1">Date d&apos;expiration de la carte (optionnel)</label>
+        <input type="date" value={parsed.card_expiry || ''} onChange={(e) => update({ card_expiry: e.target.value })} className={inp} />
+      </div>
+
+      <p className={sec}>Visuels</p>
+      <ImageUploadField label="Logo de la carte" value={parsed.logo || ''} onChange={(url) => update({ logo: url })} hint="Format carré recommandé" />
+      <ImageUploadField label="Photo de couverture" value={parsed.cover || ''} onChange={(url) => update({ cover: url })} hint="Optionnel — bannière en haut de la carte" />
     </div>
   )
 }
@@ -1657,20 +1783,23 @@ function LoyaltyForm({ data, onChange }: { data: Record<string, string>; onChang
 function AppointmentForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
   const parsed = data.appointment_json ? JSON.parse(data.appointment_json) : {
     name: '', profession: '', phone: '', email: '', address: '', booking_url: '',
-    description: '', color: '#041B4D', services: [], schedule: '',
+    description: '', color: '#041B4D', services: [], schedule: '', photo: '',
+    whatsapp: '', instagram: '', website: '', languages: '',
   }
   function update(patch: object) { onChange({ ...data, appointment_json: JSON.stringify({ ...parsed, ...patch }) }) }
   const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
   const sec = 'text-xs font-bold text-gray-400 uppercase tracking-widest pt-2 pb-1 border-t border-gray-100 mt-1'
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
+      <ImageUploadField label="Photo de profil / Logo" value={parsed.photo || ''} onChange={(url) => update({ photo: url })} hint="Votre photo ou logo professionnel" />
       <input value={parsed.name || ''} onChange={(e) => update({ name: e.target.value })} placeholder="Votre nom / cabinet / entreprise *" className={inp} />
       <input value={parsed.profession || ''} onChange={(e) => update({ profession: e.target.value })} placeholder="Profession / spécialité (ex: Médecin généraliste)" className={inp} />
       <textarea value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
         placeholder="Description de vos services..." rows={2}
         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
       <p className={sec}>Contact & réservation</p>
-      <input type="tel" value={parsed.phone || ''} onChange={(e) => update({ phone: e.target.value })} placeholder="Téléphone / WhatsApp" className={inp} />
+      <input type="tel" value={parsed.phone || ''} onChange={(e) => update({ phone: e.target.value })} placeholder="Téléphone" className={inp} />
+      <input type="tel" value={parsed.whatsapp || ''} onChange={(e) => update({ whatsapp: e.target.value })} placeholder="WhatsApp (optionnel)" className={inp} />
       <input type="email" value={parsed.email || ''} onChange={(e) => update({ email: e.target.value })} placeholder="E-mail" className={inp} />
       <input value={parsed.address || ''} onChange={(e) => update({ address: e.target.value })} placeholder="Adresse / Localisation" className={inp} />
       <input type="url" value={parsed.booking_url || ''} onChange={(e) => update({ booking_url: e.target.value })}
@@ -1681,8 +1810,15 @@ function AppointmentForm({ data, onChange }: { data: Record<string, string>; onC
       <textarea value={parsed.schedule || ''} onChange={(e) => update({ schedule: e.target.value })}
         placeholder="Horaires (ex: Lun-Ven 8h-18h, Sam 9h-13h)" rows={2}
         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
-      <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
-        className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer" />
+      <p className={sec}>Réseaux & langue</p>
+      <input value={parsed.instagram || ''} onChange={(e) => update({ instagram: e.target.value })} placeholder="Instagram (optionnel)" className={inp} />
+      <input type="url" value={parsed.website || ''} onChange={(e) => update({ website: e.target.value })} placeholder="Site web (optionnel)" className={inp} />
+      <input value={parsed.languages || ''} onChange={(e) => update({ languages: e.target.value })} placeholder="Langues parlées (ex: Français, English)" className={inp} />
+      <div className="flex items-center gap-2">
+        <label className="text-xs font-semibold text-gray-600">Couleur</label>
+        <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
+          className="h-8 w-16 border border-gray-200 rounded cursor-pointer" />
+      </div>
     </div>
   )
 }
@@ -1691,51 +1827,84 @@ function AppointmentForm({ data, onChange }: { data: Record<string, string>; onC
 function SurveyForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
   const parsed = data.survey_json ? JSON.parse(data.survey_json) : {
     title: '', description: '', color: '#041B4D', questions: [], success_message: 'Merci pour votre participation !',
+    logo: '', anonymous: false, show_progress: true,
   }
   function update(patch: object) { onChange({ ...data, survey_json: JSON.stringify({ ...parsed, ...patch }) }) }
   const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
-  type SurveyQ = { id: string; text: string; type: 'text' | 'single' | 'multiple' | 'rating' | 'yesno'; options?: string[] }
+  const sec = 'text-xs font-bold text-gray-400 uppercase tracking-widest pt-2 pb-1 border-t border-gray-100 mt-1'
+  type SurveyQ = { id: string; text: string; type: 'text' | 'single' | 'multiple' | 'rating' | 'yesno'; options?: string[]; required?: boolean }
   const questions: SurveyQ[] = parsed.questions || []
   function addQ() {
-    update({ questions: [...questions, { id: Date.now().toString(), text: '', type: 'single', options: ['Option 1', 'Option 2'] }] })
+    update({ questions: [...questions, { id: Date.now().toString(), text: '', type: 'single', options: ['Option 1', 'Option 2'], required: false }] })
   }
   function updateQ(id: string, patch: Partial<SurveyQ>) {
     update({ questions: questions.map((q) => q.id === id ? { ...q, ...patch } : q) })
   }
   function removeQ(id: string) { update({ questions: questions.filter((q) => q.id !== id) }) }
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
+      <ImageUploadField label="Logo / Image de couverture" value={parsed.logo || ''} onChange={(url) => update({ logo: url })} hint="Affiché en haut du sondage" />
       <input value={parsed.title || ''} onChange={(e) => update({ title: e.target.value })} placeholder="Titre du sondage *" className={inp} />
       <textarea value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
-        placeholder="Description (optionnel)" rows={2}
+        placeholder="Description / instructions (optionnel)" rows={2}
         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
-      <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold text-gray-600">Questions ({questions.length})</p>
-        <button type="button" onClick={addQ} className="text-xs px-2.5 py-1 rounded-lg bg-orange-100 text-orange-700 font-semibold hover:bg-orange-200">+ Ajouter</button>
+
+      <p className={sec}>Options</p>
+      <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+        <div>
+          <p className="text-xs font-semibold text-gray-700">Réponses anonymes</p>
+          <p className="text-xs text-gray-400">Ne pas collecter l'identité</p>
+        </div>
+        <button type="button" onClick={() => update({ anonymous: !parsed.anonymous })}
+          className={`relative w-10 h-5 rounded-full transition-colors ${parsed.anonymous ? 'bg-orange-500' : 'bg-gray-200'}`}>
+          <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform shadow ${parsed.anonymous ? 'translate-x-5' : 'translate-x-0.5'}`} />
+        </button>
       </div>
-      {questions.map((q) => (
+      <div className="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+        <div>
+          <p className="text-xs font-semibold text-gray-700">Barre de progression</p>
+          <p className="text-xs text-gray-400">Afficher l'avancement</p>
+        </div>
+        <button type="button" onClick={() => update({ show_progress: !parsed.show_progress })}
+          className={`relative w-10 h-5 rounded-full transition-colors ${parsed.show_progress !== false ? 'bg-orange-500' : 'bg-gray-200'}`}>
+          <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform shadow ${parsed.show_progress !== false ? 'translate-x-5' : 'translate-x-0.5'}`} />
+        </button>
+      </div>
+
+      <p className={sec}>Questions ({questions.length})</p>
+      <button type="button" onClick={addQ} className="w-full text-xs px-2.5 py-2 rounded-lg bg-orange-100 text-orange-700 font-semibold hover:bg-orange-200">+ Ajouter une question</button>
+      {questions.map((q, idx) => (
         <div key={q.id} className="bg-gray-50 rounded-lg p-3 space-y-2">
-          <div className="flex gap-2">
-            <input value={q.text} onChange={(e) => updateQ(q.id, { text: e.target.value })} placeholder="Question *"
-              className="flex-1 border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none" />
-            <select value={q.type} onChange={(e) => updateQ(q.id, { type: e.target.value as SurveyQ['type'] })}
-              className="border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none">
-              <option value="single">Choix unique</option>
-              <option value="multiple">Choix multiple</option>
-              <option value="text">Texte libre</option>
-              <option value="rating">Note (1-5)</option>
-              <option value="yesno">Oui / Non</option>
-            </select>
-            <button type="button" onClick={() => removeQ(q.id)} className="text-red-400 hover:text-red-600 text-sm px-1">✕</button>
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-gray-400">Q{idx + 1}</span>
+            <div className="flex items-center gap-2">
+              <label className="flex items-center gap-1 text-xs text-gray-500">
+                <input type="checkbox" checked={q.required || false} onChange={(e) => updateQ(q.id, { required: e.target.checked })} className="accent-orange-500" />
+                Obligatoire
+              </label>
+              <button type="button" onClick={() => removeQ(q.id)} className="text-red-400 hover:text-red-600 text-sm px-1">✕</button>
+            </div>
           </div>
+          <input value={q.text} onChange={(e) => updateQ(q.id, { text: e.target.value })} placeholder="Texte de la question *"
+            className="w-full border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none" />
+          <select value={q.type} onChange={(e) => updateQ(q.id, { type: e.target.value as SurveyQ['type'] })}
+            className="w-full border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none">
+            <option value="single">Choix unique</option>
+            <option value="multiple">Choix multiple</option>
+            <option value="text">Texte libre</option>
+            <option value="rating">Note (1-5 étoiles)</option>
+            <option value="yesno">Oui / Non</option>
+          </select>
           {(q.type === 'single' || q.type === 'multiple') && (
             <input value={q.options?.join(', ') || ''} onChange={(e) => updateQ(q.id, { options: e.target.value.split(',').map((s) => s.trim()) })}
               placeholder="Options séparées par virgule" className="w-full border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none" />
           )}
         </div>
       ))}
+
+      <p className={sec}>Fin</p>
       <input value={parsed.success_message || ''} onChange={(e) => update({ success_message: e.target.value })}
-        placeholder="Message de remerciement" className={inp} />
+        placeholder="Message de remerciement après envoi" className={inp} />
       <div className="flex items-center gap-2">
         <label className="text-xs font-semibold text-gray-600">Couleur</label>
         <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
@@ -1749,15 +1918,17 @@ function SurveyForm({ data, onChange }: { data: Record<string, string>; onChange
 function JobForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
   const parsed = data.job_json ? JSON.parse(data.job_json) : {
     company: '', title: '', location: '', type: 'CDI', description: '', requirements: '',
-    salary_range: '', apply_email: '', apply_url: '', color: '#041B4D', logo: '',
+    salary_range: '', apply_email: '', apply_url: '', color: '#041B4D', logo: '', cover: '',
+    deadline: '', benefits: '', experience: 'Tout niveau', remote: false, whatsapp: '',
   }
   function update(patch: object) { onChange({ ...data, job_json: JSON.stringify({ ...parsed, ...patch }) }) }
   const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
   const sec = 'text-xs font-bold text-gray-400 uppercase tracking-widest pt-2 pb-1 border-t border-gray-100 mt-1'
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-1">
       <input value={parsed.title || ''} onChange={(e) => update({ title: e.target.value })} placeholder="Intitulé du poste *" className={inp} />
-      <input value={parsed.company || ''} onChange={(e) => update({ company: e.target.value })} placeholder="Entreprise / Organisation" className={inp} />
+      <input value={parsed.company || ''} onChange={(e) => update({ company: e.target.value })} placeholder="Entreprise / Organisation *" className={inp} />
+
       <div className="grid grid-cols-2 gap-2">
         <div>
           <label className="block text-xs font-semibold text-gray-600 mb-1">Type de contrat</label>
@@ -1766,26 +1937,58 @@ function JobForm({ data, onChange }: { data: Record<string, string>; onChange: (
             <option>Freelance</option><option>Alternance</option><option>Temps partiel</option><option>Bénévolat</option>
           </select>
         </div>
-        <input value={parsed.location || ''} onChange={(e) => update({ location: e.target.value })} placeholder="Localisation" className={inp + ' mt-auto'} />
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Niveau d&apos;expérience</label>
+          <select value={parsed.experience || 'Tout niveau'} onChange={(e) => update({ experience: e.target.value })} className={inp}>
+            <option>Tout niveau</option><option>Débutant (0-1 an)</option><option>Junior (1-3 ans)</option>
+            <option>Confirmé (3-5 ans)</option><option>Senior (5+ ans)</option><option>Expert (10+ ans)</option>
+          </select>
+        </div>
       </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <input value={parsed.location || ''} onChange={(e) => update({ location: e.target.value })} placeholder="Localisation" className={inp} />
+        <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2">
+          <input type="checkbox" id="remote" checked={!!parsed.remote} onChange={(e) => update({ remote: e.target.checked })} className="rounded" />
+          <label htmlFor="remote" className="text-sm text-gray-600 cursor-pointer">🏠 Télétravail</label>
+        </div>
+      </div>
+
       <textarea value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
         placeholder="Description du poste *" rows={3}
         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
       <textarea value={parsed.requirements || ''} onChange={(e) => update({ requirements: e.target.value })}
         placeholder="Profil recherché / Compétences requises" rows={2}
         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+      <textarea value={parsed.benefits || ''} onChange={(e) => update({ benefits: e.target.value })}
+        placeholder="Avantages du poste (ex: assurance santé, voiture de fonction, congés payés…)" rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
       <input value={parsed.salary_range || ''} onChange={(e) => update({ salary_range: e.target.value })}
         placeholder="Salaire (ex: 200 000 - 350 000 FCFA/mois)" className={inp} />
+
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Date limite de candidature</label>
+          <input type="date" value={parsed.deadline || ''} onChange={(e) => update({ deadline: e.target.value })} className={inp} />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Couleur</label>
+          <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
+            className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer" />
+        </div>
+      </div>
+
       <p className={sec}>Candidature</p>
       <input type="email" value={parsed.apply_email || ''} onChange={(e) => update({ apply_email: e.target.value })}
         placeholder="E-mail de candidature" className={inp} />
       <input type="url" value={parsed.apply_url || ''} onChange={(e) => update({ apply_url: e.target.value })}
         placeholder="Lien de candidature (optionnel)" className={inp} />
-      <div className="grid grid-cols-2 gap-2">
-        <input type="url" value={parsed.logo || ''} onChange={(e) => update({ logo: e.target.value })} placeholder="Logo URL" className={inp} />
-        <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
-          className="h-10 border border-gray-200 rounded-lg cursor-pointer w-full" />
-      </div>
+      <input value={parsed.whatsapp || ''} onChange={(e) => update({ whatsapp: e.target.value })}
+        placeholder="WhatsApp RH (optionnel — ex: +22507...)" className={inp} />
+
+      <p className={sec}>Visuels</p>
+      <ImageUploadField label="Logo / Photo de l'entreprise" value={parsed.logo || ''} onChange={(url) => update({ logo: url })} hint="Format carré recommandé" />
+      <ImageUploadField label="Bannière / Image d'en-tête" value={parsed.cover || ''} onChange={(url) => update({ cover: url })} hint="Optionnel — 1200×400 recommandé" />
     </div>
   )
 }
@@ -1794,10 +1997,13 @@ function JobForm({ data, onChange }: { data: Record<string, string>; onChange: (
 function GiftCardForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
   const parsed = data.giftcard_json ? JSON.parse(data.giftcard_json) : {
     brand: '', amount: '', currency: 'FCFA', recipient_name: '', message: '',
-    expiry_date: '', color: '#041B4D', logo: '',
+    expiry_date: '', color: '#8B5CF6', logo: '', cover: '', theme: 'gradient',
+    redeem_url: '', terms: '', occasion: '',
   }
   function update(patch: object) { onChange({ ...data, giftcard_json: JSON.stringify({ ...parsed, ...patch }) }) }
   const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
+  const sec = 'text-xs font-bold text-gray-400 uppercase tracking-widest pt-2 pb-1 border-t border-gray-100 mt-1'
+  const occasions = ['🎂 Anniversaire', '🎄 Noël', '💝 Saint-Valentin', '🎓 Diplôme', '💍 Mariage', '🌸 Fête des mères', '👔 Fête des pères', '🎉 Célébration', '🙏 Remerciement']
   return (
     <div className="space-y-3">
       <input value={parsed.brand || ''} onChange={(e) => update({ brand: e.target.value })} placeholder="Votre marque / boutique *" className={inp} />
@@ -1807,14 +2013,29 @@ function GiftCardForm({ data, onChange }: { data: Record<string, string>; onChan
             placeholder="Valeur de la carte *" className={inp} />
         </div>
         <select value={parsed.currency || 'FCFA'} onChange={(e) => update({ currency: e.target.value })} className={inp}>
-          <option>FCFA</option><option>XOF</option><option>USD</option><option>EUR</option><option>GHS</option><option>NGN</option>
+          <option>FCFA</option><option>XOF</option><option>XAF</option><option>USD</option><option>EUR</option><option>GHS</option><option>NGN</option>
         </select>
       </div>
+
+      <p className={sec}>Destinataire & occasion</p>
       <input value={parsed.recipient_name || ''} onChange={(e) => update({ recipient_name: e.target.value })}
-        placeholder="Destinataire (optionnel)" className={inp} />
+        placeholder="Nom du destinataire (optionnel)" className={inp} />
       <textarea value={parsed.message || ''} onChange={(e) => update({ message: e.target.value })}
         placeholder="Message personnalisé (optionnel)" rows={2}
         className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+      <div>
+        <label className="block text-xs font-semibold text-gray-600 mb-1">Occasion</label>
+        <div className="flex flex-wrap gap-1.5">
+          {occasions.map((o) => (
+            <button key={o} type="button" onClick={() => update({ occasion: parsed.occasion === o ? '' : o })}
+              className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition-all ${parsed.occasion === o ? 'bg-[#8B5CF6] text-white border-[#8B5CF6]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'}`}>
+              {o}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <p className={sec}>Paramètres</p>
       <div className="grid grid-cols-2 gap-2">
         <div>
           <label className="block text-xs font-semibold text-gray-600 mb-1">Date d&apos;expiration</label>
@@ -1822,12 +2043,30 @@ function GiftCardForm({ data, onChange }: { data: Record<string, string>; onChan
         </div>
         <div>
           <label className="block text-xs font-semibold text-gray-600 mb-1">Couleur</label>
-          <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
+          <input type="color" value={parsed.color || '#8B5CF6'} onChange={(e) => update({ color: e.target.value })}
             className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer" />
         </div>
       </div>
-      <input type="url" value={parsed.logo || ''} onChange={(e) => update({ logo: e.target.value })}
-        placeholder="URL du logo (optionnel)" className={inp} />
+      <div>
+        <label className="block text-xs font-semibold text-gray-600 mb-1">Thème de la carte</label>
+        <div className="grid grid-cols-3 gap-1.5">
+          {[['gradient', '🌈 Dégradé'], ['solid', '🎨 Couleur unie'], ['dark', '🌙 Sombre']].map(([v, l]) => (
+            <button key={v} type="button" onClick={() => update({ theme: v })}
+              className={`py-1.5 text-xs font-semibold rounded-lg border transition-colors ${parsed.theme === v ? 'bg-[#041B4D] text-white border-[#041B4D]' : 'bg-white text-gray-600 border-gray-200'}`}>
+              {l}
+            </button>
+          ))}
+        </div>
+      </div>
+      <input type="url" value={parsed.redeem_url || ''} onChange={(e) => update({ redeem_url: e.target.value })}
+        placeholder="Lien pour utiliser la carte (boutique en ligne, optionnel)" className={inp} />
+      <textarea value={parsed.terms || ''} onChange={(e) => update({ terms: e.target.value })}
+        placeholder="Conditions d'utilisation (optionnel)" rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+
+      <p className={sec}>Visuels</p>
+      <ImageUploadField label="Logo de la marque" value={parsed.logo || ''} onChange={(url) => update({ logo: url })} hint="Format carré — affiché sur la carte" />
+      <ImageUploadField label="Image de fond / Bannière" value={parsed.cover || ''} onChange={(url) => update({ cover: url })} hint="Optionnel — personnalise l'arrière-plan" />
     </div>
   )
 }

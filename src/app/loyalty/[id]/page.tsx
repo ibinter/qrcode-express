@@ -45,15 +45,20 @@ export default function LoyaltyPage() {
   const total = (card.total_stamps as number) || 10
   const pct = Math.min(Math.round((stamps / total) * 100), 100)
   const completed = stamps >= total
+  const stampIcon = (card.stamp_type as string) || '🪙'
 
   return (
     <main className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
       <div className="w-full max-w-sm space-y-4">
+        {!!card.cover && (
+          <img src={card.cover as string} alt="cover" className="w-full h-40 object-cover rounded-3xl shadow-lg" />
+        )}
         <div className="rounded-3xl text-white text-center p-8 shadow-lg" style={{ background: `linear-gradient(135deg, ${color}, ${color}99)` }}>
           {!!card.logo && <img src={card.logo as string} alt="logo" className="w-16 h-16 rounded-2xl object-cover mx-auto mb-3" />}
-          <p className="text-4xl mb-2">🪙</p>
+          <p className="text-4xl mb-2">{stampIcon}</p>
           <h1 className="text-2xl font-extrabold">{card.name as string}</h1>
           {!!card.description && <p className="text-sm opacity-80 mt-1">{card.description as string}</p>}
+          {!!card.card_expiry && <p className="text-xs opacity-60 mt-2">Valable jusqu&apos;au {new Date(card.card_expiry as string).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>}
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
@@ -68,7 +73,7 @@ export default function LoyaltyPage() {
             {Array.from({ length: total }).map((_, i) => (
               <div key={i} className={`aspect-square rounded-xl flex items-center justify-center text-lg transition-all ${i < stamps ? 'scale-110' : 'bg-gray-100'}`}
                 style={i < stamps ? { background: color } : {}}>
-                {i < stamps ? '✓' : ''}
+                {i < stamps ? stampIcon : ''}
               </div>
             ))}
           </div>
