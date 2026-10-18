@@ -144,7 +144,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               className="text-center px-3 py-2 rounded-xl text-xs font-semibold border border-gray-200 text-gray-700 hover:bg-gray-100 transition-colors">
               📥 <span className="hidden sm:inline">{t('btn_import').replace(' CSV', '')} </span>CSV
             </Link>
-            <Link href="/"
+            <Link href="/create"
               className="text-center px-4 py-2 rounded-xl text-xs font-semibold text-white shadow-sm hover:opacity-90 transition-opacity"
               style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}>
               {t('btn_new_qr')}
@@ -156,7 +156,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         <div className="mb-5 overflow-x-auto pb-1 -mx-1 px-1">
           <div className="flex gap-2 w-max sm:w-auto sm:grid sm:grid-cols-8">
             {QUICK_TYPES.map(t => (
-              <Link key={t.type} href={`/?type=${t.type}`}
+              <Link key={t.type} href={`/create?type=${t.type}`}
                 className="flex flex-col items-center gap-1.5 bg-white border border-gray-100 rounded-2xl px-4 py-3 hover:border-orange-300 hover:shadow-sm hover:bg-orange-50 transition-all group shrink-0 sm:shrink">
                 <span className="text-2xl group-hover:scale-110 transition-transform">{t.icon}</span>
                 <span className="text-[10px] font-semibold text-gray-600 group-hover:text-[#FF6A00] whitespace-nowrap">{t.label}</span>
@@ -371,13 +371,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               </p>
               <div className="flex flex-wrap justify-center gap-2 mb-6">
                 {QUICK_TYPES.slice(0, 4).map(t => (
-                  <Link key={t.type} href={`/?type=${t.type}`}
+                  <Link key={t.type} href={`/create?type=${t.type}`}
                     className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-gray-200 text-xs font-semibold text-gray-700 hover:border-orange-300 hover:text-[#FF6A00] hover:bg-orange-50 transition-all">
                     {t.icon} {t.label}
                   </Link>
                 ))}
               </div>
-              <Link href="/"
+              <Link href="/create"
                 className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold text-white hover:opacity-90 transition-opacity shadow-sm"
                 style={{ background: 'linear-gradient(135deg, #FF6A00, #ee5a24)' }}>
                 {t('empty_cta')}

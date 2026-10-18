@@ -68,9 +68,9 @@ export default function Header() {
 
         {/* Nav desktop */}
         <nav className="hidden lg:flex items-center gap-0.5 text-[13px] font-medium text-gray-600 flex-shrink-0">
-          <Link href="/#generateur" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('create')}</Link>
-          <Link href="/#barcode" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('barcode')}</Link>
-          <Link href="/#etiquettes" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('labels')}</Link>
+          <Link href="/create" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('create')}</Link>
+          <Link href="/barcode" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('barcode')}</Link>
+          <Link href="/labels" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('labels')}</Link>
           <Link href="/tarifs" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('pricing')}</Link>
           <Link href="/fonctionnalites" className="px-2.5 py-1.5 rounded-lg hover:bg-gray-100 hover:text-[#FF6A00] transition-colors whitespace-nowrap">{t('features')}</Link>
         </nav>
