@@ -487,7 +487,14 @@
     "gallery": "معرض الصور",
     "video": "فيديو",
     "audio": "صوت",
-    "crypto": "عملة مشفرة"
+    "crypto": "عملة مشفرة",
+    "ticket": "تذكرة دخول",
+    "loyalty": "بطاقة الولاء",
+    "appointment": "موعد",
+    "survey": "استطلاع",
+    "job": "عرض عمل",
+    "giftcard": "بطاقة هدية",
+    "download": "تحميل"
   },
   "langSelector": {
     "label": "اللغة"

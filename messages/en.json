@@ -487,7 +487,14 @@
     "gallery": "Photo Gallery",
     "video": "Video",
     "audio": "Audio",
-    "crypto": "Cryptocurrency"
+    "crypto": "Cryptocurrency",
+    "ticket": "Entry Ticket",
+    "loyalty": "Loyalty Card",
+    "appointment": "Appointment",
+    "survey": "Survey",
+    "job": "Job Listing",
+    "giftcard": "Gift Card",
+    "download": "Download"
   },
   "langSelector": {
     "label": "Language"

@@ -21,7 +21,7 @@ const DEFAULT_DESIGN: QRDesign = {
 }
 
 // Types toujours dynamiques (landing page dédiée)
-const ALWAYS_DYNAMIC = ['menu', 'coupon', 'biolink', 'vcard_plus', 'catalog', 'review', 'event', 'lead', 'payment', 'business', 'gallery', 'video', 'audio'] as const
+const ALWAYS_DYNAMIC = ['menu', 'coupon', 'biolink', 'vcard_plus', 'catalog', 'review', 'event', 'lead', 'payment', 'business', 'gallery', 'video', 'audio', 'ticket', 'loyalty', 'appointment', 'survey', 'job', 'giftcard', 'download'] as const
 // Types qui peuvent devenir dynamiques via toggle (suivi + URL modifiable)
 const SUPPORTS_DYNAMIC = ['url', 'whatsapp', 'social', 'pdf', 'email', 'phone', 'sms', 'location', 'event', 'vcard', 'vcard_plus', 'app'] as const
 
@@ -52,6 +52,10 @@ export default function QRGenerator() {
   const [expiresAt, setExpiresAt] = useState('')
   const [qrPassword, setQrPassword] = useState('')
   const [maxScans, setMaxScans] = useState('')
+  // Organization
+  const [folder, setFolder] = useState('')
+  const [tags, setTags] = useState('')
+  const [showEmbed, setShowEmbed] = useState(false)
 
   const supabase = createClient()
 
@@ -114,6 +118,13 @@ export default function QRGenerator() {
     if (type === 'gallery')  return formData.gallery_json  || ''
     if (type === 'video')    return formData.video_json    || ''
     if (type === 'audio')    return formData.audio_json    || ''
+    if (type === 'ticket')      return formData.ticket_json      || ''
+    if (type === 'loyalty')     return formData.loyalty_json     || ''
+    if (type === 'appointment') return formData.appointment_json || ''
+    if (type === 'survey')      return formData.survey_json      || ''
+    if (type === 'job')         return formData.job_json         || ''
+    if (type === 'giftcard')    return formData.giftcard_json    || ''
+    if (type === 'download')    return formData.download_json    || ''
     return buildQRContent(type, formData)
   }
 
@@ -132,6 +143,13 @@ export default function QRGenerator() {
       if (type === 'gallery')  return JSON.parse(formData.gallery_json  || '{}').title || 'Galerie photos'
       if (type === 'video')    return JSON.parse(formData.video_json    || '{}').title || 'Vidéo'
       if (type === 'audio')    return JSON.parse(formData.audio_json    || '{}').title || 'Audio'
+      if (type === 'ticket')      return JSON.parse(formData.ticket_json      || '{}').event_name || 'Billet'
+      if (type === 'loyalty')     return JSON.parse(formData.loyalty_json     || '{}').name || 'Fidélité'
+      if (type === 'appointment') return JSON.parse(formData.appointment_json || '{}').name || 'Rendez-vous'
+      if (type === 'survey')      return JSON.parse(formData.survey_json      || '{}').title || 'Sondage'
+      if (type === 'job')         return JSON.parse(formData.job_json         || '{}').title || 'Emploi'
+      if (type === 'giftcard')    return JSON.parse(formData.giftcard_json    || '{}').brand || 'Carte cadeau'
+      if (type === 'download')    return JSON.parse(formData.download_json    || '{}').title || 'Téléchargement'
     } catch {}
     return formData.url || formData.text || formData.nom || `QR ${type}`
   }
@@ -160,6 +178,8 @@ export default function QRGenerator() {
           expires_at: expiresAt || undefined,
           max_scans: maxScans ? parseInt(maxScans) : undefined,
           password: qrPassword || undefined,
+          folder: folder || undefined,
+          tags: tags ? tags.split(',').map((t) => t.trim()).filter(Boolean) : undefined,
         }),
       })
       const data = await res.json()
@@ -170,7 +190,7 @@ export default function QRGenerator() {
       }
       const origin = window.location.origin
       if (isAlwaysDynamic) {
-        const pathMap: Record<string, string> = { menu: 'menu', coupon: 'coupon', biolink: 'bio', vcard_plus: 'vcard', catalog: 'catalog', review: 'review', event: 'event', lead: 'form', payment: 'pay', business: 'business', gallery: 'gallery', video: 'video', audio: 'audio' }
+        const pathMap: Record<string, string> = { menu: 'menu', coupon: 'coupon', biolink: 'bio', vcard_plus: 'vcard', catalog: 'catalog', review: 'review', event: 'event', lead: 'form', payment: 'pay', business: 'business', gallery: 'gallery', video: 'video', audio: 'audio', ticket: 'ticket', loyalty: 'loyalty', appointment: 'appointment', survey: 'survey', job: 'job', giftcard: 'giftcard', download: 'download' }
         setSavedUrl(`${origin}/${pathMap[type]}/${data.qr.id}`)
       } else {
         // URL-based dynamic: use /r/slug redirect for tracking
@@ -186,6 +206,8 @@ export default function QRGenerator() {
         name: name.slice(0, 100),
         design,
         status: 'active',
+        folder: folder || null,
+        tags: tags ? tags.split(',').map((t) => t.trim()).filter(Boolean) : null,
       }).select('id').single()
 
       if (error || !inserted) {
@@ -338,6 +360,53 @@ export default function QRGenerator() {
             <div className="w-full max-w-[280px] bg-green-50 border border-green-200 rounded-xl p-3 text-center">
               <p className="text-xs text-green-700 font-semibold mb-1">{tg('saved_ok')}</p>
               <p className="text-xs text-green-600 break-all font-mono">{savedUrl}</p>
+            </div>
+          )}
+
+          {/* Folder + Tags (shown when logged in and content ready) */}
+          {user && content && !content.includes('__ID__') && (
+            <div className="w-full max-w-[280px] space-y-2">
+              <input
+                type="text"
+                value={folder}
+                onChange={(e) => setFolder(e.target.value)}
+                placeholder="📁 Dossier (ex: Restaurants)"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#FF6A00]/40"
+              />
+              <input
+                type="text"
+                value={tags}
+                onChange={(e) => setTags(e.target.value)}
+                placeholder="🏷️ Tags (séparés par virgule)"
+                className="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-1 focus:ring-[#FF6A00]/40"
+              />
+            </div>
+          )}
+
+          {/* Embed widget */}
+          {savedUrl && (
+            <div className="w-full max-w-[280px]">
+              <button
+                onClick={() => setShowEmbed((v) => !v)}
+                className="w-full text-xs font-semibold text-gray-500 hover:text-[#FF6A00] py-1"
+              >
+                {showEmbed ? '▲ Masquer le code embed' : '⬇️ Obtenir le code embed'}
+              </button>
+              {showEmbed && (
+                <div className="mt-2 bg-gray-900 text-green-400 rounded-xl p-3 text-[10px] font-mono overflow-x-auto">
+                  <pre>{`<div style="text-align:center">
+  <img src="${savedUrl}?format=png"
+    alt="QR Code" width="200" />
+  <p><a href="${savedUrl}">${savedUrl}</a></p>
+</div>`}</pre>
+                  <button
+                    onClick={() => navigator.clipboard.writeText(`<div style="text-align:center">\n  <img src="${savedUrl}?format=png" alt="QR Code" width="200" />\n  <p><a href="${savedUrl}">${savedUrl}</a></p>\n</div>`)}
+                    className="mt-2 text-[10px] bg-gray-700 hover:bg-gray-600 text-white px-2 py-1 rounded"
+                  >
+                    Copier
+                  </button>
+                </div>
+              )}
             </div>
           )}
 

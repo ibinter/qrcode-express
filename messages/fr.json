@@ -487,7 +487,14 @@
     "gallery": "Galerie Photos",
     "video": "Vidéo",
     "audio": "Audio",
-    "crypto": "Cryptomonnaie"
+    "crypto": "Cryptomonnaie",
+    "ticket": "Billet d'entrée",
+    "loyalty": "Carte de fidélité",
+    "appointment": "Rendez-vous",
+    "survey": "Sondage",
+    "job": "Offre d'emploi",
+    "giftcard": "Carte cadeau",
+    "download": "Téléchargement"
   },
   "langSelector": {
     "label": "Langue"

@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
   }
 
   const body = await req.json()
-  const { type, mode, content, name, design, expires_at, max_scans, password } = body
+  const { type, mode, content, name, design, expires_at, max_scans, password, folder, tags } = body
 
   if (!type || !content) {
     return NextResponse.json({ error: 'type et content sont requis' }, { status: 400 })
@@ -101,6 +101,8 @@ export async function POST(req: NextRequest) {
   if (expires_at) insertData.expires_at = expires_at
   if (max_scans) insertData.max_scans = parseInt(String(max_scans))
   if (password) insertData.password_hash = hashPassword(password)
+  if (folder) insertData.folder = folder
+  if (tags && Array.isArray(tags)) insertData.tags = tags
 
   const { data, error } = await supabase.from('qr_codes').insert(insertData).select().single()
 

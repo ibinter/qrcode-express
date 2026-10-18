@@ -487,7 +487,14 @@
     "gallery": "Galeria de Fotos",
     "video": "Vídeo",
     "audio": "Áudio",
-    "crypto": "Criptomoeda"
+    "crypto": "Criptomoeda",
+    "ticket": "Bilhete de Entrada",
+    "loyalty": "Cartão Fidelidade",
+    "appointment": "Agendamento",
+    "survey": "Pesquisa",
+    "job": "Oferta de Emprego",
+    "giftcard": "Cartão Presente",
+    "download": "Download"
   },
   "langSelector": {
     "label": "Idioma"

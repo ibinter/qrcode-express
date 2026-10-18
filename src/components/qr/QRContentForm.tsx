@@ -759,6 +759,20 @@ export default function QRContentForm({ type, data, onChange }: Props) {
       return <VideoForm data={data} onChange={onChange} />
     case 'audio':
       return <AudioForm data={data} onChange={onChange} />
+    case 'ticket':
+      return <TicketForm data={data} onChange={onChange} />
+    case 'loyalty':
+      return <LoyaltyForm data={data} onChange={onChange} />
+    case 'appointment':
+      return <AppointmentForm data={data} onChange={onChange} />
+    case 'survey':
+      return <SurveyForm data={data} onChange={onChange} />
+    case 'job':
+      return <JobForm data={data} onChange={onChange} />
+    case 'giftcard':
+      return <GiftCardForm data={data} onChange={onChange} />
+    case 'download':
+      return <DownloadForm data={data} onChange={onChange} />
     default:
       return <Field label="URL / Contenu" name="url" placeholder="https://" data={data} onChange={onChange} />
   }
@@ -1561,6 +1575,293 @@ function AudioForm({ data, onChange }: { data: Record<string, string>; onChange:
             placeholder="URL" className="flex-1 border border-gray-200 rounded-lg px-2 py-1.5 text-xs focus:outline-none" />
         </div>
       </div>
+    </div>
+  )
+}
+
+// ─── Ticket Form ────────────────────────────────────────────────────────────
+function TicketForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const parsed = data.ticket_json ? JSON.parse(data.ticket_json) : {
+    event_name: '', date: '', time: '', location: '', category: 'Standard', color: '#041B4D',
+    holder_name: '', holder_email: '', note: '',
+  }
+  function update(patch: object) { onChange({ ...data, ticket_json: JSON.stringify({ ...parsed, ...patch }) }) }
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
+  const sec = 'text-xs font-bold text-gray-400 uppercase tracking-widest pt-2 pb-1 border-t border-gray-100 mt-1'
+  return (
+    <div className="space-y-3">
+      <p className={sec}>Événement</p>
+      <input value={parsed.event_name || ''} onChange={(e) => update({ event_name: e.target.value })} placeholder="Nom de l'événement *" className={inp} />
+      <div className="grid grid-cols-2 gap-2">
+        <input type="date" value={parsed.date || ''} onChange={(e) => update({ date: e.target.value })} className={inp} />
+        <input type="time" value={parsed.time || ''} onChange={(e) => update({ time: e.target.value })} className={inp} />
+      </div>
+      <input value={parsed.location || ''} onChange={(e) => update({ location: e.target.value })} placeholder="Lieu / Adresse" className={inp} />
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Catégorie</label>
+          <select value={parsed.category || 'Standard'} onChange={(e) => update({ category: e.target.value })} className={inp}>
+            <option>Standard</option><option>VIP</option><option>Premium</option>
+            <option>Presse</option><option>Invité</option><option>Staff</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Couleur</label>
+          <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
+            className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer" />
+        </div>
+      </div>
+      <p className={sec}>Participant (optionnel — billet nominatif)</p>
+      <input value={parsed.holder_name || ''} onChange={(e) => update({ holder_name: e.target.value })} placeholder="Nom du participant" className={inp} />
+      <input type="email" value={parsed.holder_email || ''} onChange={(e) => update({ holder_email: e.target.value })} placeholder="E-mail du participant" className={inp} />
+      <textarea value={parsed.note || ''} onChange={(e) => update({ note: e.target.value })} placeholder="Note / instructions (optionnel)" rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+    </div>
+  )
+}
+
+// ─── Loyalty Form ────────────────────────────────────────────────────────────
+function LoyaltyForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const parsed = data.loyalty_json ? JSON.parse(data.loyalty_json) : {
+    name: '', description: '', total_stamps: 10, reward_text: '', color: '#041B4D', logo: '',
+  }
+  function update(patch: object) { onChange({ ...data, loyalty_json: JSON.stringify({ ...parsed, ...patch }) }) }
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
+  return (
+    <div className="space-y-3">
+      <input value={parsed.name || ''} onChange={(e) => update({ name: e.target.value })} placeholder="Nom de la carte (ex: Café Fidélité) *" className={inp} />
+      <textarea value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description (ex: 1 tampon par achat de café)" rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Tampons pour récompense</label>
+          <input type="number" min="2" max="50" value={parsed.total_stamps || 10}
+            onChange={(e) => update({ total_stamps: parseInt(e.target.value) || 10 })} className={inp} />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Couleur</label>
+          <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
+            className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer" />
+        </div>
+      </div>
+      <input value={parsed.reward_text || ''} onChange={(e) => update({ reward_text: e.target.value })}
+        placeholder="Récompense (ex: 1 café offert, -20% sur votre commande)" className={inp} />
+      <input type="url" value={parsed.logo || ''} onChange={(e) => update({ logo: e.target.value })}
+        placeholder="URL du logo (optionnel)" className={inp} />
+    </div>
+  )
+}
+
+// ─── Appointment Form ────────────────────────────────────────────────────────
+function AppointmentForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const parsed = data.appointment_json ? JSON.parse(data.appointment_json) : {
+    name: '', profession: '', phone: '', email: '', address: '', booking_url: '',
+    description: '', color: '#041B4D', services: [], schedule: '',
+  }
+  function update(patch: object) { onChange({ ...data, appointment_json: JSON.stringify({ ...parsed, ...patch }) }) }
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
+  const sec = 'text-xs font-bold text-gray-400 uppercase tracking-widest pt-2 pb-1 border-t border-gray-100 mt-1'
+  return (
+    <div className="space-y-3">
+      <input value={parsed.name || ''} onChange={(e) => update({ name: e.target.value })} placeholder="Votre nom / cabinet / entreprise *" className={inp} />
+      <input value={parsed.profession || ''} onChange={(e) => update({ profession: e.target.value })} placeholder="Profession / spécialité (ex: Médecin généraliste)" className={inp} />
+      <textarea value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description de vos services..." rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+      <p className={sec}>Contact & réservation</p>
+      <input type="tel" value={parsed.phone || ''} onChange={(e) => update({ phone: e.target.value })} placeholder="Téléphone / WhatsApp" className={inp} />
+      <input type="email" value={parsed.email || ''} onChange={(e) => update({ email: e.target.value })} placeholder="E-mail" className={inp} />
+      <input value={parsed.address || ''} onChange={(e) => update({ address: e.target.value })} placeholder="Adresse / Localisation" className={inp} />
+      <input type="url" value={parsed.booking_url || ''} onChange={(e) => update({ booking_url: e.target.value })}
+        placeholder="Lien Calendly / Cal.com / autre (optionnel)" className={inp} />
+      <p className={sec}>Services & horaires</p>
+      <input value={parsed.services?.join(', ') || ''} onChange={(e) => update({ services: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean) })}
+        placeholder="Services séparés par virgule (ex: Consultation, Téléconsultation)" className={inp} />
+      <textarea value={parsed.schedule || ''} onChange={(e) => update({ schedule: e.target.value })}
+        placeholder="Horaires (ex: Lun-Ven 8h-18h, Sam 9h-13h)" rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+      <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
+        className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer" />
+    </div>
+  )
+}
+
+// ─── Survey Form ─────────────────────────────────────────────────────────────
+function SurveyForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const parsed = data.survey_json ? JSON.parse(data.survey_json) : {
+    title: '', description: '', color: '#041B4D', questions: [], success_message: 'Merci pour votre participation !',
+  }
+  function update(patch: object) { onChange({ ...data, survey_json: JSON.stringify({ ...parsed, ...patch }) }) }
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
+  type SurveyQ = { id: string; text: string; type: 'text' | 'single' | 'multiple' | 'rating' | 'yesno'; options?: string[] }
+  const questions: SurveyQ[] = parsed.questions || []
+  function addQ() {
+    update({ questions: [...questions, { id: Date.now().toString(), text: '', type: 'single', options: ['Option 1', 'Option 2'] }] })
+  }
+  function updateQ(id: string, patch: Partial<SurveyQ>) {
+    update({ questions: questions.map((q) => q.id === id ? { ...q, ...patch } : q) })
+  }
+  function removeQ(id: string) { update({ questions: questions.filter((q) => q.id !== id) }) }
+  return (
+    <div className="space-y-3">
+      <input value={parsed.title || ''} onChange={(e) => update({ title: e.target.value })} placeholder="Titre du sondage *" className={inp} />
+      <textarea value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description (optionnel)" rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+      <div className="flex items-center justify-between">
+        <p className="text-xs font-semibold text-gray-600">Questions ({questions.length})</p>
+        <button type="button" onClick={addQ} className="text-xs px-2.5 py-1 rounded-lg bg-orange-100 text-orange-700 font-semibold hover:bg-orange-200">+ Ajouter</button>
+      </div>
+      {questions.map((q) => (
+        <div key={q.id} className="bg-gray-50 rounded-lg p-3 space-y-2">
+          <div className="flex gap-2">
+            <input value={q.text} onChange={(e) => updateQ(q.id, { text: e.target.value })} placeholder="Question *"
+              className="flex-1 border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none" />
+            <select value={q.type} onChange={(e) => updateQ(q.id, { type: e.target.value as SurveyQ['type'] })}
+              className="border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none">
+              <option value="single">Choix unique</option>
+              <option value="multiple">Choix multiple</option>
+              <option value="text">Texte libre</option>
+              <option value="rating">Note (1-5)</option>
+              <option value="yesno">Oui / Non</option>
+            </select>
+            <button type="button" onClick={() => removeQ(q.id)} className="text-red-400 hover:text-red-600 text-sm px-1">✕</button>
+          </div>
+          {(q.type === 'single' || q.type === 'multiple') && (
+            <input value={q.options?.join(', ') || ''} onChange={(e) => updateQ(q.id, { options: e.target.value.split(',').map((s) => s.trim()) })}
+              placeholder="Options séparées par virgule" className="w-full border border-gray-200 rounded px-2 py-1.5 text-xs focus:outline-none" />
+          )}
+        </div>
+      ))}
+      <input value={parsed.success_message || ''} onChange={(e) => update({ success_message: e.target.value })}
+        placeholder="Message de remerciement" className={inp} />
+      <div className="flex items-center gap-2">
+        <label className="text-xs font-semibold text-gray-600">Couleur</label>
+        <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
+          className="h-8 w-16 border border-gray-200 rounded cursor-pointer" />
+      </div>
+    </div>
+  )
+}
+
+// ─── Job Form ─────────────────────────────────────────────────────────────────
+function JobForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const parsed = data.job_json ? JSON.parse(data.job_json) : {
+    company: '', title: '', location: '', type: 'CDI', description: '', requirements: '',
+    salary_range: '', apply_email: '', apply_url: '', color: '#041B4D', logo: '',
+  }
+  function update(patch: object) { onChange({ ...data, job_json: JSON.stringify({ ...parsed, ...patch }) }) }
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
+  const sec = 'text-xs font-bold text-gray-400 uppercase tracking-widest pt-2 pb-1 border-t border-gray-100 mt-1'
+  return (
+    <div className="space-y-3">
+      <input value={parsed.title || ''} onChange={(e) => update({ title: e.target.value })} placeholder="Intitulé du poste *" className={inp} />
+      <input value={parsed.company || ''} onChange={(e) => update({ company: e.target.value })} placeholder="Entreprise / Organisation" className={inp} />
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Type de contrat</label>
+          <select value={parsed.type || 'CDI'} onChange={(e) => update({ type: e.target.value })} className={inp}>
+            <option>CDI</option><option>CDD</option><option>Stage</option>
+            <option>Freelance</option><option>Alternance</option><option>Temps partiel</option><option>Bénévolat</option>
+          </select>
+        </div>
+        <input value={parsed.location || ''} onChange={(e) => update({ location: e.target.value })} placeholder="Localisation" className={inp + ' mt-auto'} />
+      </div>
+      <textarea value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description du poste *" rows={3}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+      <textarea value={parsed.requirements || ''} onChange={(e) => update({ requirements: e.target.value })}
+        placeholder="Profil recherché / Compétences requises" rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+      <input value={parsed.salary_range || ''} onChange={(e) => update({ salary_range: e.target.value })}
+        placeholder="Salaire (ex: 200 000 - 350 000 FCFA/mois)" className={inp} />
+      <p className={sec}>Candidature</p>
+      <input type="email" value={parsed.apply_email || ''} onChange={(e) => update({ apply_email: e.target.value })}
+        placeholder="E-mail de candidature" className={inp} />
+      <input type="url" value={parsed.apply_url || ''} onChange={(e) => update({ apply_url: e.target.value })}
+        placeholder="Lien de candidature (optionnel)" className={inp} />
+      <div className="grid grid-cols-2 gap-2">
+        <input type="url" value={parsed.logo || ''} onChange={(e) => update({ logo: e.target.value })} placeholder="Logo URL" className={inp} />
+        <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
+          className="h-10 border border-gray-200 rounded-lg cursor-pointer w-full" />
+      </div>
+    </div>
+  )
+}
+
+// ─── GiftCard Form ────────────────────────────────────────────────────────────
+function GiftCardForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const parsed = data.giftcard_json ? JSON.parse(data.giftcard_json) : {
+    brand: '', amount: '', currency: 'FCFA', recipient_name: '', message: '',
+    expiry_date: '', color: '#041B4D', logo: '',
+  }
+  function update(patch: object) { onChange({ ...data, giftcard_json: JSON.stringify({ ...parsed, ...patch }) }) }
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
+  return (
+    <div className="space-y-3">
+      <input value={parsed.brand || ''} onChange={(e) => update({ brand: e.target.value })} placeholder="Votre marque / boutique *" className={inp} />
+      <div className="grid grid-cols-3 gap-2">
+        <div className="col-span-2">
+          <input type="number" value={parsed.amount || ''} onChange={(e) => update({ amount: e.target.value })}
+            placeholder="Valeur de la carte *" className={inp} />
+        </div>
+        <select value={parsed.currency || 'FCFA'} onChange={(e) => update({ currency: e.target.value })} className={inp}>
+          <option>FCFA</option><option>XOF</option><option>USD</option><option>EUR</option><option>GHS</option><option>NGN</option>
+        </select>
+      </div>
+      <input value={parsed.recipient_name || ''} onChange={(e) => update({ recipient_name: e.target.value })}
+        placeholder="Destinataire (optionnel)" className={inp} />
+      <textarea value={parsed.message || ''} onChange={(e) => update({ message: e.target.value })}
+        placeholder="Message personnalisé (optionnel)" rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+      <div className="grid grid-cols-2 gap-2">
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Date d&apos;expiration</label>
+          <input type="date" value={parsed.expiry_date || ''} onChange={(e) => update({ expiry_date: e.target.value })} className={inp} />
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-600 mb-1">Couleur</label>
+          <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
+            className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer" />
+        </div>
+      </div>
+      <input type="url" value={parsed.logo || ''} onChange={(e) => update({ logo: e.target.value })}
+        placeholder="URL du logo (optionnel)" className={inp} />
+    </div>
+  )
+}
+
+// ─── Download Form ────────────────────────────────────────────────────────────
+function DownloadForm({ data, onChange }: { data: Record<string, string>; onChange: (d: Record<string, string>) => void }) {
+  const parsed = data.download_json ? JSON.parse(data.download_json) : {
+    title: '', description: '', file_url: '', file_name: '', file_size: '',
+    button_label: 'Télécharger', color: '#041B4D', password: '', max_downloads: '',
+  }
+  function update(patch: object) { onChange({ ...data, download_json: JSON.stringify({ ...parsed, ...patch }) }) }
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]'
+  const sec = 'text-xs font-bold text-gray-400 uppercase tracking-widest pt-2 pb-1 border-t border-gray-100 mt-1'
+  return (
+    <div className="space-y-3">
+      <input value={parsed.title || ''} onChange={(e) => update({ title: e.target.value })} placeholder="Titre du fichier *" className={inp} />
+      <textarea value={parsed.description || ''} onChange={(e) => update({ description: e.target.value })}
+        placeholder="Description (optionnel)" rows={2}
+        className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 resize-none" />
+      <input type="url" value={parsed.file_url || ''} onChange={(e) => update({ file_url: e.target.value })}
+        placeholder="URL du fichier (Google Drive, Dropbox, S3…) *" className={inp} />
+      <div className="grid grid-cols-2 gap-2">
+        <input value={parsed.file_name || ''} onChange={(e) => update({ file_name: e.target.value })} placeholder="Nom du fichier affiché" className={inp} />
+        <input value={parsed.file_size || ''} onChange={(e) => update({ file_size: e.target.value })} placeholder="Taille (ex: 2.4 MB)" className={inp} />
+      </div>
+      <input value={parsed.button_label || ''} onChange={(e) => update({ button_label: e.target.value })}
+        placeholder="Texte du bouton (ex: Télécharger)" className={inp} />
+      <p className={sec}>Sécurité (optionnel)</p>
+      <input type="password" value={parsed.password || ''} onChange={(e) => update({ password: e.target.value })}
+        placeholder="Mot de passe pour protéger le téléchargement" className={inp} />
+      <input type="number" value={parsed.max_downloads || ''} onChange={(e) => update({ max_downloads: e.target.value })}
+        placeholder="Nbre max de téléchargements (0 = illimité)" className={inp} />
+      <input type="color" value={parsed.color || '#041B4D'} onChange={(e) => update({ color: e.target.value })}
+        className="w-full h-10 border border-gray-200 rounded-lg cursor-pointer" />
     </div>
   )
 }

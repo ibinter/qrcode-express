@@ -25,6 +25,13 @@ export type QRType =
   | 'video'
   | 'audio'
   | 'crypto'
+  | 'ticket'
+  | 'loyalty'
+  | 'appointment'
+  | 'survey'
+  | 'job'
+  | 'giftcard'
+  | 'download'
 
 export type QRMode = 'static' | 'dynamic'
 

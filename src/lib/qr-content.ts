@@ -74,6 +74,34 @@ export function buildQRContent(type: QRType, data: Record<string, string>): stri
       const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
       return data.audio_json ? `${origin}/audio/__ID__` : ''
     }
+    case 'ticket': {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
+      return data.ticket_json ? `${origin}/ticket/__ID__` : ''
+    }
+    case 'loyalty': {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
+      return data.loyalty_json ? `${origin}/loyalty/__ID__` : ''
+    }
+    case 'appointment': {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
+      return data.appointment_json ? `${origin}/appointment/__ID__` : (data.booking_url || '')
+    }
+    case 'survey': {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
+      return data.survey_json ? `${origin}/survey/__ID__` : ''
+    }
+    case 'job': {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
+      return data.job_json ? `${origin}/job/__ID__` : ''
+    }
+    case 'giftcard': {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
+      return data.giftcard_json ? `${origin}/giftcard/__ID__` : ''
+    }
+    case 'download': {
+      const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
+      return data.download_json ? `${origin}/download/__ID__` : ''
+    }
     case 'crypto': {
       const coin = (data.coin || 'bitcoin').toLowerCase()
       const address = data.address || ''
