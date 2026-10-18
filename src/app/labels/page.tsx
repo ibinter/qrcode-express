@@ -427,8 +427,8 @@ export default function LabelsPage() {
 
         {/* Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-extrabold text-[#041B4D]">{tl('page_title')}</h1>
-          <p className="text-sm text-gray-500 mt-1">{tl('page_sub')}</p>
+          <h1 className="text-4xl font-extrabold text-[#041B4D]">{tl('page_title')}</h1>
+          <p className="text-base text-gray-500 mt-1">{tl('page_sub')}</p>
         </div>
 
         <PlanHeaderBanner

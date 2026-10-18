@@ -191,8 +191,8 @@ export default function BarcodePage() {
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-[#041B4D]">{tb('page_title')}</h1>
-            <p className="text-sm text-gray-500 mt-1">{tb('page_sub')}</p>
+            <h1 className="text-4xl font-extrabold text-[#041B4D]">{tb('page_title')}</h1>
+            <p className="text-base text-gray-500 mt-1">{tb('page_sub')}</p>
           </div>
           <a href="/barcode/batch"
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#041B4D] text-white text-xs font-bold hover:bg-[#0a2a6a] transition-colors">

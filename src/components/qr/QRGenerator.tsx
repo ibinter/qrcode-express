@@ -225,8 +225,8 @@ export default function QRGenerator() {
   return (
     <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
       <div className="p-6 pb-0">
-        <h2 className="text-2xl font-bold text-[#041B4D] mb-1">{tg('create_title')}</h2>
-        <p className="text-sm text-gray-500 mb-5">{tg('create_sub')}</p>
+        <h2 className="text-4xl font-extrabold text-[#041B4D] mb-1">{tg('create_title')}</h2>
+        <p className="text-base text-gray-500 mb-5">{tg('create_sub')}</p>
 
         {/* Type selector */}
         <QRTypeSelector selected={type} onChange={setType} />
