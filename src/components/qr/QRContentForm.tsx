@@ -1257,10 +1257,26 @@ function PaymentForm({ data, onChange }: { data: Record<string, string>; onChang
   }
 
   const methods: string[] = Array.isArray(parsed.methods) ? parsed.methods as string[] : ['stripe', 'wave', 'orange', 'mtn']
+  const customMethods: { id: string; label: string }[] = Array.isArray(parsed.custom_methods) ? parsed.custom_methods as { id: string; label: string }[] : []
+  const [newMethod, setNewMethod] = useState('')
 
   function toggleMethod(m: string) {
     const next = methods.includes(m) ? methods.filter((x) => x !== m) : [...methods, m]
     update({ methods: next })
+  }
+
+  function addCustomMethod() {
+    const label = newMethod.trim()
+    if (!label) return
+    const id = `custom_${label.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}`
+    const next = [...customMethods, { id, label }]
+    update({ custom_methods: next, methods: [...methods, id] })
+    setNewMethod('')
+  }
+
+  function removeCustomMethod(id: string) {
+    const next = customMethods.filter((m) => m.id !== id)
+    update({ custom_methods: next, methods: methods.filter((m) => m !== id) })
   }
 
   return (
@@ -1309,6 +1325,30 @@ function PaymentForm({ data, onChange }: { data: Record<string, string>; onChang
               {label}
             </button>
           ))}
+          {customMethods.map(({ id, label }) => (
+            <div key={id} className={`relative py-2 px-2 text-xs font-semibold rounded-lg border transition-all flex items-center justify-between gap-1 ${methods.includes(id) ? 'bg-teal-100 text-teal-700 border-teal-200' : 'bg-gray-50 text-gray-400 border-gray-200'}`}>
+              <button type="button" onClick={() => toggleMethod(id)} className="flex-1 text-left truncate">
+                💼 {label}
+              </button>
+              <button type="button" onClick={() => removeCustomMethod(id)} className="text-gray-400 hover:text-red-500 transition-colors ml-1 flex-shrink-0" title="Supprimer">
+                ×
+              </button>
+            </div>
+          ))}
+        </div>
+        <div className="mt-2 flex gap-2">
+          <input
+            value={newMethod}
+            onChange={(e) => setNewMethod(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCustomMethod() } }}
+            placeholder="Ajouter un moyen de paiement…"
+            maxLength={40}
+            className="flex-1 border border-dashed border-green-300 rounded-lg px-3 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-green-400/40 bg-green-50 placeholder:text-green-400"
+          />
+          <button type="button" onClick={addCustomMethod}
+            className="px-3 py-2 rounded-lg bg-green-600 text-white text-xs font-bold hover:bg-green-700 transition-colors whitespace-nowrap">
+            + Ajouter
+          </button>
         </div>
       </div>
       <input value={(parsed.phone as string) || ''} onChange={(e) => update({ phone: e.target.value })}
