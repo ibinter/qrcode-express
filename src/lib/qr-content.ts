@@ -13,7 +13,7 @@ export function buildQRContent(type: QRType, data: Record<string, string>): stri
     case 'sms':
       return `smsto:${data.phone}${data.message ? `:${data.message}` : ''}`
     case 'wifi':
-      return `WIFI:T:${data.encryption || 'WPA'};S:${data.ssid};P:${data.password};;`
+      return `WIFI:T:${data.encryption || 'WPA'};S:${data.ssid};P:${data.password};H:${data.hidden === 'true' ? 'true' : 'false'};;`
     case 'vcard':
       return buildVCard(data)
     case 'whatsapp':
@@ -129,18 +129,24 @@ export function buildQRContent(type: QRType, data: Record<string, string>): stri
 }
 
 function buildVCard(data: Record<string, string>): string {
-  return [
+  const lines = [
     'BEGIN:VCARD',
     'VERSION:3.0',
     `FN:${data.name || ''}`,
     data.org ? `ORG:${data.org}` : '',
     data.title ? `TITLE:${data.title}` : '',
-    data.phone ? `TEL:${data.phone}` : '',
+    data.phone ? `TEL;TYPE=CELL:${data.phone}` : '',
+    data.phone2 ? `TEL;TYPE=WORK:${data.phone2}` : '',
+    data.whatsapp && data.whatsapp !== data.phone ? `TEL;TYPE=HOME:${data.whatsapp}` : '',
     data.email ? `EMAIL:${data.email}` : '',
     data.website ? `URL:${data.website}` : '',
     data.address ? `ADR:;;${data.address};;;;` : '',
+    data.birthday ? `BDAY:${data.birthday.replace(/-/g, '')}` : '',
+    data.linkedin ? `X-SOCIALPROFILE;TYPE=linkedin:${data.linkedin}` : '',
+    data.vcard_photo ? `PHOTO;VALUE=URI:${data.vcard_photo}` : '',
     'END:VCARD',
-  ].filter(Boolean).join('\n')
+  ]
+  return lines.filter(Boolean).join('\n')
 }
 
 function buildVEvent(data: Record<string, string>): string {
