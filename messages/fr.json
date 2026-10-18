@@ -185,7 +185,7 @@
     "cta": "Créer mon QR maintenant →",
     "steps": {
       "s1_title": "Choisissez le type",
-      "s1_desc": "URL, menu, billetterie, paiement, formulaire, vCard… 20+ types pour chaque besoin professionnel.",
+      "s1_desc": "URL, menu, billetterie, paiement, formulaire, vCard… 33 types pour chaque besoin professionnel.",
       "s2_title": "Personnalisez",
       "s2_desc": "Logo, couleurs, cadre, style — votre QR à votre image en quelques clics. Design pro garanti.",
       "s3_title": "Téléchargez & partagez",
@@ -585,7 +585,7 @@
     "t5_text": "Ma carte de visite digitale vCard me distingue de la concurrence. Je partage mon QR lors de chaque formation et les participants ont tous mes contacts, mes réseaux sociaux et mon lien de réservation en un scan."
   },
   "showcase": {
-    "title": "20+ types de QR codes",
+    "title": "33 types de QR codes",
     "subtitle": "Menus, billetterie, paiements, formulaires, vCard — tout en un",
     "tag_free": "Gratuit",
     "tag_dynamic": "Dynamique",
