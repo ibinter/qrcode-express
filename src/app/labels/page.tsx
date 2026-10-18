@@ -473,7 +473,18 @@ export default function LabelsPage() {
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
               <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">{tl('sec_preview')}</p>
               <div className="flex justify-center">
-                <LabelSVGPreview tpl={tpl} data={data} barcodeUrl={barcodeUrl} logoDataUrl={logoDataUrl} />
+                <div className="relative inline-block">
+                  <LabelSVGPreview tpl={tpl} data={data} barcodeUrl={barcodeUrl} logoDataUrl={logoDataUrl} />
+                  {tpl.minPlan !== 'free' && !tierAtLeast(tier, tpl.minPlan) && (
+                    <div className="absolute inset-0 flex items-center justify-center rounded-xl pointer-events-none"
+                      style={{ background: 'rgba(255,255,255,0.55)' }}>
+                      <p className="text-[9px] font-bold text-gray-500 tracking-widest uppercase select-none"
+                        style={{ transform: 'rotate(-15deg)', textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>
+                        APERÇU — qrcode-express.com
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
               <p className="text-center text-xs text-gray-400 mt-3">
                 {tpl.isSheet ? tl('sheet_info') : `${copies} × ${tpl.w}×${tpl.h} mm`}

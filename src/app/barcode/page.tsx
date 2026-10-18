@@ -326,11 +326,20 @@ export default function BarcodePage() {
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col items-center gap-4 min-h-[280px] justify-center">
                 {imgUrl && !imgError ? (
                   <>
-                    <div className="p-4 rounded-xl border border-gray-100" style={{ background: bg }}>
+                    <div className="relative p-4 rounded-xl border border-gray-100" style={{ background: bg }}>
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={imgUrl} alt="Code-barres"
                         onError={() => setImgError('Données invalides pour ce type de code.')}
                         className="max-w-full" style={{ imageRendering: 'pixelated' }} />
+                      {currentType.minPlan !== 'free' && !tierAtLeast(tier, currentType.minPlan) && (
+                        <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl pointer-events-none"
+                          style={{ background: 'rgba(255,255,255,0.55)' }}>
+                          <p className="text-[10px] font-bold text-gray-500 tracking-widest uppercase select-none"
+                            style={{ transform: 'rotate(-15deg)', textShadow: '0 1px 2px rgba(255,255,255,0.8)' }}>
+                            APERÇU — qrcode-express.com
+                          </p>
+                        </div>
+                      )}
                     </div>
                     <p className="text-xs text-gray-400 font-mono">{text}</p>
                   </>
