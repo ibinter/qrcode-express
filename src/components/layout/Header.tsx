@@ -144,9 +144,9 @@ export default function Header() {
         aria-hidden={!open}
       >
         <div className="border-t border-gray-100 bg-white px-4 py-2 flex flex-col">
-          <Link href="/#generateur" className="flex items-center gap-2 py-3 text-sm font-medium text-gray-700 border-b border-gray-50" onClick={close}>📱 {t('create')}</Link>
-          <Link href="/#barcode" className="flex items-center gap-2 py-3 text-sm font-medium text-gray-700 border-b border-gray-50" onClick={close}>📊 {t('barcode')}</Link>
-          <Link href="/#etiquettes" className="flex items-center gap-2 py-3 text-sm font-medium text-gray-700 border-b border-gray-50" onClick={close}>🏷️ {t('labels')}</Link>
+          <Link href="/create" className="flex items-center gap-2 py-3 text-sm font-medium text-gray-700 border-b border-gray-50" onClick={close}>📱 {t('create')}</Link>
+          <Link href="/barcode" className="flex items-center gap-2 py-3 text-sm font-medium text-gray-700 border-b border-gray-50" onClick={close}>📊 {t('barcode')}</Link>
+          <Link href="/labels" className="flex items-center gap-2 py-3 text-sm font-medium text-gray-700 border-b border-gray-50" onClick={close}>🏷️ {t('labels')}</Link>
           <Link href="/tarifs" className="py-3 text-sm font-medium text-gray-700 border-b border-gray-50 block" onClick={close}>{t('pricing')}</Link>
           <Link href="/fonctionnalites" className="py-3 text-sm font-medium text-gray-700 border-b border-gray-50 block" onClick={close}>{t('features')}</Link>
           {user ? (

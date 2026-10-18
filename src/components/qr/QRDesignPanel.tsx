@@ -1,7 +1,9 @@
 'use client'
 import { useRef, useState, useEffect } from 'react'
+import Link from 'next/link'
 import { QRDesign } from '@/lib/types'
 import { Save, Trash2, BookmarkPlus, ChevronDown } from 'lucide-react'
+import { usePlan, tierAtLeast } from '@/components/ui/PlanGate'
 
 interface Props {
   design: QRDesign
@@ -401,6 +403,8 @@ export default function QRDesignPanel({ design, onChange }: Props) {
   const update = (patch: Partial<QRDesign>) => onChange({ ...design, ...patch })
   const fileRef = useRef<HTMLInputElement>(null)
   const frameColor = design.frameColor ?? '#041B4D'
+  const { tier } = usePlan()
+  const isPremium = tierAtLeast(tier, 'starter')
 
   // Templates state
   const [templates, setTemplates] = useState<DesignTemplate[]>([])
@@ -566,22 +570,41 @@ export default function QRDesignPanel({ design, onChange }: Props) {
 
       {/* Style modules */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Style des modules</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          Style des modules
+          {!isPremium && <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">🔒 Starter pour plus</span>}
+        </label>
         <div className="flex gap-2">
-          {(['squares', 'rounded', 'dots'] as const).map((s) => (
-            <button key={s} onClick={() => update({ moduleStyle: s })}
-              className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-colors ${
-                design.moduleStyle === s ? 'bg-[#041B4D] text-white border-[#041B4D]' : 'border-gray-200 text-gray-600'
-              }`}>
-              {s === 'squares' ? 'Carrés' : s === 'rounded' ? 'Arrondis' : 'Ronds'}
-            </button>
-          ))}
+          {(['squares', 'rounded', 'dots'] as const).map((s) => {
+            const locked = s !== 'squares' && !isPremium
+            return (
+              <button key={s}
+                onClick={() => locked ? undefined : update({ moduleStyle: s })}
+                title={locked ? 'Plan Starter requis' : undefined}
+                className={`relative flex-1 py-2 rounded-lg text-xs font-medium border transition-colors ${
+                  locked ? 'border-gray-200 text-gray-300 bg-gray-50 cursor-not-allowed'
+                  : design.moduleStyle === s ? 'bg-[#041B4D] text-white border-[#041B4D]'
+                  : 'border-gray-200 text-gray-600 hover:border-gray-400'
+                }`}>
+                {s === 'squares' ? 'Carrés' : s === 'rounded' ? 'Arrondis' : 'Ronds'}
+                {locked && <span className="absolute -top-1.5 -right-1 text-[8px] bg-blue-100 text-blue-700 px-1 py-0.5 rounded-full font-bold leading-none">🔒</span>}
+              </button>
+            )
+          })}
         </div>
+        {!isPremium && (
+          <p className="mt-1.5 text-[10px] text-gray-400">
+            <Link href="/tarifs" className="text-blue-600 hover:underline font-semibold">Passer au Starter</Link> pour débloquer tous les styles
+          </p>
+        )}
       </div>
 
       {/* Eye styles */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Style des coins (yeux)</label>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          Style des coins (yeux)
+          {!isPremium && <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">🔒 Starter pour plus</span>}
+        </label>
         <div className="flex gap-1.5">
           {([
             { id: 'square', label: 'Carré', svg: <svg viewBox="0 0 24 24" className="w-6 h-6"><rect x="2" y="2" width="9" height="9" fill="currentColor"/><rect x="13" y="2" width="9" height="9" fill="currentColor"/><rect x="2" y="13" width="9" height="9" fill="currentColor"/></svg> },
@@ -589,23 +612,32 @@ export default function QRDesignPanel({ design, onChange }: Props) {
             { id: 'circle', label: 'Cercle', svg: <svg viewBox="0 0 24 24" className="w-6 h-6"><circle cx="6.5" cy="6.5" r="4.5" fill="currentColor"/><circle cx="17.5" cy="6.5" r="4.5" fill="currentColor"/><circle cx="6.5" cy="17.5" r="4.5" fill="currentColor"/></svg> },
             { id: 'leaf', label: 'Pétale', svg: <svg viewBox="0 0 24 24" className="w-6 h-6"><path d="M2 2 Q2 11 11 11 Q11 2 2 2Z" fill="currentColor"/><path d="M13 2 Q13 11 22 11 Q22 2 13 2Z" fill="currentColor"/><path d="M2 13 Q2 22 11 22 Q11 13 2 13Z" fill="currentColor"/></svg> },
             { id: 'classy', label: 'Classy', svg: <svg viewBox="0 0 24 24" className="w-6 h-6"><path d="M2 5 Q2 2 5 2 H11 V11 H2Z" fill="currentColor"/><path d="M13 5 Q13 2 16 2 H22 V11 H13Z" fill="currentColor"/><path d="M2 13 H11 V22 H5 Q2 22 2 19Z" fill="currentColor"/></svg> },
-          ] as const).map((eye) => (
-            <button key={eye.id} onClick={() => update({ eyeStyle: eye.id })}
-              title={eye.label}
-              className={`flex-1 flex flex-col items-center gap-1 py-2 px-1 rounded-lg border transition-colors ${
-                (design.eyeStyle ?? 'square') === eye.id ? 'bg-[#041B4D] text-white border-[#041B4D]' : 'border-gray-200 text-gray-500 hover:border-gray-400'
-              }`}>
-              {eye.svg}
-              <span className="text-[9px] font-medium">{eye.label}</span>
-            </button>
-          ))}
+          ] as const).map((eye) => {
+            const locked = eye.id !== 'square' && !isPremium
+            return (
+              <button key={eye.id}
+                onClick={() => locked ? undefined : update({ eyeStyle: eye.id })}
+                title={locked ? 'Plan Starter requis' : eye.label}
+                className={`relative flex-1 flex flex-col items-center gap-1 py-2 px-1 rounded-lg border transition-colors ${
+                  locked ? 'border-gray-200 text-gray-300 bg-gray-50 cursor-not-allowed'
+                  : (design.eyeStyle ?? 'square') === eye.id ? 'bg-[#041B4D] text-white border-[#041B4D]'
+                  : 'border-gray-200 text-gray-500 hover:border-gray-400'
+                }`}>
+                {eye.svg}
+                <span className="text-[9px] font-medium">{locked ? '🔒' : eye.label}</span>
+              </button>
+            )
+          })}
         </div>
       </div>
 
       {/* Gradient */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Dégradé de couleurs <span className="font-normal text-gray-400 text-xs">(optionnel)</span></label>
-        <div className="flex gap-3 items-center">
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          Dégradé de couleurs <span className="font-normal text-gray-400 text-xs">(optionnel)</span>
+          {!isPremium && <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">🔒 Starter</span>}
+        </label>
+        <div className={`relative flex gap-3 items-center ${!isPremium ? 'opacity-40 pointer-events-none select-none' : ''}`}>
           <div className="flex flex-col items-center gap-1">
             <span className="text-[10px] text-gray-400">Départ</span>
             <input type="color" value={design.fgColor} onChange={(e) => update({ fgColor: e.target.value })}
@@ -641,6 +673,11 @@ export default function QRDesignPanel({ design, onChange }: Props) {
               className="text-xs text-red-400 hover:text-red-600 px-1.5 py-1 rounded hover:bg-red-50">✕</button>
           )}
         </div>
+        {!isPremium && (
+          <p className="mt-1.5 text-[10px] text-gray-400">
+            <Link href="/tarifs" className="text-blue-600 hover:underline font-semibold">Passer au Starter</Link> pour débloquer les dégradés
+          </p>
+        )}
       </div>
 
       {/* Style IA */}
@@ -690,8 +727,15 @@ export default function QRDesignPanel({ design, onChange }: Props) {
 
       {/* Logo upload */}
       <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-2">Logo au centre</label>
-        {design.logo ? (
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          Logo au centre
+          {!isPremium && <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">🔒 Starter</span>}
+        </label>
+        {!isPremium ? (
+          <div className="w-full py-3 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-400 flex items-center justify-center gap-2 bg-gray-50">
+            🔒 <Link href="/tarifs" className="text-blue-600 hover:underline font-semibold">Plan Starter requis</Link> pour ajouter un logo
+          </div>
+        ) : design.logo ? (
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-200">
             <img src={design.logo} alt="logo" className="w-12 h-12 object-contain rounded-lg border border-gray-200 bg-white" />
             <div className="flex-1">
@@ -730,31 +774,38 @@ export default function QRDesignPanel({ design, onChange }: Props) {
       <div>
         <label className="block text-sm font-semibold text-gray-700 mb-2">
           Cadre <span className="font-normal text-gray-400">({FRAMES.length - 1} styles)</span>
+          {!isPremium && <span className="ml-1.5 text-[10px] font-bold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700">🔒 Starter</span>}
         </label>
         <div className="grid grid-cols-5 gap-1.5 max-h-72 overflow-y-auto pr-1">
           {FRAMES.map((f) => {
+            const locked = f.id !== 'none' && !isPremium
             const selected = (design.frameStyle ?? 'none') === f.id
             return (
               <button
                 key={f.id}
-                onClick={() => update({ frameStyle: f.id })}
-                title={f.label}
-                className={`flex flex-col items-center rounded-xl p-1 pb-1.5 border-2 transition-all ${
-                  selected
-                    ? 'border-[#FF6A00] bg-orange-50 shadow-sm'
-                    : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
+                onClick={() => locked ? undefined : update({ frameStyle: f.id })}
+                title={locked ? 'Plan Starter requis' : f.label}
+                className={`relative flex flex-col items-center rounded-xl p-1 pb-1.5 border-2 transition-all ${
+                  locked ? 'border-gray-200 bg-gray-50 cursor-not-allowed opacity-50'
+                  : selected ? 'border-[#FF6A00] bg-orange-50 shadow-sm'
+                  : 'border-gray-200 hover:border-gray-400 hover:bg-gray-50'
                 }`}
               >
                 <div className="w-full aspect-[70/88]">
-                  <FrameThumb id={f.id!} color={frameColor} />
+                  <FrameThumb id={f.id!} color={locked ? '#d1d5db' : frameColor} />
                 </div>
                 <span className={`text-[9px] leading-tight mt-0.5 font-medium text-center ${selected ? 'text-[#FF6A00]' : 'text-gray-500'}`}>
-                  {f.label}
+                  {locked ? '🔒' : f.label}
                 </span>
               </button>
             )
           })}
         </div>
+        {!isPremium && (
+          <p className="mt-1.5 text-[10px] text-gray-400">
+            <Link href="/tarifs" className="text-blue-600 hover:underline font-semibold">Passer au Starter</Link> pour débloquer tous les cadres
+          </p>
+        )}
       </div>
 
       {/* Texte et couleur du cadre */}
