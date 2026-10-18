@@ -23,6 +23,7 @@ const TYPE_CREDIT_COST: Partial<Record<QRType, number>> = {
 }
 
 const PLAN_COLORS: Record<string, string> = {
+  Gratuit: 'bg-green-100 text-green-700',
   Starter: 'bg-blue-100 text-blue-700',
   Essentiel: 'bg-orange-100 text-orange-700',
   Pro: 'bg-purple-100 text-purple-700',
@@ -90,14 +91,19 @@ export default function QRTypeSelector({ selected, onChange }: Props) {
           >
             <span>{icon}</span>
             <span>{t(type as any)}</span>
-            {planLabel && !isSelected && (
-              <span className={`text-[9px] font-bold px-1 py-0.5 rounded-full leading-none ${PLAN_COLORS[planLabel]}`}>
-                🔒 {planLabel}
+            {!isSelected && (
+              <span className={`text-[9px] font-bold px-1 py-0.5 rounded-full leading-none ${PLAN_COLORS[planLabel ?? 'Gratuit']}`}>
+                {planLabel ? `🔒 ${planLabel}` : '✓ Gratuit'}
               </span>
             )}
-            {planLabel && isSelected && (
+            {isSelected && planLabel && (
               <span className="text-[9px] font-bold px-1 py-0.5 rounded-full leading-none bg-white/20 text-white">
                 {creditCost} cr
+              </span>
+            )}
+            {isSelected && !planLabel && (
+              <span className="text-[9px] font-bold px-1 py-0.5 rounded-full leading-none bg-white/20 text-white">
+                ✓ Gratuit
               </span>
             )}
           </button>
