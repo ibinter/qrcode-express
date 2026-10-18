@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { INTERNAL_TO_UI_TIER } from '@/lib/plan-utils'
 
 export type PlanTier = 'free' | 'starter' | 'essential' | 'pro' | 'business'
 
@@ -46,16 +47,7 @@ export function usePlan() {
       }
 
       // Fallback: profiles.plan (set by admin or manual upgrade)
-      // profiles.plan uses internal names (essential=Starter, pro=Essentiel, business=Pro, agency=Business)
-      // must translate to UI names before comparing with PLAN_ORDER
-      const INTERNAL_TO_UI: Record<string, PlanTier> = {
-        free: 'free',
-        essential: 'starter',
-        pro: 'essential',
-        business: 'pro',
-        agency: 'business',
-        enterprise: 'business',
-      }
+      // profiles.plan uses internal names — translate via INTERNAL_TO_UI_TIER before comparing
       const { data: profile } = await supabase
         .from('profiles')
         .select('plan')
@@ -63,7 +55,7 @@ export function usePlan() {
         .single()
       const planVal = profile?.plan as string | null
       if (planVal) {
-        const uiTier = INTERNAL_TO_UI[planVal]
+        const uiTier = INTERNAL_TO_UI_TIER[planVal]
         if (uiTier) setTier(uiTier)
       }
       setLoading(false)

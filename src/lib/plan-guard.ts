@@ -13,14 +13,9 @@ const PLAN_RANK: Record<Plan, number> = {
   enterprise: 5,
 }
 
-const PLAN_NAMES: Record<Plan, string> = {
-  free: 'Gratuit',
-  essential: 'Starter',
-  pro: 'Essentiel',
-  business: 'Pro',
-  agency: 'Business',
-  enterprise: 'Enterprise',
-}
+import { PLAN_DISPLAY_NAMES } from '@/lib/plan-utils'
+
+const PLAN_NAMES: Record<Plan, string> = PLAN_DISPLAY_NAMES as Record<Plan, string>
 
 // Static QR limits per plan (undefined = unlimited)
 export const STATIC_QR_LIMITS: Partial<Record<Plan, number>> = {

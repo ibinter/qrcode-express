@@ -10,6 +10,8 @@ import WelcomeBanner from '@/components/WelcomeBanner'
 import DashboardBanner from '@/components/dashboard/DashboardBanner'
 import AnalyticsWidget from '@/components/dashboard/AnalyticsWidget'
 import { getTranslations } from 'next-intl/server'
+import { DYNAMIC_QR_LIMITS } from '@/lib/plan-guard'
+import type { Plan } from '@/lib/plan-guard'
 
 
 export const metadata: Metadata = {
@@ -93,17 +95,20 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   })
   const maxChart = Math.max(...chartData7d.map(d => d.count), 1)
 
+  // Keyed by internal Supabase plan names (essential=Starter, pro=Essentiel, business=Pro, agency=Business)
   const PLAN_LIMITS: Record<string, { qr: number; scans: number }> = {
-    free: { qr: 5, scans: 100 },
-    starter: { qr: 20, scans: 1000 },
-    essential: { qr: 100, scans: 5000 },
-    pro: { qr: 9999, scans: 50000 },
-    business: { qr: 9999, scans: 999999 },
-    agency: { qr: 9999, scans: 999999 },
+    free:       { qr: 5,    scans: 100    },
+    essential:  { qr: 20,   scans: 1000   },
+    pro:        { qr: 100,  scans: 5000   },
+    business:   { qr: 9999, scans: 50000  },
+    agency:     { qr: 9999, scans: 999999 },
     enterprise: { qr: 9999, scans: 999999 },
   }
   const limits = PLAN_LIMITS[plan] ?? PLAN_LIMITS.free
-  const qrUsagePct = Math.min(Math.round(((qrs?.length ?? 0) / limits.qr) * 100), 100)
+  const staticCount = qrs?.filter(q => q.mode !== 'dynamic').length ?? 0
+  const qrUsagePct = Math.min(Math.round((staticCount / limits.qr) * 100), 100)
+  const dynLimit = DYNAMIC_QR_LIMITS[plan as Plan]
+  const dynUsagePct = dynLimit !== undefined ? Math.min(Math.round((dynamicCount / dynLimit) * 100), 100) : 0
 
   const QUICK_TYPES = [
     { type: 'url', icon: '🔗', label: 'URL' },
@@ -225,8 +230,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
             <div className="space-y-3">
               <div>
                 <div className="flex justify-between text-xs mb-1.5">
-                  <span className="text-gray-600 font-medium">{t('usage_qr')}</span>
-                  <span className="font-bold text-[#041B4D]">{qrs?.length ?? 0} / {limits.qr >= 9999 ? '∞' : limits.qr}</span>
+                  <span className="text-gray-600 font-medium">{t('usage_qr')} (statiques)</span>
+                  <span className="font-bold text-[#041B4D]">{staticCount} / {limits.qr >= 9999 ? '∞' : limits.qr}</span>
                 </div>
                 <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
                   <div className="h-full rounded-full transition-all"
@@ -236,6 +241,21 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
                   <p className="text-[10px] text-orange-500 mt-1 font-semibold">{t('usage_limit')}<Link href="/tarifs" className="underline">{t('usage_upgrade')}</Link></p>
                 )}
               </div>
+              {dynLimit !== undefined && (
+                <div>
+                  <div className="flex justify-between text-xs mb-1.5">
+                    <span className="text-gray-600 font-medium">QR dynamiques</span>
+                    <span className="font-bold text-[#041B4D]">{dynamicCount} / {dynLimit}</span>
+                  </div>
+                  <div className="h-2.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="h-full rounded-full transition-all"
+                      style={{ width: `${dynUsagePct}%`, background: dynUsagePct >= 90 ? '#ef4444' : dynUsagePct >= 70 ? '#f59e0b' : '#8b5cf6' }} />
+                  </div>
+                  {dynUsagePct >= 80 && (
+                    <p className="text-[10px] text-orange-500 mt-1 font-semibold">Limite QR dynamiques proche — <Link href="/tarifs" className="underline">Passer au plan supérieur</Link></p>
+                  )}
+                </div>
+              )}
               <div>
                 <div className="flex justify-between text-xs mb-1.5">
                   <span className="text-gray-600 font-medium">{t('usage_scans')}</span>

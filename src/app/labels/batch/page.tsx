@@ -115,26 +115,27 @@ export default function LabelsBatchPage() {
   async function generatePDF() {
     if (!rows.length) return
 
-    // Access gate for premium templates
-    if (tpl.minPlan !== 'free') {
-      const res = await fetch('/api/label/check-access', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ templateMinPlan: tpl.minPlan }),
-      })
-      if (!res.ok) {
-        const d = await res.json().catch(() => ({}))
-        alert(d.error || 'Credits insuffisants ou abonnement requis')
-        return
-      }
+    // Always verify access server-side — for free templates this returns isStarterPlus,
+    // for premium templates it also checks plan/credits
+    const res = await fetch('/api/label/check-access', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ templateMinPlan: tpl.minPlan }),
+    })
+    if (!res.ok) {
+      const d = await res.json().catch(() => ({}))
+      alert(d.error || 'Credits insuffisants ou abonnement requis')
+      return
     }
+    const accessData = await res.json()
+    const isStarterPlus: boolean = accessData.isStarterPlus ?? false
 
     setGenerating(true)
     setProgress(0)
 
     const barcodeH = tpl.h > 40 ? 14 : tpl.h > 30 ? 10 : 8
     const { jsPDF } = await import('jspdf')
-    const labelsPerPage = tierAtLeast(tier, 'starter') ? rows.length : Math.min(rows.length, 5)
+    const labelsPerPage = isStarterPlus ? rows.length : Math.min(rows.length, 5)
 
     // Layout: 2 labels per row, with margins
     const cols = 2
@@ -232,8 +233,8 @@ export default function LabelsBatchPage() {
       setProgress(Math.round(((i + 1) / labelsPerPage) * 100))
     }
 
-    // Watermark for free users
-    if (!tierAtLeast(tier, 'starter')) {
+    // Watermark for free users — based on server-verified plan, not client-side tier
+    if (!isStarterPlus) {
       doc.setFont('helvetica', 'bold')
       doc.setFontSize(8)
       doc.setTextColor(200, 200, 200)
