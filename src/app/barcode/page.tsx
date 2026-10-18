@@ -382,11 +382,20 @@ export default function BarcodePage() {
                   </div>
 
                   {/* HD Print button */}
-                  <button onClick={() => {
-                    const hdUrl = `/api/barcode/image?${new URLSearchParams({ type: currentType.id, text, color: color.replace('#',''), bg: bg.replace('#',''), height: String(height), scale: '8', includetext: 'true' })}`
+                  <button onClick={async () => {
+                    const hdUrl = `/api/barcode/image?${new URLSearchParams({ type: currentType.id, text, color: color.replace('#',''), bg: bg.replace('#',''), height: String(height), scale: '8', includetext: 'true', download: '1' })}`
+                    // Fetch blob first — server checks plan/credits once, prevents double-charge
+                    const res = await fetch(hdUrl)
+                    if (!res.ok) {
+                      if (res.status === 401) { alert(tb('login_alert')); return }
+                      if (res.status === 403) { alert(tb('credits_required')); return }
+                      alert(tb('download_error')); return
+                    }
+                    const blob = await res.blob()
+                    const blobUrl = URL.createObjectURL(blob)
                     const win = window.open('', '_blank')
                     if (win) {
-                      win.document.write(`<!doctype html><html><head><title>Impression code-barres</title><style>body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#fff}img{max-width:90vw;max-height:90vh}@media print{body{margin:0}}</style></head><body><img src="${hdUrl}" onload="window.print()"/></body></html>`)
+                      win.document.write(`<!doctype html><html><head><title>Impression code-barres</title><style>body{margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#fff}img{max-width:90vw;max-height:90vh}@media print{body{margin:0}}</style></head><body><img src="${blobUrl}" onload="window.print()"/></body></html>`)
                       win.document.close()
                     }
                   }}
