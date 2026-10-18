@@ -190,7 +190,7 @@ export default function QRGenerator() {
       }
       const origin = window.location.origin
       if (isAlwaysDynamic) {
-        const pathMap: Record<string, string> = { menu: 'menu', coupon: 'coupon', biolink: 'bio', vcard_plus: 'vcard', catalog: 'catalog', review: 'review', event: 'event', lead: 'form', payment: 'pay', business: 'business', gallery: 'gallery', video: 'video', audio: 'audio', ticket: 'ticket', loyalty: 'loyalty', appointment: 'appointment', survey: 'survey', job: 'job', giftcard: 'giftcard', download: 'download' }
+        const pathMap: Record<string, string> = { menu: 'menu', coupon: 'coupon', biolink: 'bio', vcard_plus: 'vcard', catalog: 'catalog', review: 'review', event: 'event', lead: 'form', payment: 'pay', business: 'business', gallery: 'gallery', video: 'video', audio: 'audio', ticket: 'ticket-qr', loyalty: 'loyalty', appointment: 'appointment', survey: 'survey', job: 'job', giftcard: 'giftcard', download: 'download' }
         setSavedUrl(`${origin}/${pathMap[type]}/${data.qr.id}`)
       } else {
         // URL-based dynamic: use /r/slug redirect for tracking
