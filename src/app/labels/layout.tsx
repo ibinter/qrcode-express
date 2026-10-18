@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import ClientSidebar from '@/components/dashboard/ClientSidebar'
 import Header from '@/components/layout/Header'
+import Footer from '@/components/layout/Footer'
 
 export default async function LabelsLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient()
@@ -10,11 +11,12 @@ export default async function LabelsLayout({ children }: { children: React.React
   // Non authentifié : layout public avec header
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 flex flex-col">
         <Header />
-        <main className="pt-16">
+        <main className="pt-16 flex-1">
           {children}
         </main>
+        <Footer />
       </div>
     )
   }
