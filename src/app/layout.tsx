@@ -62,6 +62,16 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
   },
+  alternates: {
+    canonical: 'https://qrcode-express.com',
+    languages: {
+      'fr': 'https://qrcode-express.com',
+      'en': 'https://qrcode-express.com',
+      'pt': 'https://qrcode-express.com',
+      'ar': 'https://qrcode-express.com',
+      'x-default': 'https://qrcode-express.com',
+    },
+  },
 }
 
 export const viewport: Viewport = {

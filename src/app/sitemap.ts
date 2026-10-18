@@ -9,16 +9,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const staticPages = [
     { url: BASE, priority: 1.0, changeFrequency: 'weekly' as const },
+    { url: `${BASE}/create`, priority: 0.95, changeFrequency: 'weekly' as const },
     { url: `${BASE}/tarifs`, priority: 0.9, changeFrequency: 'monthly' as const },
+    { url: `${BASE}/barcode`, priority: 0.9, changeFrequency: 'monthly' as const },
+    { url: `${BASE}/labels`, priority: 0.9, changeFrequency: 'monthly' as const },
     { url: `${BASE}/blog`, priority: 0.8, changeFrequency: 'weekly' as const },
     { url: `${BASE}/guide`, priority: 0.8, changeFrequency: 'monthly' as const },
+    { url: `${BASE}/faq`, priority: 0.8, changeFrequency: 'monthly' as const },
     { url: `${BASE}/fonctionnalites`, priority: 0.7, changeFrequency: 'monthly' as const },
+    { url: `${BASE}/api-docs`, priority: 0.7, changeFrequency: 'monthly' as const },
+    { url: `${BASE}/barcode/batch`, priority: 0.7, changeFrequency: 'monthly' as const },
+    { url: `${BASE}/labels/batch`, priority: 0.7, changeFrequency: 'monthly' as const },
     { url: `${BASE}/inscription`, priority: 0.7, changeFrequency: 'yearly' as const },
     { url: `${BASE}/connexion`, priority: 0.6, changeFrequency: 'yearly' as const },
     { url: `${BASE}/parrainage`, priority: 0.6, changeFrequency: 'monthly' as const },
-    { url: `${BASE}/barcode`, priority: 0.8, changeFrequency: 'monthly' as const },
-    { url: `${BASE}/barcode/batch`, priority: 0.7, changeFrequency: 'monthly' as const },
-    { url: `${BASE}/labels`, priority: 0.8, changeFrequency: 'monthly' as const },
   ]
 
   const blogPages = BLOG_ARTICLES.map((article) => ({
