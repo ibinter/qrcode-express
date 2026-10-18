@@ -172,8 +172,9 @@ export default function Pricing() {
         { text: t('pf_free_qr_1'), ok: true },
         { text: t('pf_free_qr_2'), ok: true },
         { text: t('pf_free_qr_3'), ok: true },
-        { text: t('pf_free_qr_4'), ok: false },
+        { text: t('pf_free_qr_4'), ok: true },
         { text: t('pf_free_qr_5'), ok: false },
+        { text: t('pf_free_qr_6'), ok: false },
       ]},
       { label: t('grp_bc'), features: [
         { text: t('pf_free_bc_1'), ok: true },
@@ -202,6 +203,12 @@ export default function Pricing() {
         { text: t('pf_strt_qr_5'), ok: true },
         { text: t('pf_strt_qr_6'), ok: false },
       ]},
+      { label: t('grp_new_types'), features: [
+        { text: t('pf_strt_new_1'), ok: true },
+        { text: t('pf_strt_new_2'), ok: true },
+        { text: t('pf_strt_new_3'), ok: false },
+        { text: t('pf_strt_new_4'), ok: false },
+      ]},
       { label: t('grp_bc'), features: [
         { text: t('pf_strt_bc_1'), ok: true },
         { text: t('pf_strt_bc_2'), ok: true },
@@ -229,6 +236,17 @@ export default function Pricing() {
         { text: t('pf_ess_qr_5'), ok: true },
         { text: t('pf_ess_qr_6'), ok: true },
       ]},
+      { label: t('grp_new_types'), features: [
+        { text: t('pf_ess_new_1'), ok: true },
+        { text: t('pf_ess_new_2'), ok: true },
+        { text: t('pf_ess_new_3'), ok: true },
+        { text: t('pf_ess_new_4'), ok: false },
+        { text: t('pf_ess_new_5'), ok: false },
+      ]},
+      { label: t('grp_org'), features: [
+        { text: t('pf_ess_org_1'), ok: true },
+        { text: t('pf_ess_org_2'), ok: true },
+      ]},
       { label: t('grp_bc'), features: [
         { text: t('pf_ess_bc_1'), ok: true },
         { text: t('pf_ess_bc_2'), ok: true },
@@ -254,6 +272,17 @@ export default function Pricing() {
         { text: t('pf_pro_qr_4'), ok: true },
         { text: t('pf_pro_qr_5'), ok: true },
         { text: t('pf_pro_qr_6'), ok: true },
+      ]},
+      { label: t('grp_new_types'), features: [
+        { text: t('pf_pro_new_1'), ok: true },
+        { text: t('pf_pro_new_2'), ok: true },
+        { text: t('pf_pro_new_3'), ok: true },
+        { text: t('pf_pro_new_4'), ok: false },
+      ]},
+      { label: t('grp_org'), features: [
+        { text: t('pf_pro_org_1'), ok: true },
+        { text: t('pf_pro_org_2'), ok: true },
+        { text: t('pf_pro_org_3'), ok: true },
       ]},
       { label: t('grp_bc'), features: [
         { text: t('pf_pro_bc_1'), ok: true },
@@ -291,6 +320,15 @@ export default function Pricing() {
         { text: t('pf_biz_qr_3'), ok: true },
         { text: t('pf_biz_qr_4'), ok: true },
         { text: t('pf_biz_qr_5'), ok: true },
+      ]},
+      { label: t('grp_new_types'), features: [
+        { text: t('pf_biz_new_1'), ok: true },
+        { text: t('pf_biz_new_2'), ok: true },
+        { text: t('pf_biz_new_3'), ok: true },
+      ]},
+      { label: t('grp_org'), features: [
+        { text: t('pf_biz_org_1'), ok: true },
+        { text: t('pf_biz_org_2'), ok: true },
       ]},
       { label: t('grp_bc'), features: [
         { text: t('pf_biz_bc_1'), ok: true },
@@ -396,13 +434,24 @@ export default function Pricing() {
 
   const cmpRows = [
     { label: t('cmp_r_0'), values: ['5', '20', '100', t('cmp_unlimited_pl'), t('cmp_unlimited_pl')] },
-    { label: t('cmp_r_1'), values: ['—', '2', '10', '100', t('cmp_unlimited_pl')] },
+    { label: t('cmp_r_1'), values: ['—', '2', '20', '100', t('cmp_unlimited_pl')] },
     { label: t('cmp_r_2'), values: [t('cmp_png_only'), 'PNG+SVG', 'PNG+SVG+PDF', 'PNG+SVG+PDF', 'PNG+SVG+PDF'] },
+    // New QR types
+    { label: t('cmp_r_crypto'), values: ['✓', '✓', '✓', '✓', '✓'] },
+    { label: t('cmp_r_giftcard_job'), values: ['—', '✓', '✓', '✓', '✓'] },
+    { label: t('cmp_r_ticket_appt_dl'), values: ['—', '—', '✓', '✓', '✓'] },
+    { label: t('cmp_r_loyalty_survey'), values: ['—', '—', '—', '✓', '✓'] },
+    // Organisation
+    { label: t('cmp_r_folders_tags'), values: ['—', '—', '✓', '✓', '✓'] },
+    { label: t('cmp_r_scan_limit'), values: ['—', '—', '✓', '✓', '✓'] },
+    { label: t('cmp_r_embed'), values: ['—', '—', '—', '✓', '✓'] },
+    // Barcodes & labels
     { label: t('cmp_r_3'), values: ['10', '100', t('cmp_unlimited'), t('cmp_unlimited'), t('cmp_unlimited')] },
     { label: t('cmp_r_4'), values: [t('cmp_2_formats'), t('cmp_10_formats'), t('cmp_26_formats'), t('cmp_26_formats'), t('cmp_26_formats')] },
     { label: t('cmp_r_5'), values: ['—', '—', t('cmp_100_batch'), t('cmp_500_batch'), t('cmp_2000_batch')] },
     { label: t('cmp_r_6'), values: [t('cmp_2_wm'), t('cmp_10_no_wm'), t('cmp_20_cat'), '31 + custom', '31 + custom'] },
     { label: t('cmp_r_7'), values: ['—', '—', '✓', '✓', '✓'] },
+    // Analytics & features
     { label: t('cmp_r_8'), values: ['—', t('cmp_basic'), t('cmp_30d'), t('cmp_90d'), t('cmp_unlimited')] },
     { label: t('cmp_r_9'), values: ['—', '—', '✓', '✓', '✓'] },
     { label: t('cmp_r_10'), values: ['—', '—', '—', '✓', '✓'] },

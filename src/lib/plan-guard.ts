@@ -15,10 +15,10 @@ const PLAN_RANK: Record<Plan, number> = {
 
 const PLAN_NAMES: Record<Plan, string> = {
   free: 'Gratuit',
-  essential: 'Essentiel',
-  pro: 'Pro',
-  business: 'Business',
-  agency: 'Agency',
+  essential: 'Starter',
+  pro: 'Essentiel',
+  business: 'Pro',
+  agency: 'Business',
   enterprise: 'Enterprise',
 }
 
@@ -26,7 +26,49 @@ const PLAN_NAMES: Record<Plan, string> = {
 export const DYNAMIC_QR_LIMITS: Partial<Record<Plan, number>> = {
   free: 0,
   essential: 5,
-  pro: 50,
+  pro: 20,
+  business: 100,
+  // agency / enterprise = unlimited (not in the object)
+}
+
+/**
+ * QR types unlocked per minimum plan level.
+ * Types not listed here are available to all plans (static generation).
+ */
+export const QR_TYPE_MIN_PLAN: Partial<Record<string, Plan>> = {
+  // Starter (essential) — simple landing pages, no persistent DB
+  giftcard: 'essential',
+  job: 'essential',
+
+  // Essentiel (pro) — landing pages with tracking/organisation features
+  ticket: 'pro',
+  appointment: 'pro',
+  download: 'pro',
+
+  // Pro (business) — real-time customer interaction with persistent data
+  loyalty: 'business',
+  survey: 'business',
+
+  // Already gated types (existing)
+  menu: 'pro',
+  coupon: 'pro',
+  biolink: 'pro',
+  vcard_plus: 'pro',
+  catalog: 'pro',
+  review: 'pro',
+  event: 'pro',
+  lead: 'pro',
+  payment: 'business',
+  gallery: 'pro',
+  video: 'pro',
+  audio: 'pro',
+}
+
+/**
+ * Returns the minimum plan required for a QR type, or 'free' if unrestricted.
+ */
+export function getMinPlanForType(type: string): Plan {
+  return QR_TYPE_MIN_PLAN[type] ?? 'free'
 }
 
 type UserProfile = { id: string; plan: Plan; email: string; credits: number }

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createHash } from 'crypto'
-import { requirePlan, DYNAMIC_QR_LIMITS } from '@/lib/plan-guard'
+import { requirePlan, DYNAMIC_QR_LIMITS, getMinPlanForType } from '@/lib/plan-guard'
 
 function hashPassword(pw: string): string {
   return createHash('sha256').update(pw).digest('hex')
@@ -38,6 +38,13 @@ export async function POST(req: NextRequest) {
   // Anti-quishing: validate URL content for URL-type QRs
   if (type === 'url' && content && !isUrlSafe(content)) {
     return NextResponse.json({ error: 'Cette URL semble non sécurisée. Seules les URLs http:// et https:// sont autorisées.' }, { status: 400 })
+  }
+
+  // Type-based plan guard: check if this QR type requires a minimum plan
+  const minPlanForType = getMinPlanForType(type)
+  if (minPlanForType !== 'free') {
+    const { ok, error: typeError } = await requirePlan(minPlanForType)
+    if (!ok) return typeError
   }
 
   // Dynamic QR: check plan limits (1 crédit si quota dépassé)
