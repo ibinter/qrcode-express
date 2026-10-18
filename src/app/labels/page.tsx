@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { usePlan, PlanHeaderBanner, LockBadge, tierAtLeast, type PlanTier } from '@/components/ui/PlanGate'
@@ -350,19 +350,15 @@ export default function LabelsPage() {
                     const theme = STYLE_THEMES[t.style] || STYLE_THEMES.retail
                     return (
                       <button key={t.id}
-                        onClick={() => { if (!locked) setTemplateId(t.id) }}
-                        disabled={locked}
-                        className={`text-left p-2.5 rounded-xl border transition-all relative ${
-                          locked ? 'border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed' :
-                          templateId === t.id ? 'border-[#FF6A00] bg-orange-50' : 'border-gray-200 hover:border-gray-300'
-                        }`}>
+                        onClick={() => setTemplateId(t.id)}
+                        className={`text-left p-2.5 rounded-xl border transition-all relative ${templateId === t.id ? 'border-[#FF6A00] bg-orange-50' : 'border-gray-200 hover:border-gray-300'}`}>
                         {/* Color swatch */}
                         <div className="flex items-center gap-2 mb-1">
                           <div className="w-5 h-5 rounded flex items-center justify-center text-sm flex-shrink-0"
                             style={{ background: theme.bg, border: `1.5px solid ${theme.accent}40` }}>
                             <span className="text-[10px]">{t.icon}</span>
                           </div>
-                          <p className={`text-[11px] font-bold leading-tight ${templateId === t.id && !locked ? 'text-[#FF6A00]' : 'text-gray-700'}`}>
+                          <p className={`text-[11px] font-bold leading-tight ${templateId === t.id ? 'text-[#FF6A00]' : 'text-gray-700'}`}>
                             {tl(`tpl_${t.id}` as 'tpl_price_58x40')}
                           </p>
                         </div>

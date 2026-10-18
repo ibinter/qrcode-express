@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { usePlan, UpgradeBanner, PlanHeaderBanner, LockBadge, tierAtLeast, type PlanTier } from '@/components/ui/PlanGate'
@@ -232,11 +232,11 @@ export default function BarcodePage() {
                     const locked = !tierAtLeast(tier, t.minPlan)
                     return (
                       <button key={t.id}
-                        onClick={() => !locked && handleTypeChange(t.id)}
+                        onClick={() => handleTypeChange(t.id)}
                         title={locked ? `Disponible à partir du plan ${t.minPlan === 'starter' ? 'Starter' : 'Essentiel'}` : undefined}
-                        className={`text-left p-2.5 rounded-xl border transition-all ${locked ? 'border-gray-100 bg-gray-50 opacity-60 cursor-not-allowed' : type === t.id ? 'border-[#FF6A00] bg-orange-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                        className={`text-left p-2.5 rounded-xl border transition-all ${type === t.id ? 'border-[#FF6A00] bg-orange-50' : 'border-gray-200 hover:border-gray-300'}`}>
                         <div className="flex items-center gap-1">
-                          <p className={`text-xs font-bold ${locked ? 'text-gray-400' : type === t.id ? 'text-[#FF6A00]' : 'text-gray-700'}`}>{t.label}</p>
+                          <p className={`text-xs font-bold ${type === t.id ? 'text-[#FF6A00]' : 'text-gray-700'}`}>{t.label}</p>
                           {locked && <span className="text-[9px] font-bold text-orange-500">🔒</span>}
                         </div>
                         <p className="text-[10px] text-gray-400 truncate">{tb(`type_${t.id}` as 'type_ean13')}</p>
