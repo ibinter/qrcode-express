@@ -403,6 +403,30 @@ export default function BarcodePage() {
                     {tb('btn_print')}
                   </button>
 
+                  <button onClick={async () => {
+                    const pdfPngUrl = `/api/barcode/image?${new URLSearchParams({ type: currentType.id, text, color: color.replace('#',''), bg: bg.replace('#',''), height: String(height), scale: '8', includetext: 'true', download: '1' })}`
+                    const res = await fetch(pdfPngUrl)
+                    if (!res.ok) {
+                      if (res.status === 401) { alert(tb('login_alert')); return }
+                      if (res.status === 403) { alert(tb('credits_required')); return }
+                      alert(tb('download_error')); return
+                    }
+                    const blob = await res.blob()
+                    const dataUrl = await new Promise<string>(r => { const fr = new FileReader(); fr.onload = () => r(fr.result as string); fr.readAsDataURL(blob) })
+                    const { jsPDF } = await import('jspdf')
+                    const imgEl = new Image()
+                    await new Promise<void>(r => { imgEl.onload = () => r(); imgEl.src = dataUrl })
+                    const ratio = imgEl.naturalWidth / imgEl.naturalHeight
+                    const pdfW = 100
+                    const pdfH = pdfW / ratio
+                    const doc = new jsPDF({ orientation: pdfW > pdfH ? 'landscape' : 'portrait', unit: 'mm', format: [pdfW + 20, pdfH + 20] })
+                    doc.addImage(dataUrl, 'PNG', 10, 10, pdfW, pdfH)
+                    doc.save(`barcode-${currentType.id}-${Date.now()}.pdf`)
+                  }}
+                    className="w-full py-3 rounded-xl font-bold text-sm border-2 border-purple-200 text-purple-700 hover:bg-purple-50 transition-colors flex items-center justify-center gap-2">
+                    📄 Export PDF
+                  </button>
+
                   <button onClick={saveToAccount} disabled={saving || saved}
                     className="w-full py-3 rounded-xl font-bold text-sm border-2 border-[#FF6A00] text-[#FF6A00] hover:bg-orange-50 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
                     {saved ? tb('btn_saved') : saving ? tb('btn_saving') : tb('btn_save')}

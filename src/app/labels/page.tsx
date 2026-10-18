@@ -3,6 +3,7 @@ import { useState, useRef, useCallback } from 'react'
 import Link from 'next/link'
 import { usePlan, PlanHeaderBanner, LockBadge, tierAtLeast, type PlanTier } from '@/components/ui/PlanGate'
 import { useTranslations } from 'next-intl'
+import { createClient } from '@/lib/supabase/client'
 
 // Categories
 const CATEGORIES = [
@@ -107,16 +108,18 @@ function buildBarcodeUrl(type: string, text: string, height = 12, scale = 2) {
 }
 
 // SVG preview
-function LabelSVGPreview({ tpl, data, barcodeUrl, logoDataUrl }: {
+function LabelSVGPreview({ tpl, data, barcodeUrl, logoDataUrl, themeOverride }: {
   tpl: typeof TEMPLATES[0]
   data: Record<string, string>
   barcodeUrl: string
   logoDataUrl: string
+  themeOverride?: { accent?: string; bg?: string }
 }) {
   const SC = 3.3 // px per mm
   const W = tpl.w * SC
   const H = tpl.h * SC
-  const theme = STYLE_THEMES[tpl.style] || STYLE_THEMES.retail
+  const baseTheme = STYLE_THEMES[tpl.style] || STYLE_THEMES.retail
+  const theme = { ...baseTheme, ...Object.fromEntries(Object.entries(themeOverride || {}).filter(([,v]) => v)) }
   const pad = 5
 
   return (
@@ -179,6 +182,11 @@ export default function LabelsPage() {
   const [barcodeType, setBarcodeType] = useState('code128')
   const [copies, setCopies] = useState(1)
   const [generating, setGenerating] = useState(false)
+  const [exportingPng, setExportingPng] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [savedOk, setSavedOk] = useState(false)
+  const [accentColor, setAccentColor] = useState('')
+  const [bgColor, setBgColor] = useState('')
   const [logoDataUrl, setLogoDataUrl] = useState('')
   const logoRef = useRef<HTMLInputElement>(null)
 
@@ -192,7 +200,8 @@ export default function LabelsPage() {
   })
 
   const tpl = TEMPLATES.find(t => t.id === templateId) || TEMPLATES[0]
-  const theme = STYLE_THEMES[tpl.style] || STYLE_THEMES.retail
+  const baseTheme = STYLE_THEMES[tpl.style] || STYLE_THEMES.retail
+  const effectiveTheme = { ...baseTheme, accent: accentColor || baseTheme.accent, bg: bgColor || baseTheme.bg }
   const barcodeH = tpl.h > 40 ? 14 : tpl.h > 30 ? 10 : 8
   const barcodeUrl = buildBarcodeUrl(barcodeType, data.barcode, barcodeH, 2)
 
@@ -256,7 +265,7 @@ export default function LabelsPage() {
         const x = mX + col * (tpl.w + gX)
         const y = mY + row * (tpl.h + gY)
 
-        drawLabel(doc, { x, y, tpl, data, theme, logoDataUrl, barPng, barcodeH })
+        drawLabel(doc, { x, y, tpl, data, theme: effectiveTheme, logoDataUrl, barPng, barcodeH })
       }
 
       // Crop marks for individual labels (non-sheet)
@@ -291,6 +300,124 @@ export default function LabelsPage() {
       doc.save(`etiquettes-${templateId}-${Date.now()}.pdf`)
     } finally {
       setGenerating(false)
+    }
+  }
+
+  async function exportPNG() {
+    if (tpl.minPlan !== 'free') {
+      const res = await fetch('/api/label/check-access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ templateMinPlan: tpl.minPlan }),
+      })
+      if (!res.ok) {
+        const d = await res.json().catch(() => ({}))
+        alert(d.error || 'Credits insuffisants ou abonnement requis')
+        return
+      }
+    }
+    setExportingPng(true)
+    try {
+      const SC = 4
+      const canvas = document.createElement('canvas')
+      canvas.width = tpl.w * SC
+      canvas.height = tpl.h * SC
+      const ctx = canvas.getContext('2d')!
+      const th = effectiveTheme
+      const pad = 6 * SC
+
+      ctx.fillStyle = th.bg
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      if (tpl.style !== 'shelf') {
+        ctx.fillStyle = th.accent
+        ctx.fillRect(0, 0, canvas.width, canvas.height * 0.06)
+      }
+
+      ctx.strokeStyle = th.accent + '40'
+      ctx.lineWidth = 1.5
+      ctx.strokeRect(0.75, 0.75, canvas.width - 1.5, canvas.height - 1.5)
+
+      const topOffset = tpl.style !== 'shelf' ? canvas.height * 0.06 : 0
+      let curY = topOffset + pad + 10
+
+      if (logoDataUrl) {
+        const img = new Image()
+        await new Promise<void>(r => { img.onload = () => r(); img.src = logoDataUrl })
+        const ls = canvas.height * 0.22
+        ctx.drawImage(img, pad, topOffset + pad, ls, ls)
+      }
+
+      const logoSize = logoDataUrl ? canvas.height * 0.22 : 0
+      const textX = pad + (logoSize ? logoSize + 5 : 0)
+
+      if (data.name) {
+        ctx.fillStyle = th.text
+        ctx.font = `${th.nameBold ? '800' : '600'} ${(tpl.h > 45 ? 10 : tpl.h > 35 ? 8 : 7) * SC / 3.3}px system-ui,sans-serif`
+        ctx.fillText(data.name.slice(0, 32), textX, curY)
+        curY += tpl.h > 40 ? 14 : 11
+      }
+
+      if (data.subtitle) {
+        ctx.fillStyle = th.accent
+        ctx.font = `600 ${7 * SC / 3.3}px system-ui,sans-serif`
+        ctx.fillText(data.subtitle.slice(0, 40), textX, curY)
+        curY += 10
+      }
+
+      if (data.sku) {
+        ctx.fillStyle = '#9ca3af'
+        ctx.font = `normal ${6 * SC / 3.3}px system-ui,sans-serif`
+        ctx.fillText(`#${data.sku}`, textX, curY)
+      }
+
+      if (data.price) {
+        ctx.fillStyle = th.accent
+        ctx.font = `900 ${(tpl.h > 45 ? 16 : tpl.h > 30 ? 13 : 10) * SC / 3.3}px system-ui,sans-serif`
+        ctx.fillText(data.price, pad, canvas.height - pad - 4)
+      }
+
+      if (data.barcode && barcodeUrl) {
+        try {
+          const img = new Image()
+          await new Promise<void>(r => { img.onload = () => r(); img.onerror = () => r(); img.src = barcodeUrl })
+          const bcH = barcodeH * SC * 0.9
+          const bcW = bcH * 2.2
+          ctx.imageSmoothingEnabled = false
+          ctx.drawImage(img, canvas.width - bcW - pad, canvas.height - bcH - pad, bcW, bcH)
+        } catch { /* skip */ }
+      }
+
+      await new Promise<void>(r => canvas.toBlob(blob => {
+        if (!blob) { r(); return }
+        const url = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url; a.download = `etiquette-${templateId}-${Date.now()}.png`
+        a.click(); URL.revokeObjectURL(url); r()
+      }, 'image/png'))
+    } finally {
+      setExportingPng(false)
+    }
+  }
+
+  async function saveLabel() {
+    setSaving(true)
+    try {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) { alert('Connectez-vous pour sauvegarder'); return }
+      await supabase.from('qr_codes').insert({
+        user_id: user.id,
+        type: 'label',
+        mode: 'static',
+        content: JSON.stringify({ templateId, data, barcodeType, copies, accentColor, bgColor }),
+        name: (data.name || 'Etiquette').slice(0, 100),
+        status: 'active',
+      })
+      setSavedOk(true)
+      setTimeout(() => setSavedOk(false), 2500)
+    } finally {
+      setSaving(false)
     }
   }
 
@@ -454,6 +581,33 @@ export default function LabelsPage() {
                 </div>
               )}
 
+              {/* Color overrides */}
+              <div className="border-t border-gray-100 pt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-xs font-semibold text-gray-500">Couleurs personnalisées</p>
+                  {(accentColor || bgColor) && (
+                    <button onClick={() => { setAccentColor(''); setBgColor('') }}
+                      className="text-[10px] text-gray-400 hover:text-red-500 transition-colors">
+                      ↺ Reset
+                    </button>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="flex items-center gap-2">
+                    <input type="color" value={accentColor || baseTheme.accent}
+                      onChange={e => setAccentColor(e.target.value)}
+                      className="w-8 h-8 rounded cursor-pointer p-0 border border-gray-200" />
+                    <span className="text-[10px] text-gray-400">Accent</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input type="color" value={bgColor || baseTheme.bg}
+                      onChange={e => setBgColor(e.target.value)}
+                      className="w-8 h-8 rounded cursor-pointer p-0 border border-gray-200" />
+                    <span className="text-[10px] text-gray-400">Fond</span>
+                  </div>
+                </div>
+              </div>
+
               {!tpl.isSheet && (
                 <div>
                   <label className="block text-xs text-gray-500 mb-1">
@@ -474,7 +628,7 @@ export default function LabelsPage() {
               <p className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">{tl('sec_preview')}</p>
               <div className="flex justify-center">
                 <div className="relative inline-block">
-                  <LabelSVGPreview tpl={tpl} data={data} barcodeUrl={barcodeUrl} logoDataUrl={logoDataUrl} />
+                  <LabelSVGPreview tpl={tpl} data={data} barcodeUrl={barcodeUrl} logoDataUrl={logoDataUrl} themeOverride={{ accent: accentColor || undefined, bg: bgColor || undefined }} />
                   {tpl.minPlan !== 'free' && !tierAtLeast(tier, tpl.minPlan) && (
                     <div className="absolute inset-0 flex items-center justify-center rounded-xl pointer-events-none"
                       style={{ background: 'rgba(255,255,255,0.55)' }}>
@@ -495,6 +649,22 @@ export default function LabelsPage() {
               className="w-full py-3.5 rounded-xl font-bold text-white text-sm bg-gradient-to-r from-[#FF6A00] to-[#ee0979] hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-md">
               {generating ? tl('btn_generating') : tl('btn_pdf')}
             </button>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button onClick={exportPNG} disabled={exportingPng}
+                className="py-2.5 rounded-xl font-bold text-xs border border-gray-200 text-gray-600 hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50">
+                {exportingPng ? '...' : '🖼️ Export PNG'}
+              </button>
+              <button onClick={saveLabel} disabled={saving}
+                className={`py-2.5 rounded-xl font-bold text-xs border transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50 ${savedOk ? 'border-green-400 text-green-600 bg-green-50' : 'border-gray-200 text-gray-600 hover:border-[#041B4D] hover:text-[#041B4D]'}`}>
+                {saving ? '...' : savedOk ? '✓ Sauvegarde' : '💾 Sauvegarder'}
+              </button>
+            </div>
+
+            <a href="/labels/batch"
+              className="w-full py-2.5 rounded-xl font-bold text-xs border border-gray-200 text-gray-600 hover:border-[#041B4D] hover:text-[#041B4D] transition-colors flex items-center justify-center gap-2 block text-center">
+              📂 Import CSV — plusieurs etiquettes
+            </a>
 
             <a href="/barcode"
               className="w-full py-2.5 rounded-xl font-bold text-xs border border-gray-200 text-gray-600 hover:border-[#FF6A00] hover:text-[#FF6A00] transition-colors flex items-center justify-center gap-2 block text-center">
