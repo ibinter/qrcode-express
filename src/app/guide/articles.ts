@@ -791,6 +791,109 @@ export const ARTICLES: Article[] = [
       },
     ],
   },
+
+  // QR DYNAMIQUES AVANCÉS — Social, Sondage, Fidélité
+  {
+    slug: 'page-sociale-multi-reseau',
+    title: 'Créer une page sociale multi-réseau',
+    description: 'Regroupez tous vos réseaux sociaux sur une seule page scannable avec votre QR code.',
+    category: 'dynamique',
+    icon: '📱',
+    readTime: '3 min',
+    content: [
+      {
+        type: 'intro',
+        text: 'Le type QR "Social" génère une page biolink personnalisée : une URL unique qui regroupe Instagram, Facebook, TikTok, WhatsApp et plus. Un seul QR code donne accès à tous vos liens.',
+      },
+      {
+        type: 'steps',
+        title: 'Configurer votre page sociale',
+        items: [
+          'Dans le générateur, choisissez le type "Social / Réseaux".',
+          'Uploadez votre photo de profil et votre logo.',
+          'Renseignez votre nom et bio (160 caractères max).',
+          'Ajoutez les liens de vos réseaux : Instagram, Facebook, TikTok, YouTube, LinkedIn…',
+          'Choisissez une couleur accent et un thème visuel (Clair, Sombre, Verre, Dégradé).',
+          'Créez votre QR dynamique — il pointe vers /social/[id].',
+        ],
+      },
+      {
+        type: 'tip',
+        text: 'Pour WhatsApp, entrez uniquement le numéro international (ex: +22507...). Le lien wa.me est généré automatiquement.',
+      },
+      {
+        type: 'faq',
+        pairs: [
+          { q: 'Puis-je modifier les liens après impression ?', a: 'Oui ! Comme tous les QR dynamiques, il vous suffit de modifier le contenu dans votre tableau de bord. Le QR imprimé n\'est pas à refaire.' },
+          { q: 'Combien de réseaux puis-je afficher ?', a: '11 réseaux disponibles : Instagram, Facebook, TikTok, YouTube, X/Twitter, LinkedIn, WhatsApp, Telegram, Snapchat, Pinterest et votre site web.' },
+        ],
+      },
+    ],
+  },
+  {
+    slug: 'creer-sondage-qr',
+    title: 'Créer un sondage avec un QR code',
+    description: 'Collectez les avis de vos clients ou participants via un formulaire scannable.',
+    category: 'dynamique',
+    icon: '📊',
+    readTime: '3 min',
+    content: [
+      {
+        type: 'intro',
+        text: 'Le QR de type "Sondage" génère un formulaire interactif accessible par scan. Idéal pour les restaurants, hôtels, événements ou enquêtes de satisfaction.',
+      },
+      {
+        type: 'steps',
+        title: 'Créer votre sondage',
+        items: [
+          'Choisissez le type "Sondage / Avis" dans le générateur.',
+          'Définissez le titre, la description et le logo de votre sondage.',
+          'Ajoutez vos questions : choix unique, choix multiple, réponse libre, notation 1-5, Oui/Non.',
+          'Activez le mode anonyme si vous ne souhaitez pas identifier les répondants.',
+          'Personnalisez le message de fin (remerciement après envoi).',
+          'Publiez — vos réponses apparaissent dans votre tableau de bord.',
+        ],
+      },
+      {
+        type: 'tip',
+        text: 'Activez "Afficher la progression" pour montrer aux répondants où ils en sont dans le formulaire.',
+      },
+    ],
+  },
+  {
+    slug: 'carte-fidelite-qr',
+    title: 'Carte de fidélité numérique',
+    description: 'Remplacez votre carte tampon par un QR code — vos clients collectent des points au scan.',
+    category: 'dynamique',
+    icon: '🪙',
+    readTime: '4 min',
+    content: [
+      {
+        type: 'intro',
+        text: 'Le type "Fidélité" crée une carte de fidélité numérique : vos clients scannent le QR à chaque visite pour accumuler des tampons et débloquer une récompense.',
+      },
+      {
+        type: 'steps',
+        title: 'Configurer votre carte',
+        items: [
+          'Choisissez "Carte Fidélité" dans le générateur.',
+          'Renseignez le nom de votre enseigne, le nombre de tampons nécessaires pour la récompense.',
+          'Décrivez la récompense (ex : "1 café offert", "10% de réduction").',
+          'Choisissez votre icône de tampon (émoji) et votre couleur marque.',
+          'Optionnel : ajoutez une date d\'expiration et une image de couverture.',
+          'Imprimez votre QR code ou affichez-le sur votre caisse.',
+        ],
+      },
+      {
+        type: 'tip',
+        text: 'Affichez le QR sur votre comptoir — votre client scanne pour valider sa visite. Le compteur est mis à jour en temps réel.',
+      },
+      {
+        type: 'warning',
+        text: 'La carte de fidélité QR est disponible à partir du plan Pro. Un QR par enseigne suffit pour tous vos clients.',
+      },
+    ],
+  },
 ]
 
 export function getArticlesByCategory(cat: string) {
