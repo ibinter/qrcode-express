@@ -167,7 +167,15 @@
       "bulk_title": "Import en masse (CSV)",
       "bulk_desc": "Importez jusqu'à 500 QR codes via CSV en quelques secondes. Export ZIP automatique de tous les PNG haute résolution. Idéal pour les grandes campagnes.",
       "print_title": "Export print-ready",
-      "print_desc": "PNG jusqu'à 2048px (4K), PDF A4 avec dimensions d'impression, SVG vectoriel illimité pour CMJN. Vos QR prêts pour les imprimeurs professionnels."
+      "print_desc": "PNG jusqu'à 2048px (4K), PDF A4 avec dimensions d'impression, SVG vectoriel illimité pour CMJN. Vos QR prêts pour les imprimeurs professionnels.",
+      "social_title": "Page sociale multi-réseau",
+      "social_desc": "Regroupez Instagram, TikTok, WhatsApp, LinkedIn et 7 autres réseaux sur une page biolink unique. Thème personnalisable, photo de profil, bio.",
+      "loyalty_title": "Carte de fidélité numérique",
+      "loyalty_desc": "Remplacez les cartes tampon papier par un QR. Vos clients collectent des points au scan et débloquent leurs récompenses automatiquement.",
+      "appointment_title": "Prise de rendez-vous",
+      "appointment_desc": "Page de réservation avec services, horaires, adresse et bouton de réservation direct. Vos clients bookent en scannant, sans appel.",
+      "themes_title": "4 thèmes visuels landing",
+      "themes_desc": "Choisissez parmi Clair, Sombre, Verre (glassmorphism) ou Dégradé pour chaque page publique. Identité visuelle cohérente avec votre marque."
     }
   },
   "howItWorks": {
@@ -995,7 +1003,7 @@
     "title": "QR Codes · Codes-barres · Étiquettes",
     "subtitle": "La seule plateforme africaine qui couvre tout votre besoin de codes d'identification et d'étiquetage.",
     "qr_title": "QR Codes",
-    "qr_desc": "URL, vCard, WhatsApp, Menu restaurant, Paiement Mobile Money, Événement, PDF, WiFi… 20+ types.",
+    "qr_desc": "URL, vCard, WhatsApp, Menu restaurant, Paiement Mobile Money, Page sociale multi-réseau, Carte fidélité, Rendez-vous, Sondage, Offre emploi, Carte cadeau… 33 types.",
     "qr_cta": "Créer un QR →",
     "bc_title": "Codes-barres",
     "bc_desc": "EAN-13, Code 128, Data Matrix, PDF417, ISBN, GS1-128… 26 formats. Téléchargez PNG ou SVG vectoriel. Génération en masse via CSV.",

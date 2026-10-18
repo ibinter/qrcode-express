@@ -167,7 +167,15 @@
       "bulk_title": "Bulk import (CSV)",
       "bulk_desc": "Import up to 500 QR codes via CSV in seconds. Automatic ZIP export of all high-resolution PNGs. Perfect for large campaigns.",
       "print_title": "Print-ready export",
-      "print_desc": "PNG up to 2048px (4K), A4 PDF with print dimensions, unlimited vector SVG for CMYK. Your QRs ready for professional printers."
+      "print_desc": "PNG up to 2048px (4K), A4 PDF with print dimensions, unlimited vector SVG for CMYK. Your QRs ready for professional printers.",
+      "social_title": "Multi-network social page",
+      "social_desc": "Group Instagram, TikTok, WhatsApp, LinkedIn and 7 other networks on a single biolink page. Customizable theme, profile photo, bio.",
+      "loyalty_title": "Digital loyalty card",
+      "loyalty_desc": "Replace paper stamp cards with a QR. Customers collect points per scan and unlock rewards automatically.",
+      "appointment_title": "Online booking page",
+      "appointment_desc": "Booking page with services, hours, address and direct booking button. Clients book by scanning — no phone call needed.",
+      "themes_title": "4 visual landing themes",
+      "themes_desc": "Choose from Light, Dark, Glass (glassmorphism) or Gradient for each public page. Consistent visual identity with your brand."
     }
   },
   "howItWorks": {
@@ -995,7 +1003,7 @@
     "title": "QR Codes · Barcodes · Labels",
     "subtitle": "The only African platform covering all your identification and labeling needs.",
     "qr_title": "QR Codes",
-    "qr_desc": "URL, vCard, WhatsApp, Restaurant menu, Mobile Money payment, Event, PDF, WiFi… 20+ types.",
+    "qr_desc": "URL, vCard, WhatsApp, Restaurant menu, Mobile Money payment, Multi-network social page, Loyalty card, Appointments, Survey, Job offer, Gift card… 33 types.",
     "qr_cta": "Create a QR →",
     "bc_title": "Barcodes",
     "bc_desc": "EAN-13, Code 128, Data Matrix, PDF417, ISBN, GS1-128… 26 formats. Download PNG or vector SVG. Bulk generation via CSV.",

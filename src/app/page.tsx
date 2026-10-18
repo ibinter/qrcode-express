@@ -102,7 +102,7 @@ export default async function HomePage() {
               <h3 className="text-white font-extrabold text-xl mb-2">{th('qr_title')}</h3>
               <p className="text-white/50 text-sm leading-relaxed mb-4">{th('qr_desc')}</p>
               <div className="flex flex-wrap gap-2">
-                {['Dynamic', 'Analytics', 'Logo', 'SVG', '20+ types'].map(tag => (
+                {['33 types', 'Dynamic', 'Analytics', 'Social', 'Fidélité'].map(tag => (
                   <span key={tag} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FF6A00]/20 text-[#FF6A00]">{tag}</span>
                 ))}
               </div>

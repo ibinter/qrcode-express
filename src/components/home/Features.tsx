@@ -59,6 +59,10 @@ const FEATURE_KEYS = [
   { icon: '🖨️', color: '#0ea5e9', bg: '#F0F9FF', titleKey: 'print_title', descKey: 'print_desc' },
   { icon: '🌍', color: '#0891b2', bg: '#ECFEFF', titleKey: 'multilingual_title', descKey: 'multilingual_desc' },
   { icon: '🔒', color: '#64748b', bg: '#F8FAFC', titleKey: 'security_title', descKey: 'security_desc' },
+  { icon: '📱', color: '#ec4899', bg: '#FDF2F8', titleKey: 'social_title', descKey: 'social_desc' },
+  { icon: '🪙', color: '#f59e0b', bg: '#FFFBEB', titleKey: 'loyalty_title', descKey: 'loyalty_desc' },
+  { icon: '📆', color: '#6366f1', bg: '#EEF2FF', titleKey: 'appointment_title', descKey: 'appointment_desc' },
+  { icon: '🎨', color: '#8b5cf6', bg: '#F5F3FF', titleKey: 'themes_title', descKey: 'themes_desc' },
 ]
 
 export default function Features() {

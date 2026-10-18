@@ -167,7 +167,15 @@
       "bulk_title": "Importação em massa (CSV)",
       "bulk_desc": "Importe até 500 QR codes via CSV em segundos. Export ZIP automático de todos os PNGs em alta resolução. Ideal para grandes campanhas.",
       "print_title": "Export pronto a imprimir",
-      "print_desc": "PNG até 2048px (4K), PDF A4 com dimensões de impressão, SVG vetorial ilimitado para CMYK. Os seus QRs prontos para impressoras profissionais."
+      "print_desc": "PNG até 2048px (4K), PDF A4 com dimensões de impressão, SVG vetorial ilimitado para CMYK. Os seus QRs prontos para impressoras profissionais.",
+      "social_title": "Página social multi-rede",
+      "social_desc": "Reúna Instagram, TikTok, WhatsApp, LinkedIn e outras 7 redes numa única página biolink. Tema personalizável, foto de perfil, bio.",
+      "loyalty_title": "Cartão de fidelidade digital",
+      "loyalty_desc": "Substitua os cartões de carimbo por QR. Os clientes acumulam pontos a cada scan e desbloqueiam recompensas automaticamente.",
+      "appointment_title": "Página de marcação de consultas",
+      "appointment_desc": "Página com serviços, horários, morada e botão de reserva. Os clientes marcam com scan, sem ligação telefónica.",
+      "themes_title": "4 temas visuais",
+      "themes_desc": "Escolha entre Claro, Escuro, Vidro (glassmorphism) ou Gradiente para cada página pública."
     }
   },
   "howItWorks": {
@@ -995,7 +1003,7 @@
     "title": "QR Codes · Códigos de barras · Etiquetas",
     "subtitle": "A única plataforma africana que cobre todas as suas necessidades de códigos e etiquetagem.",
     "qr_title": "QR Codes",
-    "qr_desc": "URL, vCard, WhatsApp, Menu restaurante, Pagamento Mobile Money, Evento, PDF, WiFi… 20+ tipos.",
+    "qr_desc": "URL, vCard, WhatsApp, Menu restaurante, Pagamento Mobile Money, Página social multi-rede, Cartão fidelidade, Marcações, Sondagens, Oferta de emprego, Cartão presente… 33 tipos.",
     "qr_cta": "Criar QR →",
     "bc_title": "Códigos de barras",
     "bc_desc": "EAN-13, Code 128, Data Matrix, PDF417, ISBN, GS1-128… 26 formatos. Baixe PNG ou SVG vetorial. Geração em massa via CSV.",
