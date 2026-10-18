@@ -74,6 +74,16 @@ export function buildQRContent(type: QRType, data: Record<string, string>): stri
       const origin = typeof window !== 'undefined' ? window.location.origin : 'https://qrcode-express.com'
       return data.audio_json ? `${origin}/audio/__ID__` : ''
     }
+    case 'crypto': {
+      const coin = (data.coin || 'bitcoin').toLowerCase()
+      const address = data.address || ''
+      if (!address) return ''
+      const params: string[] = []
+      if (data.amount) params.push(`amount=${data.amount}`)
+      if (data.label) params.push(`label=${encodeURIComponent(data.label)}`)
+      if (data.message) params.push(`message=${encodeURIComponent(data.message)}`)
+      return `${coin}:${address}${params.length ? '?' + params.join('&') : ''}`
+    }
     default:
       return data.url || data.text || ''
   }

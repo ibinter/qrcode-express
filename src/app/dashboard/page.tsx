@@ -23,6 +23,7 @@ const TYPE_ICONS: Record<string, string> = {
   email: '✉️', phone: '📞', sms: '💬', pdf: '📄', app: '📲', event: '📅',
   menu: '🍽️', coupon: '🎫', biolink: '🔗', social: '📱', location: '📍',
   catalog: '🛍️', review: '⭐', lead: '📋', payment: '💳',
+  business: '🏪', gallery: '🖼️', video: '▶️', audio: '🎵', crypto: '₿',
 }
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<Record<string, string>> }) {

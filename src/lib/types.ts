@@ -24,6 +24,7 @@ export type QRType =
   | 'gallery'
   | 'video'
   | 'audio'
+  | 'crypto'
 
 export type QRMode = 'static' | 'dynamic'
 

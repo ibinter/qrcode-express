@@ -486,7 +486,8 @@
     "business": "Business Page",
     "gallery": "Photo Gallery",
     "video": "Video",
-    "audio": "Audio"
+    "audio": "Audio",
+    "crypto": "Cryptocurrency"
   },
   "langSelector": {
     "label": "Language"

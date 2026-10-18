@@ -653,6 +653,34 @@ export default function QRContentForm({ type, data, onChange }: Props) {
       return <LeadForm data={data} onChange={onChange} />
     case 'payment':
       return <PaymentForm data={data} onChange={onChange} />
+    case 'crypto':
+      return (
+        <>
+          <div className="mb-4">
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Cryptomonnaie</label>
+            <select
+              value={data.coin || 'bitcoin'}
+              onChange={(e) => onChange({ ...data, coin: e.target.value })}
+              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#FF6A00]/40 focus:border-[#FF6A00]"
+            >
+              <option value="bitcoin">Bitcoin (BTC)</option>
+              <option value="ethereum">Ethereum (ETH)</option>
+              <option value="litecoin">Litecoin (LTC)</option>
+              <option value="bitcoincash">Bitcoin Cash (BCH)</option>
+              <option value="dogecoin">Dogecoin (DOGE)</option>
+              <option value="dash">Dash (DASH)</option>
+              <option value="monero">Monero (XMR)</option>
+              <option value="solana">Solana (SOL)</option>
+              <option value="bnb">BNB / BSC (BNB)</option>
+              <option value="tron">Tron (TRX)</option>
+            </select>
+          </div>
+          <Field label="Adresse du portefeuille *" name="address" placeholder="bc1q... / 0x... / T..." data={data} onChange={onChange} required />
+          <Field label="Montant (optionnel)" name="amount" placeholder="0.001" data={data} onChange={onChange} />
+          <Field label="Libellé (optionnel)" name="label" placeholder="Paiement à IBIG SARL" data={data} onChange={onChange} />
+          <Field label="Message (optionnel)" name="message" placeholder="Merci pour votre paiement" data={data} onChange={onChange} />
+        </>
+      )
     case 'vcard_plus': {
       const vp = data.vcard_json ? JSON.parse(data.vcard_json) : {}
       function updateVP(patch: object) {

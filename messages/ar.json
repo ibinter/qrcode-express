@@ -486,7 +486,8 @@
     "business": "صفحة الأعمال",
     "gallery": "معرض الصور",
     "video": "فيديو",
-    "audio": "صوت"
+    "audio": "صوت",
+    "crypto": "عملة مشفرة"
   },
   "langSelector": {
     "label": "اللغة"

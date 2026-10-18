@@ -28,6 +28,7 @@ const QR_TYPE_ICONS: { type: QRType; icon: string }[] = [
   { type: 'gallery', icon: '🖼️' },
   { type: 'video', icon: '▶️' },
   { type: 'audio', icon: '🎵' },
+  { type: 'crypto', icon: '₿' },
 ]
 
 interface Props {
