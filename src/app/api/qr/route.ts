@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createHash } from 'crypto'
-import { requirePlan, DYNAMIC_QR_LIMITS, getMinPlanForType } from '@/lib/plan-guard'
+import { requirePlan, DYNAMIC_QR_LIMITS, getMinPlanForType, QR_TYPE_CREDIT_COST } from '@/lib/plan-guard'
 
 function hashPassword(pw: string): string {
   return createHash('sha256').update(pw).digest('hex')
@@ -40,10 +40,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Cette URL semble non sécurisée. Seules les URLs http:// et https:// sont autorisées.' }, { status: 400 })
   }
 
-  // Type-based plan guard: check if this QR type requires a minimum plan
+  // Type-based plan guard: check if this QR type requires a minimum plan (credit fallback enabled)
   const minPlanForType = getMinPlanForType(type)
   if (minPlanForType !== 'free') {
-    const { ok, error: typeError } = await requirePlan(minPlanForType)
+    const creditCost = QR_TYPE_CREDIT_COST[type] ?? 30
+    const { ok, error: typeError } = await requirePlan(minPlanForType, creditCost)
     if (!ok) return typeError
   }
 

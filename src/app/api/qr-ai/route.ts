@@ -20,7 +20,7 @@ const STYLE_PRESETS: Record<string, string> = {
 
 // 5 crédits si plan < Pro
 export async function POST(request: NextRequest) {
-  const { ok, user, error } = await requirePlan('pro', 20)
+  const { ok, user, error } = await requirePlan('pro', 30)
   if (!ok) return error
 
   if (!REPLICATE_TOKEN) {

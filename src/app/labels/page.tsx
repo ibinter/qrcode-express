@@ -211,6 +211,20 @@ export default function LabelsPage() {
   async function generatePDF() {
     setGenerating(true)
     try {
+      // Server-side credit check for premium templates
+      if (tpl.minPlan !== 'free') {
+        const res = await fetch('/api/label/check-access', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ templateMinPlan: tpl.minPlan }),
+        })
+        if (!res.ok) {
+          const data = await res.json().catch(() => ({}))
+          alert(data.error || 'Crédits insuffisants ou abonnement requis')
+          return
+        }
+      }
+
       const { jsPDF } = await import('jspdf')
 
       const isSheet = !!tpl.isSheet

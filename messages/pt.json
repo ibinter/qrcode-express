@@ -900,6 +900,8 @@
     "err_check": "Verifique o formato dos dados.",
     "empty_msg": "Digite um conteúdo para gerar",
     "login_alert": "Por favor, entre para salvar.",
+    "credits_required": "Créditos insuficientes. Recarregue sua carteira ou assine.",
+    "download_error": "Erro no download.",
     "png_screen": "tela/web",
     "svg_print": "impressão"
   },

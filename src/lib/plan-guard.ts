@@ -32,6 +32,44 @@ export const DYNAMIC_QR_LIMITS: Partial<Record<Plan, number>> = {
 }
 
 /**
+ * Credit cost per QR type creation (charged when plan is insufficient).
+ * Minimum 30 credits to ensure ≥ 350 FCFA at the best pack rate (12 FCFA/credit).
+ */
+export const QR_TYPE_CREDIT_COST: Partial<Record<string, number>> = {
+  giftcard: 30, job: 30,
+  ticket: 35, appointment: 35, download: 35,
+  loyalty: 50, survey: 50,
+  menu: 35, coupon: 35, biolink: 35, vcard_plus: 35,
+  catalog: 35, review: 35, event: 35, lead: 35,
+  payment: 50, gallery: 35, video: 35, audio: 35,
+}
+
+/**
+ * Barcode type → minimum plan required for download (server-side internal names).
+ * UI 'starter' = internal 'essential', UI 'essential' = internal 'pro'.
+ */
+export const BARCODE_MIN_PLAN: Partial<Record<string, Plan>> = {
+  ean8: 'essential', upca: 'essential', upce: 'essential',
+  code39: 'essential', code39ext: 'essential', code93: 'essential',
+  codabar: 'essential', interleaved2of5: 'essential',
+  itf14: 'pro', code93ext: 'pro', code11: 'pro', industrial2of5: 'pro',
+  code32: 'pro', ean128: 'pro', sscc18: 'pro', isbn: 'pro',
+  msimodified: 'pro', datamatrix: 'pro', gs1datamatrix: 'pro',
+  pdf417: 'pro', postnet: 'pro', planet: 'pro', qrcode: 'pro', azteccode: 'pro',
+}
+
+export const BARCODE_CREDIT_COST: Partial<Record<string, number>> = {
+  ean8: 30, upca: 30, upce: 30, code39: 30, code39ext: 30, code93: 30,
+  codabar: 30, interleaved2of5: 30,
+  itf14: 35, code93ext: 35, code11: 35, industrial2of5: 35, code32: 35,
+  ean128: 35, sscc18: 35, isbn: 35, msimodified: 35, datamatrix: 35,
+  gs1datamatrix: 35, pdf417: 35, postnet: 35, planet: 35, qrcode: 35, azteccode: 35,
+}
+
+/** Credit cost for a label PDF without watermark (≥350 FCFA at best pack rate). */
+export const LABEL_CREDIT_COST = 30
+
+/**
  * QR types unlocked per minimum plan level.
  * Types not listed here are available to all plans (static generation).
  */

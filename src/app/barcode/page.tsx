@@ -142,7 +142,18 @@ export default function BarcodePage() {
   }
 
   async function downloadFile(url: string, ext: string) {
-    const res = await fetch(url)
+    const downloadUrl = url + '&download=1'
+    const res = await fetch(downloadUrl)
+    if (!res.ok) {
+      if (res.status === 401) { alert(tb('login_alert')); return }
+      if (res.status === 403) {
+        const data = await res.json().catch(() => ({}))
+        alert(data.error || tb('credits_required'))
+        return
+      }
+      alert(tb('download_error'))
+      return
+    }
     const blob = await res.blob()
     const u = URL.createObjectURL(blob)
     const a = document.createElement('a')

@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
   }
 
   // 1 crédit par tranche de 10 QR si plan < Business
-  const creditCost = Math.ceil(rows.length / 10)
+  const creditCost = Math.max(Math.ceil(rows.length / 10), 30)
   const { ok, user, usedCredits, error } = await requirePlan('business', creditCost)
   if (!ok) return error
 

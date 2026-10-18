@@ -900,6 +900,8 @@
     "err_check": "Check the data format.",
     "empty_msg": "Enter content to generate",
     "login_alert": "Please sign in to save.",
+    "credits_required": "Insufficient credits. Recharge your wallet or subscribe.",
+    "download_error": "Download error.",
     "png_screen": "screen/web",
     "svg_print": "print"
   },

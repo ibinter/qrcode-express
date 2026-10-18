@@ -1,13 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server'
 import bwipjs from 'bwip-js'
+import { requirePlan, BARCODE_MIN_PLAN, BARCODE_CREDIT_COST } from '@/lib/plan-guard'
 
 export const instant = false
 
-// GET /api/barcode/image?type=ean13&text=5901234123457&color=000000&bg=ffffff&height=15&scale=3
+// GET /api/barcode/image?type=ean13&text=...&download=1 (download=1 triggers auth+credit check)
 export async function GET(req: NextRequest) {
   const { searchParams } = req.nextUrl
   const type = searchParams.get('type') || 'code128'
   const text = searchParams.get('text') || '0000000000000'
+
+  // Gate on download — preview is always free, download requires plan or credits
+  if (searchParams.get('download') === '1') {
+    const minPlan = BARCODE_MIN_PLAN[type]
+    if (minPlan) {
+      const creditCost = BARCODE_CREDIT_COST[type] ?? 30
+      const { ok, error: planError } = await requirePlan(minPlan, creditCost)
+      if (!ok) return planError
+    }
+  }
   const color = (searchParams.get('color') || '000000').replace('#', '')
   const bg = (searchParams.get('bg') || 'ffffff').replace('#', '')
   const height = Math.min(Number(searchParams.get('height') || 15), 60)

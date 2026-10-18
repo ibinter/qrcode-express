@@ -900,6 +900,8 @@
     "err_check": "Vérifiez le format des données.",
     "empty_msg": "Saisissez un contenu pour générer",
     "login_alert": "Connectez-vous pour sauvegarder.",
+    "credits_required": "Crédits insuffisants. Rechargez votre portefeuille ou abonnez-vous.",
+    "download_error": "Erreur lors du téléchargement.",
     "png_screen": "écran/web",
     "svg_print": "impression"
   },
