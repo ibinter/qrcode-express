@@ -26,6 +26,8 @@ export default function ImageUploadField({ label, value, onChange, placeholder, 
     const json = await res.json()
     if (json.url) {
       onChange(json.url)
+    } else if (res.status === 401) {
+      setError('Connectez-vous pour uploader une image, ou utilisez le mode URL.')
     } else {
       setError(json.error || 'Erreur upload')
     }
