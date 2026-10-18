@@ -106,6 +106,18 @@ export default function Header() {
 
   const close = () => setOpen(false)
 
+  const TICKER_ITEMS = [
+    '🌍 La plateforme QR professionnelle d\'Afrique',
+    '📱 33 types de QR codes · Dynamiques & Statiques',
+    '📊 26 formats de codes-barres professionnels',
+    '🏷️ 31 gabarits d\'étiquettes compatibles Avery',
+    '💳 Paiement Wave · Orange Money · MTN MoMo',
+    '🎫 Billetterie · Menu restaurant · Lien bio',
+    '⚡ QR modifiables après impression · Analytics inclus',
+    '🔒 Données sécurisées · Hébergé en Europe',
+    '🎁 Commencez gratuitement · Sans carte bancaire',
+  ]
+
   return (
     <header
       ref={menuRef}
@@ -113,6 +125,23 @@ export default function Header() {
         scrolled ? 'shadow-md border-gray-200' : 'shadow-sm border-gray-100'
       }`}
     >
+      {/* ── Barre de défilement ── */}
+      <div className="overflow-hidden py-1.5" style={{ background: 'linear-gradient(90deg, #041B4D 0%, #0d2d6e 50%, #041B4D 100%)' }}>
+        <div className="flex whitespace-nowrap" style={{ animation: 'ticker 40s linear infinite' }}>
+          {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
+            <span key={i} className="inline-flex items-center text-[11px] font-medium text-white/90 px-6">
+              {item}
+              <span className="ml-6 text-white/30">·</span>
+            </span>
+          ))}
+        </div>
+        <style>{`
+          @keyframes ticker {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+          }
+        `}</style>
+      </div>
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
         {/* Logo */}
         <div className="flex-shrink-0">
