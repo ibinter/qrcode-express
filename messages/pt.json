@@ -500,7 +500,10 @@
     "trust_hosted": "Alojado na Europa",
     "trust_uptime": "99,9% de disponibilidade",
     "trust_origin": "Feito na Costa do Marfim",
-    "copyright": "© {year} IBIG SOFT — INTERMARK BUSINESS INTERNATIONAL GROUP (IBIG SARL), Abidjan, Costa do Marfim"
+    "copyright": "© {year} IBIG SOFT — INTERMARK BUSINESS INTERNATIONAL GROUP (IBIG SARL), Abidjan, Costa do Marfim",
+    "link_social": "Página Social Multi-rede",
+    "link_loyalty": "Cartão de Fidelidade",
+    "link_appointment": "Marcação de Consultas"
   },
   "qrTypes": {
     "url": "URL / Site web",
@@ -627,7 +630,19 @@
     "vcard_desc": "Contacto de telefone descarregável",
     "text_name": "Texto livre",
     "text_desc": "Mensagem ou nota mostrada na leitura",
-    "badge": "📱 Todos os tipos de QR"
+    "badge": "📱 Todos os tipos de QR",
+    "loyalty_name": "Cartão Fidelidade",
+    "loyalty_desc": "Carimbos digitais — os clientes acumulam pontos a cada scan e desbloqueiam recompensas.",
+    "appointment_name": "Marcação",
+    "appointment_desc": "Página de reserva com serviços, horários e botão de marcação direta.",
+    "survey_name": "Sondagem / Avaliações",
+    "survey_desc": "Recolha respostas com escolha múltipla, avaliação 1-5, texto livre ou Sim/Não.",
+    "job_name": "Oferta de Emprego",
+    "job_desc": "Divulgue recrutamentos em papel — o candidato scana e candidata-se diretamente.",
+    "giftcard_name": "Cartão Presente",
+    "giftcard_desc": "Crie cartões presente digitais com valor, mensagem personalizada e link de utilização.",
+    "ticket_name": "Bilhete QR",
+    "ticket_desc": "Gere bilhetes QR únicos para os seus eventos. Validação instantânea à entrada."
   },
   "generator": {
     "title": "Crie o seu QR agora",

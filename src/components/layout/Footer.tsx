@@ -49,6 +49,9 @@ export default function Footer() {
         { label: t('link_payment'), href: '/#generateur' },
         { label: t('link_forms'), href: '/#generateur' },
         { label: t('link_biolinks'), href: '/#generateur' },
+        { label: t('link_social'), href: '/#generateur' },
+        { label: t('link_loyalty'), href: '/#generateur' },
+        { label: t('link_appointment'), href: '/#generateur' },
       ],
     },
     {

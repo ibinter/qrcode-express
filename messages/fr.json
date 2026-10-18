@@ -500,7 +500,10 @@
     "trust_hosted": "Hébergé en Europe",
     "trust_uptime": "99,9% de disponibilité",
     "trust_origin": "Made in Côte d'Ivoire",
-    "copyright": "© {year} IBIG SOFT — INTERMARK BUSINESS INTERNATIONAL GROUP (IBIG SARL), Abidjan, Côte d'Ivoire"
+    "copyright": "© {year} IBIG SOFT — INTERMARK BUSINESS INTERNATIONAL GROUP (IBIG SARL), Abidjan, Côte d'Ivoire",
+    "link_social": "Page Sociale Multi-réseau",
+    "link_loyalty": "Carte de Fidélité",
+    "link_appointment": "Prise de Rendez-vous"
   },
   "qrTypes": {
     "url": "URL / Site web",
@@ -627,7 +630,19 @@
     "vcard_desc": "Contact téléphone téléchargeable",
     "text_name": "Texte libre",
     "text_desc": "Message ou note affichée au scan",
-    "badge": "📱 Tous types de QR"
+    "badge": "📱 Tous types de QR",
+    "loyalty_name": "Carte de Fidélité",
+    "loyalty_desc": "Tampons numériques — vos clients accumulent des points à chaque scan et débloquent leurs récompenses.",
+    "appointment_name": "Rendez-vous",
+    "appointment_desc": "Page de réservation avec services, horaires et bouton de booking direct. Vos clients bookent en un scan.",
+    "survey_name": "Sondage / Avis",
+    "survey_desc": "Collectez des réponses avec des questions à choix multiple, notation 1-5, texte libre ou Oui/Non.",
+    "job_name": "Offre d'emploi",
+    "job_desc": "Diffusez vos recrutements sur papier. Le candidat scanne et postule directement depuis son téléphone.",
+    "giftcard_name": "Carte Cadeau",
+    "giftcard_desc": "Créez des cartes cadeaux numériques avec montant, message personnalisé et lien d'utilisation.",
+    "ticket_name": "Billet QR",
+    "ticket_desc": "Générez des billets QR uniques pour vos événements. Validation instantanée à l'entrée par scan."
   },
   "generator": {
     "title": "Créez votre QR maintenant",

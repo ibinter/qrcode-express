@@ -500,7 +500,10 @@
     "trust_hosted": "Hosted in Europe",
     "trust_uptime": "99.9% uptime",
     "trust_origin": "Made in Côte d'Ivoire",
-    "copyright": "© {year} IBIG SOFT — INTERMARK BUSINESS INTERNATIONAL GROUP (IBIG SARL), Abidjan, Côte d'Ivoire"
+    "copyright": "© {year} IBIG SOFT — INTERMARK BUSINESS INTERNATIONAL GROUP (IBIG SARL), Abidjan, Côte d'Ivoire",
+    "link_social": "Multi-network Social Page",
+    "link_loyalty": "Loyalty Card",
+    "link_appointment": "Appointment Booking"
   },
   "qrTypes": {
     "url": "URL / Website",
@@ -627,7 +630,19 @@
     "vcard_desc": "Downloadable phone contact",
     "text_name": "Free Text",
     "text_desc": "Message or note shown on scan",
-    "badge": "📱 All QR types"
+    "badge": "📱 All QR types",
+    "loyalty_name": "Loyalty Card",
+    "loyalty_desc": "Digital stamps — customers collect points at each scan and unlock their rewards.",
+    "appointment_name": "Appointment",
+    "appointment_desc": "Booking page with services, hours and direct booking button. Clients book by scanning.",
+    "survey_name": "Survey / Reviews",
+    "survey_desc": "Collect responses with multiple choice, 1-5 rating, free text or Yes/No questions.",
+    "job_name": "Job Offer",
+    "job_desc": "Advertise your job openings on paper. Candidates scan and apply directly from their phone.",
+    "giftcard_name": "Gift Card",
+    "giftcard_desc": "Create digital gift cards with amount, personalized message and redemption link.",
+    "ticket_name": "QR Ticket",
+    "ticket_desc": "Generate unique QR tickets for your events. Instant validation at entry by scan."
   },
   "generator": {
     "title": "Create your QR now",

@@ -500,7 +500,10 @@
     "trust_hosted": "مستضاف في أوروبا",
     "trust_uptime": "توفر 99.9%",
     "trust_origin": "صُنع في كوت ديفوار",
-    "copyright": "© {year} IBIG SOFT — INTERMARK BUSINESS INTERNATIONAL GROUP (IBIG SARL)، أبيدجان، كوت ديفوار"
+    "copyright": "© {year} IBIG SOFT — INTERMARK BUSINESS INTERNATIONAL GROUP (IBIG SARL)، أبيدجان، كوت ديفوار",
+    "link_social": "صفحة شبكات متعددة",
+    "link_loyalty": "بطاقة الولاء",
+    "link_appointment": "حجز المواعيد"
   },
   "qrTypes": {
     "url": "URL / موقع ويب",
@@ -627,7 +630,19 @@
     "vcard_desc": "جهة اتصال قابلة للتنزيل",
     "text_name": "نص حر",
     "text_desc": "رسالة أو ملاحظة تظهر عند المسح",
-    "badge": "📱 جميع أنواع QR"
+    "badge": "📱 جميع أنواع QR",
+    "loyalty_name": "بطاقة الولاء",
+    "loyalty_desc": "طوابع رقمية — يجمع العملاء النقاط عند كل مسح ويفتحون مكافآتهم.",
+    "appointment_name": "المواعيد",
+    "appointment_desc": "صفحة حجز مع الخدمات والمواعيد وزر الحجز المباشر.",
+    "survey_name": "استطلاع / آراء",
+    "survey_desc": "اجمع الإجابات باختيار متعدد أو تقييم أو نص حر أو نعم/لا.",
+    "job_name": "عرض عمل",
+    "job_desc": "أعلن عن وظائفك على الورق — يمسح المتقدم ويتقدم مباشرة.",
+    "giftcard_name": "بطاقة هدية",
+    "giftcard_desc": "أنشئ بطاقات هدايا رقمية بمبلغ ورسالة شخصية ورابط استخدام.",
+    "ticket_name": "تذكرة QR",
+    "ticket_desc": "أنشئ تذاكر QR فريدة لفعالياتك. تحقق فوري عند المدخل."
   },
   "generator": {
     "title": "أنشئ رمز QR الآن",
