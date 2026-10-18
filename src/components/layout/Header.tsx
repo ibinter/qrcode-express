@@ -111,7 +111,7 @@ export default function Header() {
     '📱 33 types de QR codes · Dynamiques & Statiques',
     '📊 26 formats de codes-barres professionnels',
     '🏷️ 31 gabarits d\'étiquettes compatibles Avery',
-    '💳 Paiement Wave · Orange Money · MTN MoMo',
+    '💳 Paiement Wave · Orange Money · MTN MoMo · Moov · M-Pesa · Airtel · Carte bancaire',
     '🎫 Billetterie · Menu restaurant · Lien bio',
     '⚡ QR modifiables après impression · Analytics inclus',
     '🔒 Données sécurisées · Hébergé en Europe',
