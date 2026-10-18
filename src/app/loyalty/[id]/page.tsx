@@ -50,10 +50,10 @@ export default function LoyaltyPage() {
     <main className="min-h-screen bg-gray-50 flex flex-col items-center py-10 px-4">
       <div className="w-full max-w-sm space-y-4">
         <div className="rounded-3xl text-white text-center p-8 shadow-lg" style={{ background: `linear-gradient(135deg, ${color}, ${color}99)` }}>
-          {card.logo && <img src={card.logo as string} alt="logo" className="w-16 h-16 rounded-2xl object-cover mx-auto mb-3" />}
+          {!!card.logo && <img src={card.logo as string} alt="logo" className="w-16 h-16 rounded-2xl object-cover mx-auto mb-3" />}
           <p className="text-4xl mb-2">🪙</p>
           <h1 className="text-2xl font-extrabold">{card.name as string}</h1>
-          {card.description && <p className="text-sm opacity-80 mt-1">{card.description as string}</p>}
+          {!!card.description && <p className="text-sm opacity-80 mt-1">{card.description as string}</p>}
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">

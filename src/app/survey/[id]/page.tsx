@@ -50,7 +50,7 @@ export default function SurveyPage() {
         <div className="rounded-3xl text-white text-center p-8 shadow-lg" style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}>
           <p className="text-4xl mb-2">📊</p>
           <h1 className="text-2xl font-extrabold">{survey.title as string}</h1>
-          {survey.description && <p className="text-sm opacity-80 mt-1">{survey.description as string}</p>}
+          {!!survey.description && <p className="text-sm opacity-80 mt-1">{survey.description as string}</p>}
         </div>
 
         {questions.map((q) => (
