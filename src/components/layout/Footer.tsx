@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import Logo from '@/components/ui/Logo'
 import { useTranslations } from 'next-intl'
+import VisitCounter from '@/components/ui/VisitCounter'
 
 const YEAR = 2026
 
@@ -180,6 +181,21 @@ export default function Footer() {
               <span>{t.label}</span>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* Compteur de visites */}
+      <div className="border-t border-blue-900/40 py-3 px-4" style={{ background: 'rgba(0,0,0,0.15)' }}>
+        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8">
+          <VisitCounter initialCount={3255} />
+          <div className="flex items-center gap-2 text-xs text-blue-400">
+            <span>🌍</span>
+            <span>Plateforme disponible dans <span className="font-bold text-white">24+ pays</span> d&apos;Afrique</span>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-blue-400">
+            <span>⚡</span>
+            <span>Uptime <span className="font-bold text-green-400">99.9%</span></span>
+          </div>
         </div>
       </div>
 

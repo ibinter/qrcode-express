@@ -3,6 +3,14 @@ import { connection } from 'next/server'
 
 export const instant = false
 
+const COUNTRY_NAMES: Record<string, string> = {
+  CI: 'Côte d\'Ivoire', SN: 'Sénégal', CM: 'Cameroun', ML: 'Mali', BF: 'Burkina Faso',
+  GH: 'Ghana', TG: 'Togo', BJ: 'Bénin', NG: 'Nigeria', FR: 'France',
+  US: 'États-Unis', GB: 'Royaume-Uni', CA: 'Canada', DE: 'Allemagne',
+  MA: 'Maroc', DZ: 'Algérie', TN: 'Tunisie', CD: 'Congo RDC', GA: 'Gabon',
+  KE: 'Kenya', TZ: 'Tanzanie', UG: 'Ouganda', RW: 'Rwanda', ZM: 'Zambie',
+}
+
 function StatCard({ icon, label, value, sub, color }: {
   icon: string; label: string; value: string | number; sub?: string; color: string
 }) {
@@ -43,6 +51,14 @@ export default async function AdminStatistiques() {
   const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString()
 
   const [
+    // Visites du site
+    { data: siteStatsData },
+    { data: pageVisitsToday },
+    { data: pageVisitsWeek },
+    { data: pageVisitsMonth },
+    { data: topPages },
+    { data: visitDevices },
+    { data: visitCountries },
     // Utilisateurs
     { count: usersTotal },
     { count: usersToday },
@@ -74,6 +90,13 @@ export default async function AdminStatistiques() {
     // Rétention - users avec au moins 1 QR
     { data: activeUsers },
   ] = await Promise.all([
+    admin.from('site_stats').select('value').eq('key', 'total_visits').single(),
+    admin.from('page_visits').select('id', { count: 'exact', head: true }).gte('visited_at', today),
+    admin.from('page_visits').select('id', { count: 'exact', head: true }).gte('visited_at', week),
+    admin.from('page_visits').select('id', { count: 'exact', head: true }).gte('visited_at', month),
+    admin.from('page_visits').select('path').gte('visited_at', thirtyDaysAgo),
+    admin.from('page_visits').select('device').gte('visited_at', thirtyDaysAgo),
+    admin.from('page_visits').select('country').gte('visited_at', thirtyDaysAgo),
     admin.from('profiles').select('*', { count: 'exact', head: true }),
     admin.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', today),
     admin.from('profiles').select('*', { count: 'exact', head: true }).gte('created_at', week),
@@ -99,6 +122,29 @@ export default async function AdminStatistiques() {
     admin.from('referral_rewards').select('*', { count: 'exact', head: true }),
     admin.from('qr_codes').select('user_id').neq('status', 'archived'),
   ])
+
+  // Visites du site
+  const totalVisits = (siteStatsData as any)?.value ?? 3255
+  const visitsToday = (pageVisitsToday as unknown as number) ?? 0
+  const visitsWeek = (pageVisitsWeek as unknown as number) ?? 0
+  const visitsMonth = (pageVisitsMonth as unknown as number) ?? 0
+
+  const pageCounts: Record<string, number> = {}
+  for (const v of topPages ?? []) {
+    const p = v.path ?? '/'; pageCounts[p] = (pageCounts[p] || 0) + 1
+  }
+  const topPagesRanked = Object.entries(pageCounts).sort((a, b) => b[1] - a[1]).slice(0, 8)
+
+  const visitDeviceCounts: Record<string, number> = {}
+  for (const v of visitDevices ?? []) {
+    const d = v.device ?? 'desktop'; visitDeviceCounts[d] = (visitDeviceCounts[d] || 0) + 1
+  }
+
+  const visitCountryCounts: Record<string, number> = {}
+  for (const v of visitCountries ?? []) {
+    const c = v.country ?? 'Inconnu'; visitCountryCounts[c] = (visitCountryCounts[c] || 0) + 1
+  }
+  const topVisitCountries = Object.entries(visitCountryCounts).sort((a, b) => b[1] - a[1]).slice(0, 6)
 
   const revenueMonth = txMonth?.reduce((s, t) => s + Number(t.amount), 0) ?? 0
   const revenueLastMonth = txLastMonth?.reduce((s, t) => s + Number(t.amount), 0) ?? 0
@@ -352,6 +398,92 @@ export default async function AdminStatistiques() {
                 <span className="text-sm font-extrabold" style={{ color: m.color }}>{m.value}</span>
               </div>
             ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Visites du site ── */}
+      <div className="bg-gradient-to-r from-[#041B4D] to-[#0d2d6e] rounded-2xl p-5 mb-5 text-white">
+        <div className="flex items-center gap-3 mb-4">
+          <span className="text-2xl">🌐</span>
+          <div>
+            <h2 className="text-sm font-extrabold">Visites du site</h2>
+            <p className="text-[11px] text-blue-300">Trafic public — toutes pages</p>
+          </div>
+          <div className="ml-auto flex items-center gap-2 bg-green-500/20 border border-green-400/30 rounded-xl px-3 py-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+            <span className="text-[11px] font-bold text-green-300">Live</span>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5">
+          {[
+            { label: 'Total visites', value: totalVisits.toLocaleString('fr-FR'), icon: '👁️', sub: 'depuis le lancement' },
+            { label: "Aujourd'hui", value: visitsToday.toLocaleString('fr-FR'), icon: '📅', sub: 'depuis minuit' },
+            { label: 'Cette semaine', value: visitsWeek.toLocaleString('fr-FR'), icon: '📆', sub: '7 derniers jours' },
+            { label: 'Ce mois', value: visitsMonth.toLocaleString('fr-FR'), icon: '🗓️', sub: 'mois en cours' },
+          ].map(k => (
+            <div key={k.label} className="bg-white/10 rounded-xl p-3 backdrop-blur-sm">
+              <p className="text-xs text-blue-300 mb-1">{k.icon} {k.label}</p>
+              <p className="text-2xl font-extrabold">{k.value}</p>
+              <p className="text-[10px] text-blue-400 mt-0.5">{k.sub}</p>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Top pages */}
+          <div className="bg-white/10 rounded-xl p-4 md:col-span-1">
+            <h3 className="text-xs font-bold text-blue-200 mb-3">📄 Pages les plus visitées</h3>
+            <div className="space-y-2">
+              {topPagesRanked.length > 0 ? topPagesRanked.map(([path, cnt]) => (
+                <div key={path} className="flex items-center justify-between">
+                  <span className="text-[11px] text-blue-300 truncate max-w-[140px]">{path}</span>
+                  <span className="text-[11px] font-bold text-white ml-2">{cnt}</span>
+                </div>
+              )) : (
+                <p className="text-[11px] text-blue-400 text-center py-3">Données en cours de collecte…</p>
+              )}
+            </div>
+          </div>
+
+          {/* Devices */}
+          <div className="bg-white/10 rounded-xl p-4">
+            <h3 className="text-xs font-bold text-blue-200 mb-3">📱 Appareils visiteurs</h3>
+            <div className="space-y-2">
+              {Object.entries(visitDeviceCounts).sort((a, b) => b[1] - a[1]).map(([device, cnt]) => {
+                const total = Object.values(visitDeviceCounts).reduce((s, v) => s + v, 0)
+                return (
+                  <div key={device}>
+                    <div className="flex justify-between text-[11px] mb-1">
+                      <span className="text-blue-300 capitalize">{device}</span>
+                      <span className="font-bold text-white">{Math.round(cnt / (total || 1) * 100)}%</span>
+                    </div>
+                    <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full bg-[#FF6A00]" style={{ width: `${Math.round(cnt / (total || 1) * 100)}%` }} />
+                    </div>
+                  </div>
+                )
+              })}
+              {!Object.keys(visitDeviceCounts).length && (
+                <p className="text-[11px] text-blue-400 text-center py-3">Données en cours de collecte…</p>
+              )}
+            </div>
+          </div>
+
+          {/* Countries */}
+          <div className="bg-white/10 rounded-xl p-4">
+            <h3 className="text-xs font-bold text-blue-200 mb-3">🌍 Pays visiteurs</h3>
+            <div className="space-y-2">
+              {topVisitCountries.map(([code, cnt]) => (
+                <div key={code} className="flex items-center justify-between">
+                  <span className="text-[11px] text-blue-300">{COUNTRY_NAMES[code] ?? code}</span>
+                  <span className="text-[11px] font-bold text-white">{cnt}</span>
+                </div>
+              ))}
+              {!topVisitCountries.length && (
+                <p className="text-[11px] text-blue-400 text-center py-3">Données en cours de collecte…</p>
+              )}
+            </div>
           </div>
         </div>
       </div>
