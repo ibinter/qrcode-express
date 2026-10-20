@@ -53,9 +53,9 @@ export default async function AdminStatistiques() {
   const [
     // Visites du site
     { data: siteStatsData },
-    { data: pageVisitsToday },
-    { data: pageVisitsWeek },
-    { data: pageVisitsMonth },
+    { count: pageVisitsToday },
+    { count: pageVisitsWeek },
+    { count: pageVisitsMonth },
     { data: topPages },
     { data: visitDevices },
     { data: visitCountries },
@@ -125,9 +125,9 @@ export default async function AdminStatistiques() {
 
   // Visites du site
   const totalVisits = (siteStatsData as any)?.value ?? 3255
-  const visitsToday = (pageVisitsToday as unknown as number) ?? 0
-  const visitsWeek = (pageVisitsWeek as unknown as number) ?? 0
-  const visitsMonth = (pageVisitsMonth as unknown as number) ?? 0
+  const visitsToday = pageVisitsToday ?? 0
+  const visitsWeek = pageVisitsWeek ?? 0
+  const visitsMonth = pageVisitsMonth ?? 0
 
   const pageCounts: Record<string, number> = {}
   for (const v of topPages ?? []) {
