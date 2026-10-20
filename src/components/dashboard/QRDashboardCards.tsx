@@ -1,5 +1,5 @@
 ﻿'use client'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -74,12 +74,116 @@ type SortKey = 'date' | 'scans' | 'name'
 type FilterType = 'all' | string
 type ViewMode = 'grid' | 'list'
 
+function QRPreviewModal({ qr, onClose, typeIcons }: { qr: QRRow; onClose: () => void; typeIcons: Record<string, string> }) {
+  const canvasRef = useRef<HTMLDivElement>(null)
+  const [rendered, setRendered] = useState(false)
+
+  const qrUrl = qr.mode === 'dynamic' && DYNAMIC_PATHS[qr.type]
+    ? `${window.location.origin}/${DYNAMIC_PATHS[qr.type]}/${qr.id}`
+    : qr.mode === 'dynamic' && qr.slug
+    ? `${window.location.origin}/r/${qr.slug}`
+    : qr.content
+
+  useEffect(() => {
+    let instance: any
+    async function render() {
+      if (!canvasRef.current) return
+      const QRCodeStyling = (await import('qr-code-styling')).default
+      instance = new QRCodeStyling({
+        width: 280, height: 280,
+        data: qrUrl || 'https://qrcode-express.com',
+        dotsOptions: { color: (qr.design?.fgColor as string) || '#041B4D', type: 'square' },
+        backgroundOptions: { color: '#FFFFFF' },
+        qrOptions: { errorCorrectionLevel: 'M' },
+      })
+      canvasRef.current.innerHTML = ''
+      instance.append(canvasRef.current)
+      setRendered(true)
+    }
+    render()
+    return () => { if (canvasRef.current) canvasRef.current.innerHTML = '' }
+  }, [qr.id])
+
+  async function handleDownloadPng() {
+    await downloadQR(qr)
+  }
+
+  async function handleDownloadSvg() {
+    try {
+      const QRCodeStyling = (await import('qr-code-styling')).default
+      const inst = new QRCodeStyling({
+        width: 512, height: 512,
+        data: qrUrl || 'https://qrcode-express.com',
+        dotsOptions: { color: (qr.design?.fgColor as string) || '#041B4D', type: 'square' },
+        backgroundOptions: { color: '#FFFFFF' },
+        qrOptions: { errorCorrectionLevel: 'M' },
+      })
+      inst.download({ name: qr.name || `qr-${qr.id}`, extension: 'svg' })
+    } catch {}
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full" onClick={e => e.stopPropagation()}>
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <p className="font-bold text-[#041B4D] text-sm">{typeIcons[qr.type] || '📱'} {qr.name || `QR ${qr.type}`}</p>
+            <p className="text-xs text-gray-400 mt-0.5">
+              {qr.mode === 'dynamic' ? '⚡ Dynamique' : 'Statique'} · {TYPE_LABELS[qr.type] || qr.type}
+            </p>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 transition-colors">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* QR preview */}
+        <div className="flex justify-center mb-4">
+          <div className="bg-white border border-gray-100 rounded-xl p-4 shadow-inner">
+            {!rendered && <div className="w-[280px] h-[280px] flex items-center justify-center text-gray-300 text-sm">Chargement…</div>}
+            <div ref={canvasRef} />
+          </div>
+        </div>
+
+        {/* URL */}
+        <p className="text-[10px] text-gray-400 text-center truncate mb-4 px-2">{qrUrl}</p>
+
+        {/* Download buttons */}
+        <div className="flex gap-2">
+          <button
+            onClick={handleDownloadPng}
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-[#041B4D] text-white text-sm font-bold hover:opacity-90 transition-opacity"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            PNG
+          </button>
+          <button
+            onClick={handleDownloadSvg}
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[#041B4D] text-[#041B4D] text-sm font-bold hover:bg-gray-50 transition-colors"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            SVG
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function QRDashboardCards({ qrs, typeIcons }: Props) {
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [togglingId, setTogglingId] = useState<string | null>(null)
   const [list, setList] = useState(qrs)
   const [copied, setCopied] = useState<string | null>(null)
   const [editingQR, setEditingQR] = useState<QRRow | null>(null)
+  const [previewQR, setPreviewQR] = useState<QRRow | null>(null)
   const [search, setSearch] = useState('')
   const [filterType, setFilterType] = useState<FilterType>('all')
   const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'paused'>('all')
@@ -150,6 +254,9 @@ export default function QRDashboardCards({ qrs, typeIcons }: Props) {
     <>
       {editingQR && (
         <EditQRModal qr={editingQR} onClose={() => setEditingQR(null)} onSaved={handleSaved} />
+      )}
+      {previewQR && (
+        <QRPreviewModal qr={previewQR} onClose={() => setPreviewQR(null)} typeIcons={typeIcons} />
       )}
 
       {/* Toolbar */}
@@ -325,7 +432,7 @@ export default function QRDashboardCards({ qrs, typeIcons }: Props) {
                 </div>
               </div>
 
-              {/* Actions */}
+              {/* Actions row 1 */}
               <div className="flex gap-1.5">
                 <button
                   onClick={() => handleCopy(qr)}
@@ -342,11 +449,11 @@ export default function QRDashboardCards({ qrs, typeIcons }: Props) {
                   ✏️
                 </button>
                 <button
-                  onClick={() => downloadQR(qr)}
-                  className="flex-1 text-xs py-1.5 rounded-lg border border-blue-100 text-blue-600 font-semibold hover:bg-blue-50 transition-colors"
-                  title="Télécharger"
+                  onClick={() => setPreviewQR(qr)}
+                  className="flex-1 text-xs py-1.5 rounded-lg border border-purple-100 text-purple-600 font-semibold hover:bg-purple-50 transition-colors"
+                  title="Prévisualiser & Télécharger"
                 >
-                  ⬇️
+                  👁️
                 </button>
                 <button
                   onClick={() => handleToggleStatus(qr)}
@@ -362,8 +469,18 @@ export default function QRDashboardCards({ qrs, typeIcons }: Props) {
                 </button>
               </div>
 
-              {/* Stats link + delete */}
+              {/* Stats link + download + delete */}
               <div className="flex gap-1.5">
+                <button
+                  onClick={() => downloadQR(qr)}
+                  className="flex items-center justify-center gap-1 px-2 py-1.5 rounded-lg border border-[#041B4D]/20 text-[#041B4D] text-xs font-bold hover:bg-[#041B4D]/5 transition-colors"
+                  title="Télécharger PNG"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  PNG
+                </button>
                 <Link
                   href={`/dashboard/${qr.id}`}
                   className="flex-1 text-center text-xs py-1.5 rounded-lg border border-blue-100 text-blue-600 font-semibold hover:bg-blue-50 transition-colors"
@@ -434,7 +551,8 @@ export default function QRDashboardCards({ qrs, typeIcons }: Props) {
                       <button onClick={() => handleCopy(qr)} className="p-1.5 rounded-lg hover:bg-gray-100 text-gray-500 transition-colors" title="Copier">
                         {copied === qr.id ? '✅' : '🔗'}
                       </button>
-                      <button onClick={() => downloadQR(qr)} className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-500 transition-colors" title="Télécharger">⬇️</button>
+                      <button onClick={() => setPreviewQR(qr)} className="p-1.5 rounded-lg hover:bg-purple-50 text-purple-500 transition-colors" title="Prévisualiser & Télécharger">👁️</button>
+                      <button onClick={() => downloadQR(qr)} className="p-1.5 rounded-lg hover:bg-blue-50 text-blue-500 transition-colors" title="Télécharger PNG">⬇️</button>
                       <button onClick={() => setEditingQR(qr)} className="p-1.5 rounded-lg hover:bg-orange-50 text-orange-500 transition-colors" title="Éditer">✏️</button>
                       <button onClick={() => handleToggleStatus(qr)} disabled={togglingId === qr.id}
                         className={`p-1.5 rounded-lg transition-colors disabled:opacity-50 ${qr.status === 'active' ? 'hover:bg-yellow-50 text-yellow-500' : 'hover:bg-green-50 text-green-500'}`}
