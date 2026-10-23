@@ -1,8 +1,39 @@
+import nodemailer from 'nodemailer'
+
+// Envoi via la messagerie LWS (SMTP) si SMTP_HOST est défini, sinon via Resend.
 const RESEND_KEY = process.env.RESEND_API_KEY
-const FROM = 'QR Code Express <noreply@qrcode-express.com>'
+const FROM = process.env.EMAIL_FROM ?? 'QR Code Express <noreply@qrcode-express.com>'
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://qrcode-express.com'
 
-async function sendEmail(to: string, subject: string, html: string) {
+const SMTP_PORT = Number(process.env.SMTP_PORT ?? 465)
+const smtp = process.env.SMTP_HOST
+  ? nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: SMTP_PORT,
+      secure: SMTP_PORT === 465,
+      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS },
+      // Hébergement mutualisé : on limite le débit pour ne pas être bloqué par LWS.
+      pool: true,
+      maxConnections: 2,
+      rateDelta: 1000,
+      rateLimit: 5,
+    })
+  : null
+
+export function emailConfigured() {
+  return Boolean(smtp || RESEND_KEY)
+}
+
+export async function sendEmail(to: string, subject: string, html: string) {
+  if (smtp) {
+    try {
+      await smtp.sendMail({ from: FROM, to, subject, html })
+      return { ok: true }
+    } catch (err) {
+      console.error('[email] SMTP :', err instanceof Error ? err.message : err)
+      return { ok: false, reason: 'smtp_error' }
+    }
+  }
   if (!RESEND_KEY) return { ok: false, reason: 'no_key' }
   try {
     const res = await fetch('https://api.resend.com/emails', {

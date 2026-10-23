@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { emailConfigured, sendEmail } from '@/lib/email'
 
 function generateCode(): string {
   const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -74,8 +75,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
 
   // Send ticket email (non-blocking)
-  const RESEND_KEY = process.env.RESEND_API_KEY
-  if (RESEND_KEY && email.trim()) {
+  if (emailConfigured() && email.trim()) {
     const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://qrcode-express.com'
     const ticketUrl = `${appUrl}/ticket/${ticket.code}`
     const qrImgUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${encodeURIComponent(ticketUrl)}&color=041B4D&bgcolor=ffffff`
@@ -122,16 +122,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 </div>
 </body></html>`
 
-    fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: 'QR Code Express <noreply@qrcode-express.com>',
-        to: [email.trim()],
-        subject: `🎟️ Votre billet — ${event.name || 'Événement'}`,
-        html,
-      }),
-    }).catch(() => {})
+    sendEmail(email.trim(), `🎟️ Votre billet — ${event.name || 'Événement'}`, html).catch(() => {})
   }
 
   return NextResponse.json({ ticket: { code: ticket.code } })

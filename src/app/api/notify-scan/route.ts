@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { emailConfigured, sendEmail } from '@/lib/email'
 
 // Internal-only route: protected by a shared secret to prevent external abuse
 const INTERNAL_SECRET = process.env.INTERNAL_API_SECRET
@@ -19,8 +20,7 @@ export async function POST(request: NextRequest) {
     const { data: qr } = await admin.from('qr_codes').select('name, slug').eq('id', qrId).single()
     if (!qr) return NextResponse.json({ ok: false }, { status: 404 })
 
-    const RESEND_KEY = process.env.RESEND_API_KEY
-    if (!RESEND_KEY) return NextResponse.json({ ok: true, skipped: true })
+    if (!emailConfigured()) return NextResponse.json({ ok: true, skipped: true })
 
     const body = `
       <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:24px">
@@ -41,16 +41,7 @@ export async function POST(request: NextRequest) {
       </div>
     `
 
-    await fetch('https://api.resend.com/emails', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: 'QR Code Express <noreply@qrcode-express.com>',
-        to: [email],
-        subject: `🔔 Scan détecté — ${qr.name || qr.slug}`,
-        html: body,
-      }),
-    })
+    await sendEmail(email, `🔔 Scan détecté — ${qr.name || qr.slug}`, body)
 
     return NextResponse.json({ ok: true })
   } catch {
