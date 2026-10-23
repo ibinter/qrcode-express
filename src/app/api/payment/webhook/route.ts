@@ -5,21 +5,23 @@ import { sendPaymentConfirmationEmail } from '@/lib/email'
 
 // GeniusPay webhook payload format:
 // { id, event, timestamp, data: { reference, status, metadata, ... }, environment }
-// Signature header: X-Webhook-Signature (HMAC-SHA256 of raw body with whsec_... secret)
+// Signature header: X-Webhook-Signature = HMAC-SHA256(X-Webhook-Timestamp + "." + raw body) with whsec_... secret
+// (format documenté par GeniusPay ; l'ancien format sans timestamp reste accepté)
 
-function verifySignature(payload: string, signature: string): boolean {
+function verifySignature(payload: string, timestamp: string, signature: string): boolean {
   const secret = process.env.GENIUSPAY_WEBHOOK_SECRET
   if (!secret) return false
-  const expected = createHmac('sha256', secret).update(payload).digest('hex')
-  return expected === signature
+  const sign = (data: string) => createHmac('sha256', secret).update(data).digest('hex')
+  return (timestamp !== '' && sign(`${timestamp}.${payload}`) === signature) || sign(payload) === signature
 }
 
 export async function POST(request: NextRequest) {
   const rawBody = await request.text()
   const signature = request.headers.get('x-webhook-signature') || request.headers.get('x-geniuspay-signature') || ''
+  const timestamp = request.headers.get('x-webhook-timestamp') || ''
 
   const webhookSecret = process.env.GENIUSPAY_WEBHOOK_SECRET
-  if (webhookSecret && (!signature || !verifySignature(rawBody, signature))) {
+  if (webhookSecret && (!signature || !verifySignature(rawBody, timestamp, signature))) {
     console.error('[webhook] Signature invalide ou manquante')
     return NextResponse.json({ error: 'Signature invalide' }, { status: 401 })
   }
