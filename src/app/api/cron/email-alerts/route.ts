@@ -39,6 +39,17 @@ export async function GET(request: NextRequest) {
     }
   }
 
+  // --- Fin effective des abonnements : période terminée → statut « expired » et retour au plan gratuit ---
+  const nowTs = new Date().toISOString()
+  const { data: ended } = await admin.from('subscriptions').select('id, user_id').eq('status', 'active').lt('period_end', nowTs)
+  let expiredCount = 0
+  for (const sub of ended ?? []) {
+    await admin.from('subscriptions').update({ status: 'expired' }).eq('id', sub.id)
+    const { count: stillActive } = await admin.from('subscriptions').select('id', { count: 'exact', head: true }).eq('user_id', sub.user_id).eq('status', 'active')
+    if (!stillActive) await admin.from('profiles').update({ plan: 'free' }).eq('id', sub.user_id)
+    expiredCount++
+  }
+
   // --- Expiration warnings (3 days and 1 day before plan expiry) ---
   const now = new Date()
   const in3Days = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000)

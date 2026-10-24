@@ -1,3 +1,4 @@
+import { absoluteUrl } from '@/lib/site-url'
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
@@ -17,7 +18,7 @@ export async function GET(
     .single()
 
   if (!qr || qr.status !== 'active') {
-    return NextResponse.redirect(new URL('/qr-introuvable', request.url))
+    return NextResponse.redirect(absoluteUrl('/qr-introuvable'))
   }
 
   // content = JSON stringified { ios, android, fallback }
@@ -42,7 +43,7 @@ export async function GET(
   })
 
   if (!destination) {
-    return NextResponse.redirect(new URL('/qr-introuvable', request.url))
+    return NextResponse.redirect(absoluteUrl('/qr-introuvable'))
   }
 
   return NextResponse.redirect(destination)

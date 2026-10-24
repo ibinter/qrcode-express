@@ -1,9 +1,10 @@
+import { absoluteUrl } from '@/lib/site-url'
 import { NextRequest, NextResponse, after } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import type { Plan } from '@/lib/plan-guard'
 
 const PLAN_RANK: Record<Plan, number> = { free: 0, essential: 1, pro: 2, business: 3, agency: 4, enterprise: 5 }
-function planAtLeast(userPlan: Plan, min: Plan) { return PLAN_RANK[userPlan] >= PLAN_RANK[min] }
+function planAtLeast(userPlan: Plan, min: Plan) { return (PLAN_RANK[userPlan] ?? 0) >= PLAN_RANK[min] }
 
 export async function GET(
   request: NextRequest,
@@ -22,7 +23,7 @@ export async function GET(
   const ownerPlan = ((qr as any)?.profiles?.plan ?? 'free') as Plan
 
   if (error || !qr) {
-    return NextResponse.redirect(new URL('/qr-introuvable', request.url))
+    return NextResponse.redirect(absoluteUrl('/qr-introuvable'))
   }
 
   // QR "jamais mort" — fallback_url dans design JSON
@@ -35,21 +36,21 @@ export async function GET(
   if (isExpired || isMaxReached) {
     // Redirect to fallback URL if configured (QR jamais mort)
     if (fallbackUrl) return NextResponse.redirect(fallbackUrl)
-    return NextResponse.redirect(new URL(`/qr-expire?slug=${slug}`, request.url))
+    return NextResponse.redirect(absoluteUrl(`/qr-expire?slug=${slug}`))
   }
 
   if (qr.status === 'paused') {
     if (fallbackUrl) return NextResponse.redirect(fallbackUrl)
-    return NextResponse.redirect(new URL(`/qr-pause?slug=${slug}`, request.url))
+    return NextResponse.redirect(absoluteUrl(`/qr-pause?slug=${slug}`))
   }
 
   if (qr.status !== 'active') {
-    return NextResponse.redirect(new URL('/qr-introuvable', request.url))
+    return NextResponse.redirect(absoluteUrl('/qr-introuvable'))
   }
 
   // Password protection
   if (qr.password_hash) {
-    return NextResponse.redirect(new URL(`/qr-password/${slug}`, request.url))
+    return NextResponse.redirect(absoluteUrl(`/qr-password/${slug}`))
   }
 
   // Detect request context for smart routing
@@ -78,7 +79,7 @@ export async function GET(
 
   // app type stores JSON content — route to the dedicated landing page
   if (qr.type === 'app') {
-    return NextResponse.redirect(new URL(`/app/${qr.id}`, request.url))
+    return NextResponse.redirect(absoluteUrl(`/app/${qr.id}`))
   }
 
   let destination = qr.content

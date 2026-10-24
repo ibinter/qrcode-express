@@ -1,30 +1,32 @@
-﻿import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { rateLimit, getIp } from '@/lib/rate-limit'
 
 const GENIUSPAY_URL = 'https://geniuspay.ci/api/v1/merchant/payments'
 
+// ATTENTION : les codes de plan enregistrés en base sont décalés par rapport aux noms affichés
+// (voir lib/plan-utils.ts) : Starter = 'essential', Essentiel = 'pro', Pro = 'business', Business = 'agency'.
 // Amounts in FCFA — monthly × months paid (1 free for semi, 2 free for annual)
 // Base prices: starter=4900, essential=9900, pro=19900, business=29900
 const PLANS: Record<string, { amount: number; label: string; basePlan: string; durationDays: number }> = {
   // ── Monthly ─────────────────────────────────────
-  starter:   { amount: 4900,  label: 'QR CODE EXPRESS — Plan Starter (mensuel)',      basePlan: 'starter',   durationDays: 30  },
-  essential: { amount: 9900,  label: 'QR CODE EXPRESS — Plan Essentiel (mensuel)',    basePlan: 'essential', durationDays: 30  },
-  pro:       { amount: 19900, label: 'QR CODE EXPRESS — Plan Pro (mensuel)',           basePlan: 'pro',       durationDays: 30  },
-  business:  { amount: 29900, label: 'QR CODE EXPRESS — Plan Business (mensuel)',      basePlan: 'business',  durationDays: 30  },
+  starter:   { amount: 4900,  label: 'QR CODE EXPRESS — Plan Starter (mensuel)',      basePlan: 'essential',   durationDays: 30  },
+  essential: { amount: 9900,  label: 'QR CODE EXPRESS — Plan Essentiel (mensuel)',    basePlan: 'pro', durationDays: 30  },
+  pro:       { amount: 19900, label: 'QR CODE EXPRESS — Plan Pro (mensuel)',           basePlan: 'business',       durationDays: 30  },
+  business:  { amount: 29900, label: 'QR CODE EXPRESS — Plan Business (mensuel)',      basePlan: 'agency',  durationDays: 30  },
 
   // ── Semestriel (6 mois, payer 5) ────────────────
-  starter_semi:   { amount: 24500, label: 'QR CODE EXPRESS — Plan Starter (6 mois)',    basePlan: 'starter',   durationDays: 183 },
-  essential_semi: { amount: 49500, label: 'QR CODE EXPRESS — Plan Essentiel (6 mois)',  basePlan: 'essential', durationDays: 183 },
-  pro_semi:       { amount: 99500, label: 'QR CODE EXPRESS — Plan Pro (6 mois)',         basePlan: 'pro',       durationDays: 183 },
-  business_semi:  { amount: 149500,label: 'QR CODE EXPRESS — Plan Business (6 mois)',    basePlan: 'business',  durationDays: 183 },
+  starter_semi:   { amount: 24500, label: 'QR CODE EXPRESS — Plan Starter (6 mois)',    basePlan: 'essential',   durationDays: 183 },
+  essential_semi: { amount: 49500, label: 'QR CODE EXPRESS — Plan Essentiel (6 mois)',  basePlan: 'pro', durationDays: 183 },
+  pro_semi:       { amount: 99500, label: 'QR CODE EXPRESS — Plan Pro (6 mois)',         basePlan: 'business',       durationDays: 183 },
+  business_semi:  { amount: 149500,label: 'QR CODE EXPRESS — Plan Business (6 mois)',    basePlan: 'agency',  durationDays: 183 },
 
   // ── Annuel (12 mois, payer 10) ──────────────────
-  starter_annual:   { amount: 49000,  label: 'QR CODE EXPRESS — Plan Starter (annuel)',    basePlan: 'starter',   durationDays: 365 },
-  essential_annual: { amount: 99000,  label: 'QR CODE EXPRESS — Plan Essentiel (annuel)',  basePlan: 'essential', durationDays: 365 },
-  pro_annual:       { amount: 199000, label: 'QR CODE EXPRESS — Plan Pro (annuel)',         basePlan: 'pro',       durationDays: 365 },
-  business_annual:  { amount: 299000, label: 'QR CODE EXPRESS — Plan Business (annuel)',    basePlan: 'business',  durationDays: 365 },
+  starter_annual:   { amount: 49000,  label: 'QR CODE EXPRESS — Plan Starter (annuel)',    basePlan: 'essential',   durationDays: 365 },
+  essential_annual: { amount: 99000,  label: 'QR CODE EXPRESS — Plan Essentiel (annuel)',  basePlan: 'pro', durationDays: 365 },
+  pro_annual:       { amount: 199000, label: 'QR CODE EXPRESS — Plan Pro (annuel)',         basePlan: 'business',       durationDays: 365 },
+  business_annual:  { amount: 299000, label: 'QR CODE EXPRESS — Plan Business (annuel)',    basePlan: 'agency',  durationDays: 365 },
 }
 
 export async function POST(request: NextRequest) {
@@ -64,18 +66,18 @@ export async function POST(request: NextRequest) {
         customer: { email: user.email },
         success_url: `${appUrl}/dashboard?payment=success`,
         error_url: `${appUrl}/dashboard?payment=cancelled`,
-        metadata: { plan, basePlan: planConfig.basePlan, durationDays: planConfig.durationDays, user_id: user.id },
+        metadata: { site: 'qrcode-express', plan, basePlan: planConfig.basePlan, durationDays: planConfig.durationDays, user_id: user.id },
       }),
     })
   } catch (e: any) {
     console.error('[payment/initiate] GeniusPay fetch error:', e?.message)
-    return NextResponse.json({ error: `Erreur réseau GeniusPay: ${e?.message}` }, { status: 502 })
+    return NextResponse.json({ error: 'Le service de paiement est momentanément injoignable. Réessayez dans quelques minutes.' }, { status: 502 })
   }
 
   if (!geniusRes.ok) {
     const errText = await geniusRes.text().catch(() => '')
     console.error('[payment/initiate] GeniusPay HTTP error:', geniusRes.status, errText)
-    return NextResponse.json({ error: `Erreur GeniusPay ${geniusRes.status}: ${errText}` }, { status: 502 })
+    return NextResponse.json({ error: 'Le service de paiement est momentanément indisponible. Réessayez dans quelques minutes.' }, { status: 502 })
   }
 
   const genius = await geniusRes.json()
@@ -98,7 +100,7 @@ export async function POST(request: NextRequest) {
     description: planConfig.label,
     reference: geniusRef || `QRE-${Date.now()}`,
     status: 'pending',
-    metadata: { plan, basePlan: planConfig.basePlan, durationDays: planConfig.durationDays },
+    metadata: { site: 'qrcode-express', plan, basePlan: planConfig.basePlan, durationDays: planConfig.durationDays },
   })
 
   return NextResponse.json({ payment_url: checkoutUrl })

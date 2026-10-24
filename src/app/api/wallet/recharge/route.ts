@@ -1,4 +1,4 @@
-﻿import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 
@@ -44,18 +44,18 @@ export async function POST(request: NextRequest) {
         customer: { email: user.email },
         success_url: `${appUrl}/portefeuille?recharge=success`,
         error_url: `${appUrl}/portefeuille?recharge=cancelled`,
-        metadata: { type: 'credits', pack, credits: packConfig.credits, user_id: user.id },
+        metadata: { site: 'qrcode-express', type: 'credits', pack, credits: packConfig.credits, user_id: user.id },
       }),
     })
   } catch (e: any) {
     console.error('[wallet/recharge] GeniusPay fetch error:', e?.message)
-    return NextResponse.json({ error: `Erreur réseau GeniusPay: ${e?.message}` }, { status: 502 })
+    return NextResponse.json({ error: 'Le service de paiement est momentanément injoignable. Réessayez dans quelques minutes.' }, { status: 502 })
   }
 
   if (!geniusRes.ok) {
     const errText = await geniusRes.text().catch(() => '')
     console.error('[wallet/recharge] GeniusPay HTTP error:', geniusRes.status, errText)
-    return NextResponse.json({ error: `Erreur GeniusPay ${geniusRes.status}: ${errText}` }, { status: 502 })
+    return NextResponse.json({ error: 'Le service de paiement est momentanément indisponible. Réessayez dans quelques minutes.' }, { status: 502 })
   }
 
   const genius = await geniusRes.json()
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     description: packConfig.label,
     reference: geniusRef || `QRE-CR-${Date.now()}`,
     status: 'pending',
-    metadata: { type: 'credits', pack, credits: packConfig.credits },
+    metadata: { site: 'qrcode-express', type: 'credits', pack, credits: packConfig.credits },
   })
 
   return NextResponse.json({ payment_url: checkoutUrl })

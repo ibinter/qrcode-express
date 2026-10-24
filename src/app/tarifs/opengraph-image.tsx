@@ -26,9 +26,10 @@ export default function Image() {
         <div style={{ display: 'flex', gap: '20px' }}>
           {[
             { name: 'Gratuit', price: '0 FCFA', color: '#6b7280' },
-            { name: 'Essentiel', price: '4 900 FCFA', color: '#3b82f6' },
-            { name: 'Pro', price: '14 900 FCFA', color: '#8b5cf6' },
-            { name: 'Business', price: '39 900 FCFA', color: '#FF6A00' },
+            { name: 'Starter', price: '4 900 FCFA', color: '#0ea5e9' },
+            { name: 'Essentiel', price: '9 900 FCFA', color: '#3b82f6' },
+            { name: 'Pro', price: '19 900 FCFA', color: '#8b5cf6' },
+            { name: 'Business', price: '29 900 FCFA', color: '#FF6A00' },
           ].map((plan) => (
             <div key={plan.name} style={{
               display: 'flex', flexDirection: 'column', alignItems: 'center',

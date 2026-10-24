@@ -58,6 +58,13 @@ export async function POST(request: NextRequest) {
     .eq('reference', reference)
     .single()
 
+  // Le compte marchand GeniusPay est partagé par plusieurs sites : sans transaction connue ni marqueur
+  // de ce site, le paiement appartient à un autre site et n'est pas traité ici.
+  if (!tx && meta.site !== 'qrcode-express') {
+    console.log('[webhook] Paiement d un autre site, ignoré. ref:', reference)
+    return NextResponse.json({ received: true })
+  }
+
   // Idempotence : si déjà traité, ignorer
   if (tx?.status === 'success') {
     return NextResponse.json({ received: true })
@@ -104,7 +111,10 @@ export async function POST(request: NextRequest) {
 
   // Cas : abonnement (mensuel, semestriel ou annuel)
   const plan = (txMeta.plan as string) ?? 'essential'
-  const basePlan = (txMeta.basePlan as string) ?? plan.replace(/_semi$|_annual$/, '')
+  // Repli (transaction sans basePlan) : noms affichés → codes internes décalés (voir lib/plan-utils.ts)
+  const UI_TO_INTERNAL: Record<string, string> = { starter: 'essential', essential: 'pro', pro: 'business', business: 'agency' }
+  const uiPlan = plan.replace(/_semi$|_annual$/, '')
+  const basePlan = (txMeta.basePlan as string) ?? UI_TO_INTERNAL[uiPlan] ?? uiPlan
   const durationDays = Number(txMeta.durationDays ?? 30)
 
   const now = new Date()
@@ -116,7 +126,9 @@ export async function POST(request: NextRequest) {
     .select('id, period_end')
     .eq('user_id', resolvedUserId)
     .eq('status', 'active')
-    .single()
+    .order('period_end', { ascending: false })
+    .limit(1)
+    .maybeSingle()
 
   if (existingSub) {
     const existingEnd = new Date(existingSub.period_end)

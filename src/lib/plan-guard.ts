@@ -143,7 +143,7 @@ export async function requirePlan(minPlan: Plan, creditCost = 0): Promise<GuardR
   const userCredits = profile?.credits ?? 0
 
   // Plan is sufficient → allow without credits
-  if (PLAN_RANK[userPlan] >= PLAN_RANK[minPlan]) {
+  if ((PLAN_RANK[userPlan] ?? 0) >= PLAN_RANK[minPlan]) {
     return {
       ok: true as const,
       user: { id: authUser.id, plan: userPlan, email: authUser.email ?? '', credits: userCredits },

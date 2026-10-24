@@ -3,9 +3,11 @@ import { cookies } from 'next/headers'
 import { NextResponse, type NextRequest } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { sendWelcomeEmail } from '@/lib/email'
+import { siteOrigin } from '@/lib/site-url'
 
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url)
+  const { searchParams } = new URL(request.url)
+  const origin = siteOrigin() // adresse publique : request.url vaut https://localhost:3021 derrière Nginx
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/dashboard'
   const claimRef = searchParams.get('claim_ref') === '1'
